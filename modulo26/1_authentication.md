@@ -521,7 +521,7 @@ Now, let's introduce two types of authentication tokens:
   - **Signature**: Created by signing the encoded Header and Payload with a secret key using the specified algorithm (e.g., HMAC, RSA, or ECC). The signature ensures that the token has not been tampered with.
 
   - Example JWT:
-    ```json
+    ```text
     {
       "alg": "HS256",
       "typ": "JWT"

@@ -65,22 +65,22 @@ For example:
 - **Encoding**:  
   Let's encode the string "hello" into Base64.
   1. First, the ASCII values of each character in "hello" are obtained:
-    - `h = 104`, `e = 101`, `l = 108`, `l = 108`, `o = 111`
-    - These values are based on the **ASCII table**:
-      ```
-      Character  | ASCII Value
-      ------------------------
-      h          | 104
-      e          | 101
-      l          | 108
-      o          | 111
-      ```
+  - `h = 104`, `e = 101`, `l = 108`, `l = 108`, `o = 111`
+  - These values are based on the **ASCII table**:
+    ```
+    Character  | ASCII Value
+    ------------------------
+    h          | 104
+    e          | 101
+    l          | 108
+    o          | 111
+    ```
 
   2. The string is then converted to binary using the ASCII values:
-    - `h = 01101000`, `e = 01100101`, `l = 01101100`, `l = 01101100`, `o = 01101111`
+  - `h = 01101000`, `e = 01100101`, `l = 01101100`, `l = 01101100`, `o = 01101111`
 
   3. The binary data is grouped into 6-bit chunks:
-    - `011010 000110 010101 101100 011011 000110 111100`
+  - `011010 000110 010101 101100 011011 000110 111100`
 
   4. Each 6-bit group is mapped to its corresponding Base64 character using a predefined **Base64 index table**:
      ```
@@ -101,18 +101,18 @@ For example:
      ```
 
   5. The Base64-encoded output is `aGVsbG8=`.
-    - Notice the `=` character at the end, which is used as **padding**. Padding is added when the input data isn't a multiple of 3 bytes (24 bits), ensuring the final Base64 string has a length that's a multiple of 4 characters.
+  - Notice the `=` character at the end, which is used as **padding**. Padding is added when the input data isn't a multiple of 3 bytes (24 bits), ensuring the final Base64 string has a length that's a multiple of 4 characters.
 
 - **Decoding**:  
   To decode `aGVsbG8=` back to the original string "hello":
   1. The Base64 string `aGVsbG8=` is split into 6-bit chunks:
-    - `a = 26`, `G = 6`, `V = 21`, `s = 44`, `b = 27`, `G = 6`, `8 = 60`
+  - `a = 26`, `G = 6`, `V = 21`, `s = 44`, `b = 27`, `G = 6`, `8 = 60`
 
   2. These numbers are converted back into their original 8-bit binary format:
-    - `a = 011010`, `G = 000110`, `V = 010101`, `s = 101100`, `b = 011011`, `G = 000110`, `8 = 111100`
+  - `a = 011010`, `G = 000110`, `V = 010101`, `s = 101100`, `b = 011011`, `G = 000110`, `8 = 111100`
 
   3. The binary groups are concatenated and decoded back to their ASCII characters:
-    - The final decoded output is "hello".
+  - The final decoded output is "hello".
 
 **Example 2:**
 - **Encoding**:  
@@ -147,22 +147,22 @@ For example:
      63     | /
      ```
      Using the above table, we map the 6-bit groups:
-    - `101100` → `44` (decimal) → Base64 Character: `s`
-    - `110110` → `54` (decimal) → Base64 Character: `2`
-    - `000111` → `7` (decimal) → Base64 Character: `H`
-    - `011010` → `26` (decimal) → Base64 Character: `a`
+  - `101100` → `44` (decimal) → Base64 Character: `s`
+  - `110110` → `54` (decimal) → Base64 Character: `2`
+  - `000111` → `7` (decimal) → Base64 Character: `H`
+  - `011010` → `26` (decimal) → Base64 Character: `a`
 
   4. The Base64-encoded output is `s2Ha`.
-    - Notice that **no padding** is needed here since the binary data is exactly 24 bits (3 bytes), which is divisible by 3. Padding (`=`) is only used when the data is not a multiple of 3 bytes.
+  - Notice that **no padding** is needed here since the binary data is exactly 24 bits (3 bytes), which is divisible by 3. Padding (`=`) is only used when the data is not a multiple of 3 bytes.
 
 - **Decoding**:  
   To decode `s2Ha` back to the original binary data:
 
   1. The Base64 string `s2Ha` is split into 6-bit groups:
-    - `s` → `44` → `101100`
-    - `2` → `54` → `110110`
-    - `H` → `7` → `000111`
-    - `a` → `26` → `011010`
+  - `s` → `44` → `101100`
+  - `2` → `54` → `110110`
+  - `H` → `7` → `000111`
+  - `a` → `26` → `011010`
 
   2. These binary values are concatenated back into the original 24-bit binary data:
      ```
@@ -194,62 +194,66 @@ For example:
 
 **Example:**
 - **Encoding**:  
-  Let's encode some binary data using Base64 for URLs.
+  Let's encode some binary data where the standard Base64 output would contain URL-unsafe characters (`/` and `+`).
 
   1. First, the binary data we want to encode is as follows:
      ```
-     10110011 01100001 11011010
+     11111111 11110000 00111111
      ```
-     These are three bytes (24 bits) of raw binary data, similar to the binary data in Example 2.
+     These are three bytes (24 bits) of raw binary data.
 
   2. The binary data is grouped into 6-bit chunks:
      ```
-     101100 110110 000111 011010
+     111111 111111 000000 111111
      ```
 
-  3. Each 6-bit group is mapped to its corresponding Base64 character using a modified **Base64 URL-safe index table**:
-     ```
-     Index  | Base64 URL-Safe Character
-     -------------------------
-     0      | A
-     1      | B
-     2      | C
-     3      | D
-     ...
-     25     | Z
-     26     | a
-     ...
-     52     | 0
-     53     | 1
-     ...
-     62     | -
-     63     | _
-     ```
+  3. Each 6-bit group is converted to its decimal representation:
+  - `111111` → 63
+  - `111111` → 63
+  - `000000` → 0
+  - `111111` → 63
 
-     Using the above table, we map the 6-bit groups:
-    - `101100` → `44` (decimal) → Base64 URL-Safe Character: `s`
-    - `110110` → `54` (decimal) → Base64 URL-Safe Character: `2`
-    - `000111` → `7` (decimal) → Base64 URL-Safe Character: `H`
-    - `011010` → `26` (decimal) → Base64 URL-Safe Character: `a`
+  4. Map these values to Base64 characters:
 
-  4. The Base64 URL-safe encoded output is `s2Ha`.
-    - Note that **no padding** (`=`) is used here since the binary data is a multiple of 3 bytes (24 bits), just like in the previous example.
+  - Standard Base64:
+    - 63 → `/`
+    - 63 → `/`
+    - 0  → `A`
+    - 63 → `/`
+      → Result: `//A/`
+
+  - Base64 URL-safe:
+    - 63 → `_`
+    - 63 → `_`
+    - 0  → `A`
+    - 63 → `_`
+      → Result: `__A_`
+
+  You can see that the **standard Base64** result `//A/` contains multiple `/` characters, which would need to be URL-encoded as `%2F`, leading to:
+     ```
+     %2F%2FA%2F
+     ```
+  In contrast, the **Base64 URL-safe** version `__A_` contains only URL-safe characters, so it can be used directly in a URL.
+
+  5. **Padding**:
+  - Since the original input was exactly 3 bytes (24 bits), the Base64-encoded output has 4 characters and does **not require padding**.
+  - If the input had been 1 or 2 bytes, padding with `=` would be added in standard Base64. In URL-safe Base64, the padding is often **omitted**.
 
 - **Decoding**:  
-  To decode `s2Ha` back to the original binary data:
+  To decode `__A_` back to the original binary data:
 
-  1. The Base64 URL-safe string `s2Ha` is split into 6-bit groups:
-    - `s` → `44` → `101100`
-    - `2` → `54` → `110110`
-    - `H` → `7` → `000111`
-    - `a` → `26` → `011010`
+  1. Map URL-safe characters back to their 6-bit values:
+  - `_` → 63 → `111111`
+  - `_` → 63 → `111111`
+  - `A` → 0  → `000000`
+  - `_` → 63 → `111111`
 
-  2. These binary values are concatenated back into the original 24-bit binary data:
+  2. Concatenate the bits:
      ```
-     10110011 01100001 11011010
+     11111111 11110000 00111111
      ```
 
-  3. The decoded output is the original binary data.
+  3. This gives us back the original binary input.
 
 **Special Characters in Base64 for URLs**:
 - Base64 for URLs replaces the `/` and `+` characters with `-` and `_`, respectively, to make the encoding URL-safe. This modification prevents issues with special characters that could interfere with URL parsing.
@@ -454,7 +458,7 @@ These protocols combine various authentication concepts—such as the **type of 
   Host: example.com
   Authorization: Digest username="user", realm="Example", nonce="dcd98b7102dd2f0e8b2e3a7f4b3d7f2f2d8c3ad5f3b8c1b4", uri="/protected-resource", response="5ccc069c403ebaf9f0171e9517f40e41", opaque="5ccc069c403ebaf9f0171e9517f40e41"
   ```
-  
+
 - **Encryption Requirement**:  
   Just like Basic Authentication, Digest Authentication should always be used over HTTPS to guarantee that the entire communication, including the hashed credentials, is encrypted during transmission.
 
@@ -596,15 +600,15 @@ When the user revisits the website or makes another request, the browser automat
 3. **Secure Flag**: The cookie is only sent over HTTPS connections if marked as `Secure`.
 4. **SameSite Policy**: The `SameSite` attribute of a cookie helps to control when the cookie is sent with cross-site requests. Cross-site requests are requests that are made from one domain (website) to another domain. This is common in scenarios where a webpage from one website makes a request to another website, for example, when loading resources like images, scripts, or making API calls.
 
-  - **Cross-site request example**: Imagine you're logged into a banking website (`bank.com`) and visit a blog (`blog.com`). While on the blog site, an embedded advertisement or an iframe might make a request to the bank's website to load certain resources or even submit forms. This is a cross-site request because the request originates from a domain (e.g., `blog.com`) that is different from the one the user is authenticated on (e.g., `bank.com`).
+- **Cross-site request example**: Imagine you're logged into a banking website (`bank.com`) and visit a blog (`blog.com`). While on the blog site, an embedded advertisement or an iframe might make a request to the bank's website to load certain resources or even submit forms. This is a cross-site request because the request originates from a domain (e.g., `blog.com`) that is different from the one the user is authenticated on (e.g., `bank.com`).
 
-   The `SameSite` cookie attribute allows website owners to specify the conditions under which cookies should be sent along with these types of cross-site requests. It has three main values:
+The `SameSite` cookie attribute allows website owners to specify the conditions under which cookies should be sent along with these types of cross-site requests. It has three main values:
 
-  - **`SameSite=Strict`**: With this setting, the cookie is **not sent** with any cross-site requests, even if the request originates from the same user who is logged in. This means that the cookie will only be sent in **first-party** contexts (requests initiated by the same domain). For example, if you're on `bank.com` and make a request to `bank.com`, the cookie will be sent, but if you go to `blog.com` and it tries to make a request to `bank.com`, the cookie will not be included. This is the most restrictive setting and is useful to prevent cross-site request forgery (CSRF) attacks.
+- **`SameSite=Strict`**: With this setting, the cookie is **not sent** with any cross-site requests, even if the request originates from the same user who is logged in. This means that the cookie will only be sent in **first-party** contexts (requests initiated by the same domain). For example, if you're on `bank.com` and make a request to `bank.com`, the cookie will be sent, but if you go to `blog.com` and it tries to make a request to `bank.com`, the cookie will not be included. This is the most restrictive setting and is useful to prevent cross-site request forgery (CSRF) attacks.
 
-  - **`SameSite=Lax`**: With this setting, the cookie will be sent with **top-level navigations** to the origin site (such as when the user clicks a link to `bank.com` from another site), but **not** with other cross-site requests like those initiated by embedded resources or AJAX requests. It's a more lenient policy than `Strict`, as it allows cookies to be sent in some cross-site requests but still limits automatic sending of cookies in cases like embedded ads or iframes.
+- **`SameSite=Lax`**: With this setting, the cookie will be sent with **top-level navigations** to the origin site (such as when the user clicks a link to `bank.com` from another site), but **not** with other cross-site requests like those initiated by embedded resources or AJAX requests. It's a more lenient policy than `Strict`, as it allows cookies to be sent in some cross-site requests but still limits automatic sending of cookies in cases like embedded ads or iframes.
 
-  - **`SameSite=None`**: This setting allows the cookie to be sent with **all** cross-site requests, regardless of whether the request is initiated by a first-party or third-party site. If you use `SameSite=None`, it’s important to also mark the cookie with the **`Secure`** flag, ensuring the cookie is only sent over HTTPS connections. This setting is typically used for cross-site functionality like embedded widgets or third-party login systems.
+- **`SameSite=None`**: This setting allows the cookie to be sent with **all** cross-site requests, regardless of whether the request is initiated by a first-party or third-party site. If you use `SameSite=None`, it’s important to also mark the cookie with the **`Secure`** flag, ensuring the cookie is only sent over HTTPS connections. This setting is typically used for cross-site functionality like embedded widgets or third-party login systems.
 
 For example, the browser will send:
 
@@ -616,7 +620,7 @@ The server uses these cookies to identify the user, retrieve their preferences, 
 
 ### Session Cookies
 
-Session cookies are a specific type of cookie used to maintain a user's authentication state during a session. 
+Session cookies are a specific type of cookie used to maintain a user's authentication state during a session.
 
 Unlike persistent cookies, session cookies do not stay on the client after the browser is closed. They are deleted once the browser session ends.
 
@@ -679,11 +683,11 @@ This session cookie:
 
 4. **Automatic Request with Session Cookie**: The victim’s browser, which is already authenticated with the target website, **might automatically include the session cookie in the HTTP request under certain conditions**:
 
-  - **If `SameSite=Strict`**: The session cookie will **not** be sent with cross-site requests. This means the victim’s browser will **not** include the session cookie with the request to the malicious website. Therefore, the CSRF attack **will not succeed** because the target website will not receive the session cookie.
+- **If `SameSite=Strict`**: The session cookie will **not** be sent with cross-site requests. This means the victim’s browser will **not** include the session cookie with the request to the malicious website. Therefore, the CSRF attack **will not succeed** because the target website will not receive the session cookie.
 
-  - **If `SameSite=Lax` (default)**: The session cookie **will** be sent with top-level navigations (e.g., clicking on a link) but **not** with other cross-site requests like form submissions or AJAX calls. If the victim visits the malicious site via a top-level navigation (e.g., by clicking a link from the malicious site), the session cookie will be sent, and the CSRF attack **could succeed**.
+- **If `SameSite=Lax` (default)**: The session cookie **will** be sent with top-level navigations (e.g., clicking on a link) but **not** with other cross-site requests like form submissions or AJAX calls. If the victim visits the malicious site via a top-level navigation (e.g., by clicking a link from the malicious site), the session cookie will be sent, and the CSRF attack **could succeed**.
 
-  - **If `SameSite=None`**: The session cookie **will** be sent with all requests, including cross-site requests. If the victim visits the malicious website, the browser will include the session cookie in the forged request, allowing the CSRF attack **to succeed**. However, `SameSite=None` must be used in conjunction with the `Secure` flag, which requires the cookie to be sent only over HTTPS connections.
+- **If `SameSite=None`**: The session cookie **will** be sent with all requests, including cross-site requests. If the victim visits the malicious website, the browser will include the session cookie in the forged request, allowing the CSRF attack **to succeed**. However, `SameSite=None` must be used in conjunction with the `Secure` flag, which requires the cookie to be sent only over HTTPS connections.
 
 5. **Target Website Processes the Request**: The target website receives the forged request along with the victim's session cookie. Since the request includes the valid session cookie, the website assumes the request is legitimate and processes it as if it were sent by the authenticated user. The attacker takes advantage of this trust to perform actions without the victim's consent.
 
@@ -700,7 +704,7 @@ This session cookie:
 - **Session expiry**: Without the **Expires** or **Max-Age** attributes, the session cookie is a **session cookie** and will expire when the user closes their browser. This ensures session information is not stored beyond the session duration.
 - **Session hijacking**: If session cookies are improperly configured (e.g., not using **Secure**, **HttpOnly**, and **SameSite**), they are vulnerable to attacks like XSS and CSRF.
 
-##### Cookies and HTTPS**
+##### Cookies and HTTPS
 - **Headers are not encrypted**: HTTP headers, including cookies, are sent as part of the HTTP request and response. However, these headers are **transmitted securely** if **HTTPS** is being used, because HTTPS (SSL/TLS) encrypts the entire communication channel between the client and the server.
 - **HTTPS Encryption**: While HTTP headers themselves aren't "encrypted" in the sense that each individual header is hidden, the entire HTTP message, including headers, cookies, and body, is encrypted when using HTTPS. This ensures that an attacker can't intercept or tamper with the headers during transmission over the network. Therefore, when using HTTPS, even though the headers are visible to the client and server, **they are protected by the encrypted channel**, making it much harder for attackers to eavesdrop on or manipulate the data.
 
@@ -732,72 +736,64 @@ Now, let's compare **session cookies** and **JWTs**:
 
 ### Token Storage
 
-#### Browsers
-When deciding where to store authentication tokens (including session cookies and JWTs), security should be a top priority. Common client-side storage options like **local storage** and **session storage** are vulnerable to **XSS (Cross-Site Scripting)** attacks, as they can be accessed by JavaScript. **HTTP-only cookies**, however, provide a more secure alternative, as they cannot be accessed by JavaScript and are more resistant to XSS attacks. Nevertheless, additional security measures like the **Secure** and **SameSite** flags must be implemented to protect cookies from cross-site request attacks and ensure that tokens are only transmitted securely over HTTPS.
+#### Browser
 
-- **Local Storage**:
-  - **Persistent**: Data stored in **local storage** persists even after the browser is closed, allowing users to stay logged in across sessions without needing to re-authenticate.
-  - **Vulnerable to XSS Attacks**: **XSS (Cross-Site Scripting)** is a security vulnerability where an attacker injects malicious JavaScript into a webpage. If a website is vulnerable to XSS, malicious scripts can access local storage and steal tokens.
-    - **Example of XSS Attack**: An attacker might inject a script that reads the content of local storage (`localStorage.getItem('auth_token')`) and sends it to a malicious server, where the token can be used to impersonate the user.
+When handling authentication tokens in the browser (such as JWTs or session cookies), choosing the right storage mechanism is critical for maintaining security. Below are the common options and their implications.
 
-  - **Why Local Storage is Vulnerable**:
-    - Local storage is accessible by JavaScript, meaning that if an attacker can inject malicious JavaScript, they can easily steal tokens stored in local storage.
-    - **Solution**: To protect against XSS, avoid storing sensitive data like JWTs or session tokens in local storage. Instead, consider using **HTTP-only cookies**, which are not accessible to JavaScript.
+##### **Local Storage**
+- **Persistence**: Data remains even after the browser is closed. Useful for keeping users logged in across sessions.
+- **Security Risk**: Vulnerable to **XSS (Cross-Site Scripting)**. Since JavaScript has access, a malicious script can read tokens:
+  ```javascript
+  const token = localStorage.getItem('auth_token');
+  ```
+- **Use with Caution**: Never store sensitive data like JWTs here if XSS is a concern. Prefer **HTTP-only cookies** for better protection.
 
-  - **Implementation of Local Storage**:
-    - **localStorage** is a simple key-value storage mechanism built into modern web browsers, accessible via JavaScript.
-    - Data is stored indefinitely until explicitly removed using JavaScript (`localStorage.removeItem()`) or until the user clears their browser cache.
-    - Example: Storing a token in local storage:
+**Example:**
+```javascript
+localStorage.setItem('auth_token', 'your-authentication-token');
+```
 
-      ```javascript
-      localStorage.setItem('auth_token', 'your-authentication-token');
-      ```
+##### **Session Storage**
+- **Scope**: Data is cleared when the tab or browser is closed. Short-lived, making it less risky than local storage.
+- **Still Vulnerable to XSS**: JavaScript can access session storage, though the shorter lifespan reduces exposure.
 
-- **Session Storage**:
-  - **More Secure**: Data in **session storage** is available only for the duration of the browser session (i.e., until the browser tab is closed). This limits the exposure time if an attacker manages to exploit an XSS vulnerability.
-  - **Cleared on Session End**: When the user closes the browser or tab, session storage is automatically cleared, reducing the risk of session hijacking once the session has ended.
+**Example:**
+```javascript
+sessionStorage.setItem('auth_token', 'your-authentication-token');
+```
 
-  - **Why Session Storage is More Secure**:
-    - While session storage is still vulnerable to XSS attacks (because JavaScript can access it), its **short-lived nature** makes it **less risky** than local storage. Since session storage data is cleared when the browser or tab is closed, the window for an attacker to steal tokens is smaller.
-    - However, session storage is still not the most secure option for storing tokens, as it remains accessible to JavaScript. For stronger protection, consider using **HTTP-only cookies**.
+##### **HTTP-only Cookies**
+- **Most Secure**: Not accessible via JavaScript, making them immune to XSS attacks.
+- **Automatic Transmission**: Sent with each HTTP request, no need to attach manually.
+- **Secure Flags Needed**:
+  - `HttpOnly`: Prevents access via JavaScript.
+  - `Secure`: Ensures transmission only over HTTPS.
+  - `SameSite`: Helps protect against CSRF.
 
-  - **Implementation of Session Storage**:
-    - **sessionStorage** works similarly to **localStorage**, but the data is stored only for the duration of the page session. Once the browser or tab is closed, the data is automatically cleared.
-    - Example: Storing a token in session storage:
+**Recommended for:**
+- Storing sensitive tokens like JWTs.
+- Maintaining sessions securely.
 
-      ```javascript
-      sessionStorage.setItem('auth_token', 'your-authentication-token');
-      ```
+##### Comparison
+| Method            | Accessible to JS | Survives Tab Close | XSS Safe | Requires Manual Sending |
+|-------------------|------------------|--------------------|----------|-------------------------|
+| Local Storage     | Yes              | Yes                | No       | Yes                     |
+| Session Storage   | Yes              | No                 | No       | Yes                     |
+| HTTP-only Cookies | No               | Yes                | Yes      | No (sent automatically) |
 
-- **JWT and Session Cookie Storage**:
-  - Both **JWTs** and **session cookies** can be stored in **local storage**, **session storage**, or **HTTP-only cookies**.
-  - The security risks associated with storing tokens are similar for both JWTs and session cookies:
-    - If stored in **local storage** or **session storage**, both **JWTs** and **session cookies** are vulnerable to **XSS** because they can be accessed by JavaScript.
-    - If stored in **HTTP-only cookies**, both **JWTs** and **session cookies** are protected from XSS attacks, but they must still be managed carefully to avoid cross-site request attacks.
+##### Sending JWTs in Headers
+If using local or session storage, you'll need to manually send the token in the `Authorization` header:
 
-- **JWT in HTTP-only Cookies**:
-  - Storing **JWTs** in **HTTP-only cookies** provides a balance between convenience and security. Since cookies are automatically sent with each HTTP request, JWTs are included seamlessly without the need to manually add them to headers.
-  - This also protects JWTs from JavaScript-based theft via XSS attacks. However, it is crucial to secure cookies with the **Secure** and **SameSite** flags to prevent them from being exposed to cross-site request attacks or being sent over insecure channels.
+```javascript
+fetch('https://api.example.com/endpoint', {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+  }
+});
+```
 
-- **JWT in Headers**:
-  - **JWTs** are often used in authentication and are commonly sent in **Authorization** headers when making HTTP requests. This is an alternative to storing them in client-side storage like local storage or session storage.
-  - The typical way to send a JWT in the HTTP header is by using the **Authorization** header with the `Bearer` scheme:
-
-    ```javascript
-    fetch('https://api.example.com/endpoint', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-      }
-    });
-    ```
-  - **JWTs in headers** can provide additional flexibility as they can be sent with every HTTP request automatically without needing to manually retrieve them from storage. However, storing the JWT in client-side storage (e.g., **local storage** or **session storage**) creates potential security risks, especially if the website is vulnerable to XSS attacks.
-  - It is also important to consider the **CORS (Cross-Origin Resource Sharing)** policy and **SameSite** cookie settings, as they can impact how JWTs are transmitted in headers or cookies.
-
-- **Session Cookies in HTTP-only Cookies**:
-  - **Session Cookies** stored in **HTTP-only cookies** are also protected from XSS attacks, as JavaScript cannot access these cookies.
-  - As with JWTs, it is important to use the **Secure** and **SameSite** flags with session cookies to ensure that they are only sent over HTTPS and are protected from cross-site request attacks.
-  - Since **session cookies** typically store a reference to session data on the server (rather than containing user data directly, like JWTs), their protection from XSS attacks is important to prevent attackers from hijacking user sessions.
+**Note:** This method is flexible but exposes the token to XSS if stored insecurely.
 
 #### Java client
 

@@ -303,8 +303,6 @@ Authentication methods relying on information that only the user should know:
 #### Password Cracking Protection
 - **Hashing** and **salting** passwords before storage ensures they aren't stored as plaintext, preventing rainbow table attacks.
 
----
-
 ### **Something You Have**
 Authentication methods requiring a **physical item** the user possesses to authenticate:
 
@@ -322,8 +320,6 @@ Authentication methods requiring a **physical item** the user possesses to authe
 
 #### Passwordless Authentication
 - Passwordless methods eliminate traditional passwords and rely on physical items such as mobile devices or hardware security keys for authentication via OTPs, magic links, or public-key cryptography (WebAuthn, FIDO2).
-
----
 
 ### **Something You Are (Biometrics)**
 Authentication methods using **unique physical or behavioral traits** to verify identity:

@@ -544,9 +544,54 @@ Now, let's introduce two types of authentication tokens:
 - **Base64URL Encoding**:
   - The **Header** and **Payload** of a JWT are **Base64URL encoded**. This encoding is specifically used because JWTs are often passed in **URLs** and must be safely transmitted in HTTP requests and URLs. Unlike regular **Base64**, **Base64URL** replaces characters like `+`, `/`, and `=` with URL-safe alternatives (`-`, `_`), making the JWT safe to include in URLs and HTTP headers.
   - **Base64 encoding** is not encryption; it simply converts binary data into a string format for safe transmission over text-based protocols like HTTP. While Base64 encoding ensures the data is compatible with URLs and headers, it does not provide any security on its own. To ensure the authenticity of the data, the JWT is signed with a secret key.
+  - Once the **Header** and **Payload** are Base64URL encoded, they are concatenated with a period (`.`) separator. The resulting JWT structure is:
+    ```
+    Header.Payload.Signature
+    ```
+  - The **Signature** is created by signing the concatenated encoded Header and Payload with a secret key, ensuring the token hasn’t been tampered with during transmission.
+
+  - Example of Base64URL encoding:
+    - **Header** (JSON):
+      ```json
+      {
+        "alg": "HS256",
+        "typ": "JWT"
+      }
+      ```
+      **Base64URL encoded Header**:
+      ```
+      eyJhbGciOiAiSFMyNTYiLCJ0eXAiOiAiSldUIn0
+      ```
+    - **Payload** (JSON):
+      ```json
+      {
+        "sub": "1234567890",
+        "name": "John Doe",
+        "iat": 1516239022
+      }
+      ```
+      **Base64URL encoded Payload**:
+      ```
+      eyJzdWIiOiAiMTIzNDU2Nzg5MCIsIm5hbWUiOiAiSm9obiBEb2UiLCJpYXQiOiAxNTE2MjM5MDIyfQ
+      ```
+    - **Example JWT**:
+      ```
+      eyJhbGciOiAiSFMyNTYiLCJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiMTIzNDU2Nzg5MCIsIm5hbWUiOiAiSm9obiBEb2UiLCJpYXQiOiAxNTE2MjM5MDIyfQ.Pxy7t1kUzUwHXU2UNW7tJ9uv0cZ1yg-QP9npIcnx5fA
+      ```
 
 - **JWT in URL**:
   - Since JWTs are often used in **URLs**, **Base64URL encoding** is employed to make the JWT URL-safe, ensuring it can be included in URLs without interfering with URL structures. While the JWT is encrypted during transmission over **HTTPS**, passing JWTs in URLs poses additional risks, such as exposure in browser histories, referrer headers, or server logs.
+  - Example of a URL containing a JWT:
+    ```
+    https://example.com/api/resource?token=eyJhbGciOiAiSFMyNTYiLCJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiMTIzNDU2Nzg5MCIsIm5hbWUiOiAiSm9obiBEb2UiLCJpYXQiOiAxNTE2MjM5MDIyfQ.Pxy7t1kUzUwHXU2UNW7tJ9uv0cZ1yg-QP9npIcnx5fA
+    ```
+
+- **JWT in HTTP Authorization header**:
+  - JWTs are commonly passed in the **Authorization** header of HTTP requests using the `Bearer` schema. This allows the server to authenticate the request based on the provided token. While the token is transmitted securely over **HTTPS**, it’s important to note that exposing JWTs in HTTP headers might still expose the token if the HTTPS connection is not properly configured or intercepted.
+  - Example of JWT in the HTTP Authorization header:
+    ```
+    Authorization: Bearer eyJhbGciOiAiSFMyNTYiLCJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiMTIzNDU2Nzg5MCIsIm5hbWUiOiAiSm9obiBEb2UiLCJpYXQiOiAxNTE2MjM5MDIyfQ.Pxy7t1kUzUwHXU2UNW7tJ9uv0cZ1yg-QP9npIcnx5fA
+    ```
 
 - **JWT Theft Risk**:
   - If a JWT is stolen (e.g., intercepted by an attacker), it can be used to impersonate the legitimate user. Since JWTs are used to maintain sessions, their theft allows unauthorized access to resources until the token expires or is revoked.

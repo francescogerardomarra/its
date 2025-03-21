@@ -1,54 +1,44 @@
-# Operating System files
-.DS_Store        # macOS
-Thumbs.db        # Windows
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+.idea/misc.xml
 
-# IDEs and text editors
-.vscode/          # VS Code settings
-.idea/            # JetBrains IDEs
-*.sublime-workspace
-*.sublime-project
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
-# Node.js
-node_modules/     # Node.js modules directory
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+caches/
+daemon/
+native/
+wrapper/
+.tmp/
 
-# Python
-__pycache__/      # Python bytecode
-*.py[cod]         # Python compiled files
-*.pyo              # Python optimized files
-*.pyd              # Python extension modules
 
-# Logs
-*.log
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
 
-# Build output directories
-/dist
-/build
-
-# Dependencies
-*.tgz
-*.tar.gz
-
-# Test coverage
-coverage/
-
-# Environment files
-.env              # Environment variable files (DO NOT commit this)
-.env.local        # Local env files
-
-# npm & yarn lockfiles (if you use Yarn, include both)
-package-lock.json
-yarn.lock
-
-# Compiled files
-*.class           # Java class files
-*.exe             # Executables
-*.dll             # Dynamic link library
-
-# OS generated files
-ehthumbs.db
-Desktop.ini
-
-# Other common files to ignore
-*.bak
-*.swp
-*.swo
+### VS Code ###
+.vscode/

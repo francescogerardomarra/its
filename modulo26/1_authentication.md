@@ -750,30 +750,31 @@ This session cookie:
 - **HTTPS Encryption**: While HTTP headers themselves aren't "encrypted" in the sense that each individual header is hidden, the entire HTTP message, including headers, cookies, and body, is encrypted when using HTTPS. This ensures that an attacker can't intercept or tamper with the headers during transmission over the network. Therefore, when using HTTPS, even though the headers are visible to the client and server, **they are protected by the encrypted channel**, making it much harder for attackers to eavesdrop on or manipulate the data.
 
 ### JWT vs Session Cookies
-Just to remind you, **authentication-related session data** refers to the information stored on the server to manage a user's authentication state across multiple requests. This typically includes:
 
-- **Authentication information** (e.g., user ID, roles, permissions)
-- **Session state** (e.g., session expiration time, login status)
+Authentication-related session data includes information that helps maintain a user's authenticated state across multiple requests. Typically, this encompasses:
 
-Now, let's compare **session cookies** and **JWTs**:
+- **Authentication details** (e.g., user ID, roles, permissions)
+- **Session state** (e.g., expiration time, login status)
 
-- **Session cookies** are generally considered more secure than **JWTs** because they do not store sensitive authentication-related session data on the client side. Instead, they store a **session ID** that references authentication-related session data stored securely on the server. This reduces the risk of exposing sensitive information if the cookie is intercepted. In contrast, **JWTs** can contain full user authentication-related information (such as user ID, roles, and permissions) within the token itself, which makes them more vulnerable if the token is compromised.
+Here’s a breakdown of the differences between **JWTs** and **session cookies**:
 
-- **Session cookies** can be automatically included with every HTTP request by the browser. This provides a seamless experience for users since they don’t need to manually send authentication tokens in headers. On the other hand, **JWTs** must be manually included in each HTTP request, typically via HTTP headers (e.g., `Authorization: Bearer <token>`), adding some complexity to the request process.
+- **Session Cookies** are generally more secure than **JWTs** because they store only a **session ID** on the client side. This session ID references data securely stored on the server, minimizing the risk of exposing sensitive information. In contrast, **JWTs** often contain full authentication-related data (like user ID and roles) in the token itself, which can be more vulnerable if intercepted.
 
-- **Session cookies** rely on **server-side authentication-related session storage**. The **session ID** is stored in the cookie, and the server uses this ID to look up the authentication-related session data associated with it. The actual authentication-related session data—such as user authentication details and session state (e.g., expiration time)—is stored on the server, and the client only stores a reference to it (the session ID). This means that authentication session management is entirely handled by the server, and the client doesn’t need to manage or store any authentication-related session data beyond the session ID.
+- **Session Cookies** are automatically included with each HTTP request by the browser, simplifying user experience. **JWTs**, however, must be manually added to HTTP headers (e.g., `Authorization: Bearer <token>`), which introduces additional handling on the client side.
 
-- **JWTs**, on the other hand, are **stateless** and **self-contained**. The token itself contains all the authentication-related session data needed to authenticate the user, such as user identity, roles, permissions, and expiration time. This is possible thanks to **claims** in the JWT, which hold the necessary user information and session data. Since **JWTs** store this information directly in the token as **claims**, the server does not need to store authentication-related session data. The server only validates the JWT using its signature. This makes JWTs ideal for APIs or distributed systems, where a **stateless** authentication approach is preferred, allowing the server to function without having to track authentication-related session data for each user.
+- **Session Cookies** depend on **server-side session storage**. The cookie holds a session ID, and the server looks up the session data based on this ID. The server handles session management, and the client simply holds a reference.
 
-- **Session cookies** are **stateful** and rely on **server-side authentication-related session storage**. The session ID stored in the cookie is used by the server to retrieve the user's authentication-related session data. This centralized management of authentication-related session data is common in traditional web applications. The cookie typically contains only a reference to the session data stored on the server, rather than the actual data itself.
+- **JWTs** are **stateless** and **self-contained**. All necessary authentication information is embedded within the token as **claims**, including identity, roles, permissions, and expiration. This allows the server to authenticate requests by validating the token's signature without maintaining session data.
 
-| Feature                                    | JWT                                                                                                                                   | Session Cookies                                                                                                                                     |
-|--------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Security**                               | JWTs store authentication-related session data directly in the token on the client side, which can be more vulnerable if intercepted. | Session cookies store only a session ID, reducing the exposure of sensitive data by keeping authentication-related session data on the server side. |
-| **Automatic Inclusion in Requests**        | Must be manually included in HTTP headers (e.g., `Authorization: Bearer <token>`).                                                    | Can be automatically included with every HTTP request by the browser, providing a seamless experience for the user.                                 |
-| **Authentication-related Session Storage** | Stateless and self-contained; the server does not store authentication-related session data, only validates the JWT using its claims. | Stateful; session ID stored in the cookie, and authentication-related session data is managed on the server side.                                   |
-| **Session Management**                     | Server does not need to store authentication-related session data beyond validating the JWT's claims.                                 | Authentication-related session management is centralized on the server, where session data is stored and maintained.                                |
-| **Use Case**                               | Ideal for APIs or distributed systems where a stateless authentication approach is preferred.                                         | Primarily used in traditional web applications with centralized server-side authentication-related session management.                              |
+- **Session Cookies** follow a **stateful** model. The server manages session data and uses the session ID in the cookie to retrieve the relevant authentication details. This approach is common in traditional web applications.
+
+| Feature                             | JWT                                                                                 | Session Cookies                                                       |
+|-------------------------------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| **Security**                        | Stores full authentication data on the client side; more vulnerable if intercepted. | Stores only a session ID; actual data remains securely on the server. |
+| **Automatic Inclusion in Requests** | Must be manually included in headers (e.g., `Authorization: Bearer <token>`).       | Automatically included with every browser request.                    |
+| **Session Storage**                 | Stateless; no server-side storage of authentication data.                           | Stateful; session data stored and managed on the server.              |
+| **Session Management**              | Handled via token validation; no need for server-side session tracking.             | Managed centrally on the server using the session ID.                 |
+| **Use Case**                        | Best for APIs and distributed systems requiring stateless authentication.           | Suited for traditional web apps with centralized session management.  |
 
 ### Token Storage
 

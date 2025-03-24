@@ -932,34 +932,13 @@ Storing JWTs is a crucial part of implementing secure authentication and authori
 
 ---
 
-## JWT Advanced Topics
-
+## JWS, JWK, JWE
 In this section, we delve deeper into advanced concepts surrounding JWTs (JSON Web Tokens), focusing on key management, encryption, signing, and validation. These mechanisms enhance the security and flexibility of JWT usage in distributed systems.
 
-### JSON Web Key (JWK) for Key Management
-
-JWK is a JSON-based data structure that represents a cryptographic key. It allows you to publish, rotate, and manage keys used for signing and encryption.
-
-**Example of a public JWK:**
-```json
-{
-  "kty": "RSA",
-  "kid": "1234",
-  "use": "sig",
-  "alg": "RS256",
-  "n": "0vx7...",  // Modulus
-  "e": "AQAB"     // Exponent
-}
-```
-- `kty`: Key type (e.g., RSA or EC)
-- `kid`: Key ID (used to select the correct key)
-- `use`: Intended use (sig for signature, enc for encryption)
-- `alg`: Algorithm
-- `n` and `e`: RSA public key components
-
 ### Token Signing with JSON Web Signature (JWS)
+What we presented so far is JWS which is the most common method for ensuring data integrity and authenticity of a JWT.
 
-JWS is the most common method for ensuring data integrity and authenticity of a JWT. A JWS token consists of:
+A JWS token consists of:
 - Header
 - Payload
 - Signature
@@ -983,36 +962,149 @@ JWS is the most common method for ensuring data integrity and authenticity of a 
 eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKx...xyz
 ```
 
-### Token Encryption with JSON Web Encryption (JWE)
+### JSON Web Key (JWK) for Key Management
 
-JWE provides confidentiality by encrypting the payload. A JWE token consists of:
-- Header
-- Encrypted key
-- Initialization Vector (IV)
-- Ciphertext
-- Authentication tag
+A **JSON Web Key (JWK)** is a JSON-formatted data structure that represents a cryptographic key. It's primarily used to manage public keys for verifying JWTs or encrypting data. When issuing or consuming JWTs, JWKs allow systems to publish, discover, and use keys in a standardized, interoperable way.
 
-**Example of JWE Structure:**
-```
-<base64url-encoded header>.<encrypted key>.<IV>.<ciphertext>.<tag>
-```
+JWK provides a standardized way to distribute public keys securely and reliably. By publishing a JWK Set at a known endpoint and referencing keys via `kid` values, systems can validate JWTs without manual key distribution or configuration changes.
 
-**JWE Header Example:**
+In secure systems, the private key is never exposed — it stays with the issuer (authorization server), while public keys are safely distributed via JWKs for signature verification.
+
+#### Why JWKs Matter
+JWKs are essential for:
+- **Key discovery**: Clients can fetch keys dynamically instead of hardcoding them.
+- **Key rotation**: New keys can be added to the JWK Set, and old ones retired.
+- **Multi-tenant scenarios**: Multiple keys can be maintained in one JWKS, each with a unique ID.
+
+#### Structure of a Public JWK
+Here's a simplified example of a public JWK representing an RSA key:
 ```json
 {
-  "alg": "RSA-OAEP",
-  "enc": "A256GCM",
-  "kid": "5678"
+  "kty": "RSA",
+  "kid": "1234",
+  "use": "sig",
+  "alg": "RS256",
+  "n": "0vx7...", 
+  "e": "AQAB"      
+}
+```
+- `kty`: Key type (e.g., `RSA` or `EC` for elliptic curve)
+- `kid`: Key ID – uniquely identifies this key in a set
+- `use`: What the key is used for – `sig` (signature) or `enc` (encryption)
+- `alg`: Algorithm this key is intended to be used with
+- `n`: The base64url-encoded modulus for RSA public key
+- `e`: The base64url-encoded public exponent for RSA public key
+
+#### How It Works: End-to-End Example
+Let’s walk through the flow of how a JWK is actually used in the context of verifying a JWT:
+
+1. **JWT is received as part of a request**:
+  - JWT header contains `alg` and `kid`:
+   ```json
+   {
+     "alg": "RS256",
+     "typ": "JWT",
+     "kid": "1234"
+   }
+   ```
+
+2. **Locate the correct public key**:
+  - The consumer of the token makes an HTTP GET request to a JWKS endpoint (e.g., `https://example.com/.well-known/jwks.json`).
+  - This endpoint returns a **JSON Web Key Set** (JWKS), which is an array of JWKs:
+   ```json
+   {
+     "keys": [
+       {
+         "kty": "RSA",
+         "kid": "1234",
+         "use": "sig",
+         "alg": "RS256",
+         "n": "0vx7...",
+         "e": "AQAB"
+       },
+       {
+         "kty": "RSA",
+         "kid": "5678",
+         "use": "sig",
+         "alg": "RS256",
+         "n": "1abc...",
+         "e": "AQAB"
+       }
+     ]
+   }
+   ```
+
+3. **Select the matching key**:
+  - Use the `kid` in the JWT header to find the matching key in the JWKS.
+
+4. **Reconstruct the public key**:
+  - Libraries use the `n` and `e` values to rebuild the RSA public key in memory.
+
+5. **Verify the client JWT**:
+  - The JWT library uses the public key to verify the JWT's signature.
+
+#### Why `kid` Is Important
+- Helps identify which key to use when multiple keys exist.
+- Enables **key rotation**: You can issue new JWTs with a different `kid` and new key, while still accepting old tokens until they expire.
+
+### Token Encryption with JSON Web Encryption (JWE)
+JWE ensures **confidentiality** by encrypting the payload of a token. This means only authorized parties with the correct decryption keys can view the contents.
+
+##### JWE Token Structure
+A JWE consists of 5 parts, all base64url-encoded and separated by dots:
+```
+<Protected Header>.<Encrypted Key>.<Initialization Vector>.<Ciphertext>.<Authentication Tag>
+```
+
+- **Protected Header**: Specifies encryption algorithms and key identifiers.
+- **Encrypted Key**: The symmetric key encrypted using the recipient's public key.
+- **Initialization Vector (IV)**: A random value used to ensure different ciphertexts.
+- **Ciphertext**: The encrypted payload.
+- **Authentication Tag**: Ensures data integrity and authenticity.
+
+##### Example JWE Header
+```json
+{
+  "alg": "RSA-OAEP",      // Key encryption algorithm
+  "enc": "A256GCM",       // Content encryption algorithm
+  "kid": "5678"           // Key identifier
 }
 ```
 
-This structure allows secure data transmission, especially useful in sensitive contexts (e.g., financial or health data).
+##### Encryption Process (Step-by-Step)
+1. **Generate a Content Encryption Key (CEK)** - a symmetric key to encrypt the payload.
+2. **Encrypt the payload** with CEK using the algorithm in `enc` (e.g., A256GCM).
+3. **Encrypt the CEK** using the recipient's public key with `alg` (e.g., RSA-OAEP).
+4. **Generate IV** - a nonce to add randomness.
+5. **Calculate Authentication Tag** to verify integrity upon decryption.
+6. **Assemble the token** using base64url-encoded parts.
 
-### Token Validation with JSON Web Key Set (JWKS)
+##### Full JWE Token Example (illustrative):
+```
+eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00iLCJraWQiOiI1Njc4In0
+.
+Z3Vlc3MtcGFzc3dvcmQ
+.
+48V1_ALb6US04U3b
+.
+5eym8TW_c8SuK0ltJ3rpYg
+.
+XFBoMYUZodetZdvTiFvSkQ
+```
 
-JWKS is a set of JWKs published at a URL. Clients use the `kid` in the JWT header to select the appropriate key from the JWKS for verification.
+#### Token Validation with JSON Web Key Set (JWKS)
 
-**JWKS Example:**
+JWKS is a standard format for exposing public keys used to validate tokens. It is commonly hosted at a well-known endpoint:
+```
+/.well-known/jwks.json
+```
+
+##### Purpose of JWKS
+- Allows dynamic retrieval of public keys.
+- Supports key rotation.
+- Enables multi-tenant systems to manage keys per issuer.
+
+##### JWKS Example
 ```json
 {
   "keys": [
@@ -1028,12 +1120,26 @@ JWKS is a set of JWKs published at a URL. Clients use the `kid` in the JWT heade
 }
 ```
 
-**Validation Flow:**
-1. Extract the `kid` from the JWT header.
-2. Retrieve the JWKS (typically from `/.well-known/jwks.json`).
-3. Locate the corresponding key.
-4. Verify the signature using the public key.
+##### Validation Flow (Step-by-Step)
+1. **Extract the `kid`** from the JWT or JWE header.
+2. **Fetch the JWKS** from the identity provider (e.g., `https://issuer.com/.well-known/jwks.json`).
+3. **Find the matching key** with the same `kid` in the JWKS.
+4. **Use the public key** to:
+  - Verify the **signature** (for JWTs)
+  - Decrypt the **encrypted key** (for JWEs)
+5. **Decrypt the CEK** (if using JWE).
+6. **Use the CEK to decrypt the ciphertext** and retrieve the original payload.
+7. **Verify the authentication tag** to ensure the data hasn’t been tampered with.
 
-This dynamic discovery and validation pattern supports key rotation and multi-issuer environments.
+##### Key Rotation Support
+Because tokens reference keys by `kid`, rotating keys is seamless:
+- New keys are published in JWKS.
+- Clients automatically select the correct key based on the `kid`.
+
+#### Real-World Use Case
+Imagine a healthcare provider encrypts patient data in a JWE. The recipient’s public key is used for encryption, and the token is transmitted. When the recipient receives it:
+- They look up the public key in their JWKS.
+- They decrypt the CEK, then the payload.
+- They ensure nothing was tampered with via the authentication tag.
 
 ---

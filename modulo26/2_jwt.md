@@ -940,3 +940,109 @@ Storing JWTs is a crucial part of implementing secure authentication and authori
   - Never log full JWTs in plaintext; truncate or hash before logging.
 
 ---
+
+## JWT Advanced Topics
+
+In this section, we delve deeper into advanced concepts surrounding JWTs (JSON Web Tokens), focusing on key management, encryption, signing, and validation. These mechanisms enhance the security and flexibility of JWT usage in distributed systems.
+
+### JSON Web Key (JWK) for Key Management
+
+JWK is a JSON-based data structure that represents a cryptographic key. It allows you to publish, rotate, and manage keys used for signing and encryption.
+
+**Example of a public JWK:**
+```json
+{
+  "kty": "RSA",
+  "kid": "1234",
+  "use": "sig",
+  "alg": "RS256",
+  "n": "0vx7...",  // Modulus
+  "e": "AQAB"     // Exponent
+}
+```
+- `kty`: Key type (e.g., RSA or EC)
+- `kid`: Key ID (used to select the correct key)
+- `use`: Intended use (sig for signature, enc for encryption)
+- `alg`: Algorithm
+- `n` and `e`: RSA public key components
+
+### Token Signing with JSON Web Signature (JWS)
+
+JWS is the most common method for ensuring data integrity and authenticity of a JWT. A JWS token consists of:
+- Header
+- Payload
+- Signature
+
+**Example of JWS Header:**
+```json
+{
+  "alg": "RS256",
+  "typ": "JWT",
+  "kid": "1234"
+}
+```
+
+**Flow:**
+1. Create a base64url-encoded header and payload.
+2. Sign the concatenated string `header.payload` with the private key.
+3. Append the signature to form the JWT.
+
+**Sample JWT (truncated):**
+```
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKx...xyz
+```
+
+### Token Encryption with JSON Web Encryption (JWE)
+
+JWE provides confidentiality by encrypting the payload. A JWE token consists of:
+- Header
+- Encrypted key
+- Initialization Vector (IV)
+- Ciphertext
+- Authentication tag
+
+**Example of JWE Structure:**
+```
+<base64url-encoded header>.<encrypted key>.<IV>.<ciphertext>.<tag>
+```
+
+**JWE Header Example:**
+```json
+{
+  "alg": "RSA-OAEP",
+  "enc": "A256GCM",
+  "kid": "5678"
+}
+```
+
+This structure allows secure data transmission, especially useful in sensitive contexts (e.g., financial or health data).
+
+### Token Validation with JSON Web Key Set (JWKS)
+
+JWKS is a set of JWKs published at a URL. Clients use the `kid` in the JWT header to select the appropriate key from the JWKS for verification.
+
+**JWKS Example:**
+```json
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "kid": "1234",
+      "use": "sig",
+      "alg": "RS256",
+      "n": "0vx7...",
+      "e": "AQAB"
+    }
+  ]
+}
+```
+
+**Validation Flow:**
+1. Extract the `kid` from the JWT header.
+2. Retrieve the JWKS (typically from `/.well-known/jwks.json`).
+3. Locate the corresponding key.
+4. Verify the signature using the public key.
+
+This dynamic discovery and validation pattern supports key rotation and multi-issuer environments.
+
+---

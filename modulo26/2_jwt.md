@@ -325,7 +325,7 @@ This compact, URL-safe string can now be used as an access token in HTTP headers
 
 ---
 
-# JWT Usage
+## JWT Usage
 JWT (JSON Web Token) is a compact, URL-safe means of representing claims securely between two parties. JWTs are commonly used for authentication and information exchange in web applications and APIs. A JWT consists of three parts:
 
 1. **Header**: Contains metadata about the token, such as the signing algorithm.

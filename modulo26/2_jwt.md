@@ -337,7 +337,7 @@ Generating a JWT involves the following steps:
 4. **Encode the JWT**: The header, payload, and signature are concatenated using dots (`.`) to form the final token.
 
 ### Example JWT Structure (JSON):
-```json
+```text
 {
   "header": {
     "alg": "HS256",

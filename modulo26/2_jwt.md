@@ -850,3 +850,93 @@ JWTs are commonly used as access tokens in OAuth2 implementations, especially in
 OAuth2 + JWT enables secure, federated, and scalable access delegation for APIs, clients, and distributed services.
 
 ---
+
+## JWT Storage
+
+Storing JWTs is a crucial part of implementing secure authentication and authorization workflows. Once a token is issued, its storage location significantly impacts both security and application behavior. Below is a deep dive into key considerations and practices for storing JWTs.
+
+### Why JWT Storage Matters on the Client Side
+- **Session persistence**: Clients need to persist JWTs across requests to maintain authenticated sessions.
+- **Security context**: Improper storage can expose tokens to XSS or CSRF attacks.
+- **Token accessibility**: The chosen storage method determines how and when a token can be accessed by client-side scripts or sent automatically with requests.
+
+### When and Where to Store JWTs
+- **Authentication tokens** should be stored immediately after a successful login.
+- **Authorization tokens** (e.g., access/refresh tokens) may be stored temporarily or with long-lived storage depending on their purpose and lifespan.
+- **Browser vs Application Clients**:
+  - **Browser-based clients** require careful storage due to exposure to web-based attacks.
+  - **Applications** have more control over storage but still need to avoid insecure file systems or memory leaks.
+
+### JWT Storage Options in Browsers
+
+#### **localStorage**
+- **Pros**:
+  - Easy to use and persists even after the browser tab is closed.
+  - Accessible via JavaScript without needing to send it to the server on every request.
+
+- **Cons & Risks**:
+  - **Vulnerable to XSS Attacks**: Any malicious script injected through XSS can access JWTs stored in localStorage. This exposes the token to theft and potential misuse by an attacker.
+  - **Impact of XSS**: If an attacker steals the JWT, they can impersonate the user and perform unauthorized actions, compromising sensitive data.
+
+#### **sessionStorage**
+- **Pros**:
+  - Easy to use and persists only during the browser tab session (cleared once the tab is closed).
+
+- **Cons & Risks**:
+  - **Vulnerable to XSS Attacks**: Like localStorage, sessionStorage is accessible via JavaScript and can be exploited through XSS vulnerabilities.
+  - **Impact of XSS**: An attacker could steal the JWT during the session and use it to impersonate the user, though the risk window is shorter compared to localStorage.
+
+#### **Cookies**
+- **Pros**:
+  - Automatically sent with every HTTP request, reducing the need for manual token handling.
+  - Can be secured with `HttpOnly` and `Secure` flags.
+
+- **Cons & Risks**:
+  - **Susceptible to CSRF**: If cookies are not configured with `SameSite`, they can be sent with cross-site requests, allowing attackers to forge actions (CSRF) on behalf of an authenticated user.
+    - Example: A malicious website can trigger an unwanted action on a site the user is logged into by leveraging the JWT stored in cookies.
+  - **Mitigating CSRF**: Use `SameSite` cookies (`Strict` or `Lax`), or implement anti-CSRF tokens to prevent unauthorized requests.
+  - **XSS Risks**: While the `HttpOnly` flag protects cookies from JavaScript access, an attacker may still be able to exfiltrate tokens via server-side vulnerabilities or intercept cookies in transit (without HTTPS).
+
+### Handling JWTs in Different Contexts
+- **Client-side handling**:
+  - Tokens are used to attach authorization headers to API requests.
+  - Must ensure minimal exposure to JavaScript context.
+- **Server-side handling**:
+  - Tokens may be stored in secure cookies, server sessions, or verified per request without storage.
+  - Optional caching for performance, especially for token introspection or validation.
+
+### Secure Storage During Authentication / Authorization
+- Store access tokens in short-lived memory if possible.
+- Use refresh tokens with longer expiration in `HttpOnly` cookies or encrypted storage.
+- Implement token rotation to minimize the window of misuse.
+
+### Best Practices for Secure JWT Storage
+- **Use short-lived access tokens** and rotate them frequently.
+- **Store refresh tokens in secure, `HttpOnly`, `SameSite=Strict` cookies**.
+- **Avoid exposing tokens to JavaScript** unless absolutely necessary.
+- **Encrypt sensitive JWTs** if stored in databases or persistent caches.
+- **Do not store JWTs in plain text** in local files or unprotected client storage.
+- **Invalidate tokens server-side** when no longer needed or after logout.
+
+### Storing JWTs in Backend Systems
+- **Database storage** (e.g., for refresh tokens):
+  - Encrypt before storing.
+  - Use indexed expiration timestamps for cleanup.
+- **Session stores** (e.g., Redis):
+  - Ideal for stateless authentication fallback or blacklisting.
+  - Supports TTL and efficient revocation.
+- **Cache layers**:
+  - Reduce validation overhead.
+  - Use hashed keys and encrypted payloads.
+
+### Advanced Security Techniques
+- **Token encryption**:
+  - Use JWE (JSON Web Encryption) if sensitive data is in the payload.
+- **Obfuscation**:
+  - While not a substitute for encryption, it can deter casual inspection.
+- **Token fingerprinting**:
+  - Bind tokens to user agents or IPs to prevent misuse.
+- **Subtle logging**:
+  - Never log full JWTs in plaintext; truncate or hash before logging.
+
+---

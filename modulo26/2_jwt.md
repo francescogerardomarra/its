@@ -1063,7 +1063,7 @@ A JWE consists of 5 parts, all base64url-encoded and separated by dots:
 - **Authentication Tag**: Ensures data integrity and authenticity.
 
 ##### Example JWE Header
-```json
+```text
 {
   "alg": "RSA-OAEP",      // Key encryption algorithm
   "enc": "A256GCM",       // Content encryption algorithm

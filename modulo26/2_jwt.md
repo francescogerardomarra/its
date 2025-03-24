@@ -1,4 +1,4 @@
-# JWT (JSON Web Token)
+# JWT
 JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object. This information can be verified and trusted because it is digitally signed using a secret (HMAC algorithm) or a public/private key pair (RSA or ECDSA).
 
 JWTs are commonly used for **authentication** and **authorization** in web applications, APIs, and microservices architectures.
@@ -70,6 +70,7 @@ While more secure than Basic Auth, session-based authentication introduces chall
 
 ### Basic Authentication vs JWT
 
+**Table 1**
 | Feature                     | Basic Authentication                      | JWT                                           |
 |-----------------------------|-------------------------------------------|-----------------------------------------------|
 | **Security of Credentials** | Sends username/password with each request | Token sent instead of credentials             |
@@ -80,6 +81,7 @@ While more secure than Basic Auth, session-based authentication introduces chall
 | **Revocation**              | Hard to implement                         | Supported via refresh tokens or blacklists    |
 | **Custom Claims**           | Not supported                             | Supported (roles, permissions, etc.)          |
 
+**Table 2**
 | **Problem**                          | **Basic Authentication**                                                                                              | **JWT Resolution**                                                                                                                                        |
 |--------------------------------------|-----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Security Risks**                   | Transmits credentials (username and password) in plaintext with each request, making them vulnerable to interception. | JWT tokens are digitally signed, providing integrity and authenticity. Tokens can be encrypted to ensure confidentiality of sensitive information.        |
@@ -322,17 +324,6 @@ This compact, URL-safe string can now be used as an access token in HTTP headers
 1. Decode the JWT.
 2. Verify the signature using the appropriate algorithm and key.
 3. Validate claims (e.g., expiration time, issuer).
-
----
-
-## JWT Usage
-JWT (JSON Web Token) is a compact, URL-safe means of representing claims securely between two parties. JWTs are commonly used for authentication and information exchange in web applications and APIs. A JWT consists of three parts:
-
-1. **Header**: Contains metadata about the token, such as the signing algorithm.
-2. **Payload**: Holds the claims, which can include user details and additional metadata.
-3. **Signature**: Used to verify that the token has not been tampered with.
-
-JWTs are encoded using Base64URL and signed using either an HMAC secret or an asymmetric key pair.
 
 ---
 

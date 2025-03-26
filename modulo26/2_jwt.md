@@ -5,7 +5,7 @@ JWTs are commonly used for **authentication** and **authorization** in web appli
 
 JWT is widely used due to its efficiency and security features. Some of its key benefits include:
 
-1. **Stateless Authentication**: JWT eliminates the need for a session state stored on the server, allowing scalability in distributed systems.
+1. **Stateless Authentication**: JWT eliminates the need for an authentication-related session state stored on the server, allowing scalability in distributed systems.
 2. **Compact & Fast**: Being a compact token, JWTs are easily transmitted over HTTP headers, making them suitable for web applications and mobile devices.
 3. **Security**: JWTs can be signed (integrity protection) and optionally encrypted (confidentiality protection), ensuring secure data transmission.
 4. **Interoperability**: JWTs are widely adopted across different programming languages and frameworks.
@@ -42,11 +42,11 @@ To avoid sending credentials repeatedly, applications began using session-based 
 
 1. **User logs in with credentials.**
 2. **Server authenticates the user and creates a session.**
-3. **Session data is stored server-side (e.g., in-memory, Redis).**
+3. **Authentication-related session data is stored server-side (e.g., in-memory, Redis).**
 4. **A session cookie is sent to the client.**
 5. **Client includes the session cookie with every request.**
 
-#### Session Data Typically Includes:
+#### Authentication-related Session Data Typically Includes:
 - **User identity** (e.g., user ID, username)
 - **User roles and permissions** (e.g., `admin`, `user`)
 - **Authentication claims** (e.g., email, attributes)
@@ -66,29 +66,31 @@ While more secure than Basic Auth, session-based authentication introduces chall
 2. **Server authenticates and issues a signed JWT.**
 3. **Client stores the JWT (e.g., in localStorage or memory).**
 4. **Client sends the JWT in the `Authorization` header with each request.**
-5. **Server verifies the token without needing to store session data.**
+5. **Server verifies the token without needing to store authentication-related session data.**
 
 ### Basic Authentication vs JWT
 
 **Table 1**
-| Feature                     | Basic Authentication                      | JWT                                           |
-|-----------------------------|-------------------------------------------|-----------------------------------------------|
-| **Security of Credentials** | Sends username/password with each request | Token sent instead of credentials             |
-| **Statelessness**           | No, requires server-side sessions         | Yes, fully stateless                          |
-| **Session Management**      | Server stores user session                | Token stores claims, no server session needed |
-| **Cross-Domain (SSO)**      | Poor support                              | Excellent support                             |
-| **Token Expiration**        | Not built-in                              | Built-in with `exp` claim                     |
-| **Revocation**              | Hard to implement                         | Supported via refresh tokens or blacklists    |
-| **Custom Claims**           | Not supported                             | Supported (roles, permissions, etc.)          |
+
+| Feature                     | Basic Authentication                                     | JWT                                                                  |
+|-----------------------------|----------------------------------------------------------|----------------------------------------------------------------------|
+| **Security of Credentials** | Sends username/password with each request                | Token sent instead of credentials                                    |
+| **Statelessness**           | No, requires server-side authentication-related sessions | Yes, fully stateless                                                 |
+| **Session Management**      | Server stores user authentication-related session        | Token stores claims, no server authentication-related session needed |
+| **Cross-Domain (SSO)**      | Poor support                                             | Excellent support                                                    |
+| **Token Expiration**        | Not built-in                                             | Built-in with `exp` claim                                            |
+| **Revocation**              | Hard to implement                                        | Supported via refresh tokens or blacklists                           |
+| **Custom Claims**           | Not supported                                            | Supported (roles, permissions, etc.)                                 |
 
 **Table 2**
-| **Problem**                          | **Basic Authentication**                                                                                              | **JWT Resolution**                                                                                                                                        |
-|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Security Risks**                   | Transmits credentials (username and password) in plaintext with each request, making them vulnerable to interception. | JWT tokens are digitally signed, providing integrity and authenticity. Tokens can be encrypted to ensure confidentiality of sensitive information.        |
-| **Scalability and Performance**      | Requires server validation with each request, leading to performance overhead, especially in distributed systems.     | JWT tokens are self-contained, reducing the need for server-side validation, which improves scalability and performance.                                  |
-| **Session Management**               | Relies on server-side session management, which can be cumbersome and prone to scalability issues.                    | JWT tokens eliminate the need for server-side session management, improving scalability and reducing overhead.                                            |
-| **Security Features**                | Lacks built-in support for features like token expiration, role-based access control, or user-specific claims.        | JWT tokens can include expiration times, user roles, permissions, and custom claims, enabling fine-grained access control and enhanced security policies. |
-| **Interoperability and Flexibility** | Relies heavily on HTTP headers, which might not be suitable for all types of requests.                                | JWT tokens can be transmitted via headers, query parameters, or request bodies, providing greater flexibility and interoperability.                       |
+
+| **Problem**                          | **Basic Authentication**                                                                                                  | **JWT Resolution**                                                                                                                                        |
+|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Security Risks**                   | Transmits credentials (username and password) in plaintext with each request, making them vulnerable to interception.     | JWT tokens are digitally signed, providing integrity and authenticity. Tokens can be encrypted to ensure confidentiality of sensitive information.        |
+| **Scalability and Performance**      | Requires server validation with each request, leading to performance overhead, especially in distributed systems.         | JWT tokens are self-contained, reducing the need for server-side validation, which improves scalability and performance.                                  |
+| **Session Management**               | Relies on server-side authentication-related session management, which can be cumbersome and prone to scalability issues. | JWT tokens eliminate the need for server-side authentication-related session management, improving scalability and reducing overhead.                     |
+| **Security Features**                | Lacks built-in support for features like token expiration, role-based access control, or user-specific claims.            | JWT tokens can include expiration times, user roles, permissions, and custom claims, enabling fine-grained access control and enhanced security policies. |
+| **Interoperability and Flexibility** | Relies heavily on HTTP headers, which might not be suitable for all types of requests.                                    | JWT tokens can be transmitted via headers, query parameters, or request bodies, providing greater flexibility and interoperability.                       |
 
 ---
 
@@ -197,29 +199,94 @@ System.out.println("Token is valid. Subject: " + jwt.getSubject());
 
 In this example, the verifier will check whether the `iss` and `aud` claims match the expected values. If they don’t, an exception is thrown.
 
-### Public Claims
-Public claims are custom claims intended to be shared openly, provided they don’t conflict with registered claims. These should be **defined in a way that avoids collisions**, typically using **namespaced keys** or referencing public claim registries.
+### 🧩 Public Claims (with Examples)
 
-While they may seem similar to private claims, public claims are designed to be more **standardized** across applications, allowing external services or libraries to potentially recognize and act on them. They serve as a middle ground between the formal structure of registered claims and the freeform nature of private ones.
+#### What Are Public Claims?
+
+**Public claims** are custom claims meant to be **shared and recognized across different systems and services**. They follow naming conventions—usually involving **namespaces**—to avoid clashes with standard or other custom claims.
+
+At their core, public and private claims are structurally the same: they are both key-value pairs in a JWT payload. What differentiates them is **intent and interpretation**.
+
+- **Public claims** are **meant to be shared** and interpreted by external systems.
+- **Private claims** are **meant for internal use** within your ecosystem.
+
+#### Naming Convention
+
+The key naming convention for public claims is **namespacing**, typically using a **URI or domain-based structure**.
+
+Why?
+1. It ensures uniqueness
+2. It points to an authoritative source (your domain)
+3. It allows third parties to locate documentation (if you publish it)
 
 Example:
 ```json
-{
-  "https://mycompany.com/role": "admin",
-  "https://mycompany.com/permissions": ["read", "write", "delete"]
-}
+"https://mycompany.com/role": "editor"
 ```
+This namespaced key reduces the risk of name collision and signals that `mycompany.com` owns the definition.
 
-#### Example Use Case for a Public Claim
-Suppose you’re integrating with a third-party analytics dashboard that reads JWTs to determine a user’s access level. Rather than using a private claim (which the third-party wouldn’t recognize), you could use a **namespaced public claim** like:
+✅ Good: `https://yourdomain.com/subscriptionTier`: `"pro"`
+❌ Bad: `subscriptionTier`: `"pro"` — might conflict with other claims named the same.
 
+> 🔍 Important: Simply using a namespaced URI does **not automatically** make the claim meaningful to third parties. It must be accompanied by documentation or agreement.
+
+#### When to Use Public Claims
+
+Use **public claims** when:
+- Data in the JWT will be consumed by **third-party systems** or **external APIs**
+- The meaning of the claim should be **standardized** or **documented**
+- You want to ensure **cross-system compatibility**
+
+##### Example Use Case
+You're issuing a token for a customer using a third-party helpdesk system that determines support level based on user tier:
 ```json
-{
-  "https://analytics.vendor.com/access-tier": "premium"
-}
+"https://support.mycompany.com/accessLevel": "premium"
 ```
+This is only meaningful if `support.mycompany.com` (or a partner using it) has access to **documentation that defines `accessLevel`** and understands what "premium" means.
 
-Because it’s public and namespaced, the third-party service knows to look for that claim and interpret its value. This allows multiple systems to interoperate without having to pre-negotiate all custom field names.
+Without documentation, it's just a string—they won't know what to do with it.
+
+#### When to Use Private Claims
+
+Use **private claims** when:
+- Data is meant for **internal use** only
+- You're communicating between **your own microservices or internal systems**
+- There’s no need to document or expose the claim to external consumers
+
+##### Example:
+```json
+"role": "admin"
+```
+This is fine if only your internal services consume the JWT. But it won’t mean anything to a third-party tool unless pre-agreed.
+
+#### Real-World Comparison
+
+| Feature               | Public Claim                                | Private Claim                  |
+|----------------------|----------------------------------------------|--------------------------------|
+| Naming convention    | Namespaced (e.g., URL-style)                 | Free-form                     |
+| Shared externally?   | Yes, with docs or agreement                  | No (unless pre-agreed)        |
+| Risk of conflicts    | Low (if namespaced)                          | High                          |
+| Use case example     | `"https://api.partner.com/role": "admin"`    | `"role": "admin"`             |
+| Self-explanatory?    | Only if namespace is documented              | No                            |
+
+#### Advantages of Using Public Claims
+
+1. **Interoperability**
+  - Can be reliably used across systems and tools
+  - ✅ Example: A third-party BI tool reads `"https://mycompany.com/plan": "enterprise"`, and your docs define what "enterprise" means
+
+2. **Avoiding Conflicts**
+  - Namespacing avoids overlap with registered claims like `email`, `sub`, or `iss`
+
+3. **Standardization**
+  - Your ecosystem can rely on consistent claim names
+  - ✅ Example: `"https://mycompany.com/tenantId"` is recognized across all your services
+
+4. **Data Sharing**
+  - Enables clean B2B and third-party integrations
+  - ✅ Example: A payment processor reads `"https://mycompany.com/accountStatus": "active"` and understands the account state
+
+> 📘 Tip: If you’re building a public API or identity provider, always document your public claim names and expected values.
 
 ### Private Claims
 Private claims are completely **custom** and are used to transmit information **agreed upon between the issuer and the consumer** of the token. These are not registered or intended for public use, and are the most flexible.
@@ -442,16 +509,6 @@ JWTs are self-contained and typically not stored server-side, making revocation 
 - **Refresh Token Rotation**: Issue a new refresh token on each use, invalidating the previous. Detection of reuse indicates compromise.
 - **Short-lived Tokens**: Reduce reliance on revocation by minimizing token lifespan.
 
-Example blacklist strategy:
-```java
-Set<String> revokedJtis = new HashSet<>(Arrays.asList("abc123", "def456"));
-
-public boolean isTokenRevoked(Claims claims) {
-    String jti = claims.getId();
-    return revokedJtis.contains(jti);
-}
-```
-
 ### Token Scope
 
 Scopes define the level of access granted by the token, typically through a `scope` claim:
@@ -464,16 +521,6 @@ String token = Jwts.builder()
 ```
 
 Fine-grained scope enforcement is essential for least-privilege access control. Use middleware or filters to validate scopes at runtime.
-
-Example:
-```java
-String requiredScope = "write:messages";
-String tokenScope = claims.get("scope", String.class);
-
-if (!Arrays.asList(tokenScope.split(" ")).contains(requiredScope)) {
-    throw new SecurityException("Insufficient scope");
-}
-```
 
 ### Token Leakage
 
@@ -492,14 +539,7 @@ To mitigate leakage:
 
 ### Integrity & Tampering Prevention
 
-Integrity ensures that the token hasn’t been altered. This is done by verifying the signature of the JWT using the same secret (HS256) or a public key (RS256):
-
-```java
-Claims claims = Jwts.parser()
-    .setSigningKey(publicKey)
-    .parseClaimsJws(token)
-    .getBody();
-```
+Integrity ensures that the token hasn’t been altered. This is done by verifying the signature of the JWT using the same secret (HS256) or a public key (RS256).
 
 **Always verify the token signature before using any of its claims.** Avoid accepting unsigned tokens or those signed with weak or unexpected algorithms.
 
@@ -511,38 +551,15 @@ Token replay occurs when an attacker captures a valid token and reuses it. Mitig
 - **Bind tokens to client context** (e.g., IP, user-agent fingerprint)
 - **Track usage** via jti or nonce claims
 
-```java
-String jti = claims.getId();
-if (usedJtis.contains(jti)) {
-    throw new SecurityException("Replay detected");
-} else {
-    usedJtis.add(jti);
-}
-```
-
 ### Best Practices
 
 #### Use Strong Algorithms
 Always use robust signing algorithms like `RS256` (asymmetric) or `HS256` (symmetric). Avoid `none` or outdated algorithms.
 
-```java
-String token = Jwts.builder()
-    .setClaims(claims)
-    .signWith(SignatureAlgorithm.RS256, privateKey)
-    .compact();
-```
-
 Use key rotation strategies to limit the blast radius of a compromised key.
 
 #### Keep Tokens Short-lived
 Short-lived tokens reduce risk from token leakage. Aim for access tokens with a TTL under 15 minutes when possible.
-
-Combine with rotating refresh tokens for seamless UX:
-```java
-Map<String, String> tokenPair = new HashMap<>();
-tokenPair.put("access_token", generateAccessToken(user));
-tokenPair.put("refresh_token", generateRefreshToken(user));
-```
 
 #### Avoid Storing Sensitive Information
 JWTs are base64-encoded, not encrypted. Avoid including PII, passwords, or secrets.
@@ -563,15 +580,6 @@ Always validate the following claims during verification:
 - `iss` (issuer)
 - `aud` (audience)
 
-```java
-Claims claims = Jwts.parser()
-    .requireIssuer("my-auth-server")
-    .requireAudience("my-api")
-    .setSigningKey(publicKey)
-    .parseClaimsJws(token)
-    .getBody();
-```
-
 #### Token Payload Size Considerations
 JWTs are transmitted on every request, so size impacts performance. Avoid bloated payloads:
 
@@ -581,11 +589,6 @@ JWTs are transmitted on every request, so size impacts performance. Avoid bloate
 
 #### Use HTTPS
 Always transmit JWTs over HTTPS to prevent MITM attacks and token theft.
-
-Enforce secure headers like:
-```http
-Strict-Transport-Security: max-age=63072000; includeSubDomains
-```
 
 ---
 
@@ -624,7 +627,7 @@ Content-Type: application/json
 }
 ```
 
-3. **Token Delivery**: The JWT is returned to the client, typically via a JSON response. The client stores the token (commonly in localStorage or memory).
+3. **Token Delivery**: The JWT is returned to the client, **typically via a JSON response**. The client stores the token (commonly in localStorage or memory).
 
 ```
 HTTP/1.1 200 OK
@@ -644,7 +647,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 5. **Token Validation**: The server verifies the token's signature and claims. If valid, the request proceeds with the user's identity established.
 
-This flow eliminates the need for server-side sessions, enabling stateless authentication.
+This flow eliminates the need for server-side authentication-related sessions, enabling stateless authentication.
 
 ### Authorization Flows
 
@@ -669,68 +672,6 @@ JWTs also play a central role in defining and enforcing what authenticated users
 2. **Policy Enforcement**: Downstream services or middleware inspect these claims to determine whether a user has the necessary rights to perform an action.
 
 3. **Decentralized Enforcement**: Since all required claims are embedded in the token, services can enforce authorization without querying a central authority.
-
-#### Access Control in Microservices
-
-In a microservices architecture, each service may need to independently validate and interpret JWTs:
-
-1. **Central Auth Service**: Handles authentication and JWT issuance.
-
-2. **Token Propagation**: The client or API gateway attaches the JWT to requests routed to individual microservices.
-
-```
-GET /user-service/users/123
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
-
-3. **Service-Level Validation**: Each microservice verifies the token's signature and checks claims relevant to its context.
-
-4. **Granular Authorization**: Microservices can implement fine-grained access control by interpreting roles or permissions encoded in the token.
-
-Proper understanding and implementation of JWT flows ensure secure communication, efficient identity propagation, and scalable access control across distributed systems.
-
-### Token Exchange Flow
-Token exchange enables secure delegation and communication between services by allowing one token to be exchanged for another with a different scope, audience, or identity. This is especially useful in microservices or federated architectures.
-
-#### Common Steps:
-- A client obtains an initial access token (JWT) from an identity provider or authentication server.
-- The client presents this token to a backend or token exchange endpoint.
-- The backend verifies the token and issues a new JWT scoped to the target service.
-- The new token may include different claims (e.g., audience, scopes) suitable for the downstream service.
-
-#### Use Case Example:
-A frontend client obtains a token for a resource gateway, and the gateway exchanges it for an internal token to access a service:
-```http
-POST /token/exchange
-Authorization: Bearer <frontend-access-token>
-Content-Type: application/json
-
-{
-  "target_audience": "internal-service"
-}
-```
-
-### Single Sign-On (SSO)
-JWTs are ideal for enabling Single Sign-On across multiple systems. A user authenticates once and receives a token from a trusted Identity Provider (IdP). Other applications in the trust network accept the JWT without re-authentication.
-
-#### Key Concepts:
-- **Trust relationships** established using public key cryptography.
-- **Federated identity** allows different systems to rely on a central IdP.
-
-#### Flow:
-- User logs in to App A and receives a signed JWT from the IdP.
-- User visits App B; App B verifies the token using the IdP's public key.
-- App B grants access based on the validated token.
-
-```json
-{
-  "iss": "https://idp.example.com",
-  "sub": "user123",
-  "aud": "appB",
-  "exp": 1711390000,
-  "roles": ["user"]
-}
-```
 
 ### Token Refresh Flow
 Since access tokens (JWTs) are often short-lived, refresh tokens are used to obtain new access tokens without requiring re-authentication.
@@ -799,46 +740,6 @@ Token rotation helps mitigate replay attacks and detect token misuse. Every refr
   "exp": 1711400000
 }
 ```
-
-### Information Exchange
-JWTs are not only for authorization—they are efficient vehicles for secure information transmission. This makes them powerful in microservices and stateless API environments.
-
-#### Benefits:
-- Encapsulate identity and metadata in a signed format.
-- Reduce backend calls for user data.
-- Improve API scalability and statelessness.
-
-#### CSRF Protection:
-- Do **not** store JWTs in localStorage when cookies are used—this exposes them to CSRF.
-- Use `SameSite=Strict` on cookies.
-- Prefer Authorization headers with Bearer tokens over cookie storage if managing tokens manually.
-
-### OAuth2
-JWTs are commonly used as access tokens in OAuth2 implementations, especially in OpenID Connect (OIDC).
-
-#### Common Flow: Authorization Code with PKCE
-1. Client initiates authorization request with code challenge.
-2. User authenticates and authorizes.
-3. Authorization server issues an authorization code.
-4. Client exchanges the code (with code verifier) for an access token (JWT).
-
-#### Example JWT Access Token:
-```json
-{
-  "iss": "https://auth.example.com",
-  "sub": "user123",
-  "aud": "api.example.com",
-  "scope": "read write",
-  "exp": 1711410000
-}
-```
-
-#### Advantages:
-- Self-contained access tokens reduce dependency on central authorization server.
-- Signed JWTs provide integrity and authenticity.
-- Scopes and claims allow fine-grained access control.
-
-OAuth2 + JWT enables secure, federated, and scalable access delegation for APIs, clients, and distributed services.
 
 ---
 
@@ -1047,23 +948,33 @@ Let’s walk through the flow of how a JWK is actually used in the context of ve
 - Helps identify which key to use when multiple keys exist.
 - Enables **key rotation**: You can issue new JWTs with a different `kid` and new key, while still accepting old tokens until they expire.
 
-### Token Encryption with JSON Web Encryption (JWE)
-JWE ensures **confidentiality** by encrypting the payload of a token. This means only authorized parties with the correct decryption keys can view the contents.
+---
 
-##### JWE Token Structure
-A JWE consists of 5 parts, all base64url-encoded and separated by dots:
+### JWE
+
+JSON Web Encryption (JWE) is a specification that ensures **confidentiality** of JWT payloads by **encrypting the content**. This is in contrast to JSON Web Signature (JWS), which **only signs** the payload for authenticity and integrity but **does not hide** its contents.
+
+In other words:
+- With **JWS**, anyone who intercepts the token (after HTTPS termination) can read the payload, though they can’t modify it without breaking the signature.
+- With **JWE**, the **payload is encrypted**, so even after HTTPS is unwrapped, the data remains unreadable unless the recipient has the decryption key.
+
+This makes JWE ideal for scenarios where **sensitive information** must be protected, even from intermediaries.
+
+#### 🧱 JWE Token Structure
+A JWE consists of 5 base64url-encoded parts, separated by dots:
 ```
 <Protected Header>.<Encrypted Key>.<Initialization Vector>.<Ciphertext>.<Authentication Tag>
 ```
+Each part serves a specific purpose:
 
-- **Protected Header**: Specifies encryption algorithms and key identifiers.
-- **Encrypted Key**: The symmetric key encrypted using the recipient's public key.
-- **Initialization Vector (IV)**: A random value used to ensure different ciphertexts.
-- **Ciphertext**: The encrypted payload.
-- **Authentication Tag**: Ensures data integrity and authenticity.
+- **Protected Header**: Specifies algorithms and key identifiers.
+- **Encrypted Key**: The symmetric key (used to encrypt the payload) itself encrypted using the recipient's public key.
+- **Initialization Vector (IV)**: Adds randomness to the encryption process.
+- **Ciphertext**: The encrypted payload data.
+- **Authentication Tag**: Verifies the integrity and authenticity of the encrypted content.
 
-##### Example JWE Header
-```text
+#### 🧾 Example JWE Header
+```json
 {
   "alg": "RSA-OAEP",      // Key encryption algorithm
   "enc": "A256GCM",       // Content encryption algorithm
@@ -1071,15 +982,15 @@ A JWE consists of 5 parts, all base64url-encoded and separated by dots:
 }
 ```
 
-##### Encryption Process (Step-by-Step)
-1. **Generate a Content Encryption Key (CEK)** - a symmetric key to encrypt the payload.
-2. **Encrypt the payload** with CEK using the algorithm in `enc` (e.g., A256GCM).
-3. **Encrypt the CEK** using the recipient's public key with `alg` (e.g., RSA-OAEP).
-4. **Generate IV** - a nonce to add randomness.
-5. **Calculate Authentication Tag** to verify integrity upon decryption.
-6. **Assemble the token** using base64url-encoded parts.
+#### 🔄 Encryption Process (Step-by-Step)
+1. **Generate a CEK (Content Encryption Key)** – a temporary symmetric key to encrypt the payload.
+2. **Encrypt the payload** using the CEK and the algorithm from `enc` (e.g., `A256GCM`).
+3. **Encrypt the CEK** using the recipient’s public key and algorithm from `alg` (e.g., `RSA-OAEP`).
+4. **Generate an Initialization Vector (IV)** to ensure unique ciphertext.
+5. **Calculate an Authentication Tag** to ensure tamper-proofing.
+6. **Assemble the final JWE** using base64url-encoded segments.
 
-##### Full JWE Token Example (illustrative):
+#### 📦 Illustrative JWE Token Example
 ```
 eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00iLCJraWQiOiI1Njc4In0
 .
@@ -1091,55 +1002,3 @@ Z3Vlc3MtcGFzc3dvcmQ
 .
 XFBoMYUZodetZdvTiFvSkQ
 ```
-
-#### Token Validation with JSON Web Key Set (JWKS)
-
-JWKS is a standard format for exposing public keys used to validate tokens. It is commonly hosted at a well-known endpoint:
-```
-/.well-known/jwks.json
-```
-
-##### Purpose of JWKS
-- Allows dynamic retrieval of public keys.
-- Supports key rotation.
-- Enables multi-tenant systems to manage keys per issuer.
-
-##### JWKS Example
-```json
-{
-  "keys": [
-    {
-      "kty": "RSA",
-      "kid": "1234",
-      "use": "sig",
-      "alg": "RS256",
-      "n": "0vx7...",
-      "e": "AQAB"
-    }
-  ]
-}
-```
-
-##### Validation Flow (Step-by-Step)
-1. **Extract the `kid`** from the JWT or JWE header.
-2. **Fetch the JWKS** from the identity provider (e.g., `https://issuer.com/.well-known/jwks.json`).
-3. **Find the matching key** with the same `kid` in the JWKS.
-4. **Use the public key** to:
-  - Verify the **signature** (for JWTs)
-  - Decrypt the **encrypted key** (for JWEs)
-5. **Decrypt the CEK** (if using JWE).
-6. **Use the CEK to decrypt the ciphertext** and retrieve the original payload.
-7. **Verify the authentication tag** to ensure the data hasn’t been tampered with.
-
-##### Key Rotation Support
-Because tokens reference keys by `kid`, rotating keys is seamless:
-- New keys are published in JWKS.
-- Clients automatically select the correct key based on the `kid`.
-
-#### Real-World Use Case
-Imagine a healthcare provider encrypts patient data in a JWE. The recipient’s public key is used for encryption, and the token is transmitted. When the recipient receives it:
-- They look up the public key in their JWKS.
-- They decrypt the CEK, then the payload.
-- They ensure nothing was tampered with via the authentication tag.
-
----

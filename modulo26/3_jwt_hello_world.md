@@ -810,13 +810,13 @@ curl -X GET "http://localhost:8080/shop/users?id=<USER_ID>" \
 
 ### Retrieve a User by Email
 ```bash
-curl -X GET "http://localhost:8080/shop/users?email=alice@example.com" \
+curl -X GET "http://localhost:8080/shop/users?email=alice7@example.com" \
      -H "Authorization: Bearer <YOUR_TOKEN>"
 ```
 
 ### Retrieve a User by Username
 ```bash
-curl -X GET "http://localhost:8080/shop/users?username=alice01" \
+curl -X GET "http://localhost:8080/shop/users?username=alice007" \
      -H "Authorization: Bearer <YOUR_TOKEN>"
 ```
 
@@ -827,13 +827,13 @@ curl -X PUT http://localhost:8080/shop/users \
      -H "Content-Type: application/json" \
      -d '{
            "username": "alice_updated",
-           "email": "alice@example.com"
+           "email": "alice7@example.com"
          }'
 ```
 
 Check update:
 ```sql
-SELECT * FROM shop_schema.User WHERE email = 'alice@example.com';
+SELECT * FROM shop_schema.User WHERE email = 'alice7@example.com';
 ```
 
 ### Delete a User

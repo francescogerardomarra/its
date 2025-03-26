@@ -791,14 +791,14 @@ curl -X POST http://localhost:8080/shop/users \
      -H "Authorization: Bearer <YOUR_TOKEN>" \
      -H "Content-Type: application/json" \
      -d '{
-           "username": "alice01",
-           "email": "alice@example.com"
+           "username": "alice007",
+           "email": "alice7@example.com"
          }'
 ```
 
 Check insertion:
 ```sql
-SELECT * FROM shop_schema.User WHERE email = 'alice@example.com';
+SELECT * FROM shop_schema.User WHERE email = 'alice7@example.com';
 ```
 
 ### Retrieve a User by ID

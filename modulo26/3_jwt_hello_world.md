@@ -679,7 +679,7 @@ To run the `WebServiceRestJWT` application in IntelliJ:
 - Set **Project SDK** to **JDK 21**. If not available, add it manually.
 
 **Run the Application**
-- Locate the main class `WebServiceRestJwt` (the one with the `main` method).
+- Locate the main class `WebServiceRest` (the one with the `main` method).
 - Click the green Run arrow or use **Run -> Run 'WebServiceRestJwt'**.
 
 **Verify Startup**

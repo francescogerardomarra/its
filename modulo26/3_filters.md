@@ -49,11 +49,8 @@ Here's how this flow works in the context of filters:
     - Once the controller has generated the response, the response object travels back through the filter chain. Filters can now inspect or modify the **response** before it is sent to the client. This is typically where you can perform logging or modify the content of the response (e.g., adding custom headers or logging response times).
 
 #### Use Cases
-**Authentication**
-A filter can intercept incoming requests to verify the presence of a JWT token in the request headers, validate the token, and allow or deny access to the resources based on the token's validity.
-
-**Logging**
-A filter can log details about incoming requests (e.g., request method, URL, headers, body) for auditing, debugging, or monitoring purposes.
+- **Authentication**: A filter can intercept incoming requests to verify the presence of a JWT token in the request headers, validate the token, and allow or deny access to the resources based on the token's validity.
+- **Logging**: A filter can log details about incoming requests (e.g., request method, URL, headers, body) for auditing, debugging, or monitoring purposes.
 
 #### Filter Chain
 A **filter chain** is a sequence of filters that process a request and/or response in the order they are defined. Each filter in the chain can:

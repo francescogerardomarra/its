@@ -343,7 +343,6 @@ This bean is a central security component used in the authentication and authori
   This token is returned to the client for future authenticated requests.
 
 ### Annotations
-
 - `@Component`: This annotation marks `AdminTokenProvider` as a Spring component, allowing Spring to detect it during component scanning and manage it as a singleton bean. It makes the class eligible for dependency injection into other beans like `AuthenticationTokenFilter` and `LoginController`.
 
 - `@Value`: Used to inject configuration properties (defined in the application properties file) into the bean's fields. This includes the JWT secret, claims such as subject, role, permissions, and expiration duration.
@@ -571,7 +570,7 @@ A **filter** is an object that performs filtering tasks on either the **request*
 
 In Spring, filters are commonly used to process requests or responses in a way that is **independent of the business logic**. Filters sit in between the client and the servlet (or controller), intercepting and potentially modifying the request and/or response before the request reaches the servlet or after the servlet generates the response.
 
-#### Definition, Chaining Registration
+#### Definition, Chaining, Registration
 From a theoretical point of view, the implementation lifecycle of a filter can be broken down into three main stages:
 
 1. **Definition**: In this stage, the filter is created by implementing the `jakarta.servlet.Filter` interface or by extending an abstract class like `GenericFilter`. The filter class contains the logic that defines how incoming requests and outgoing responses should be processed, typically by overriding methods like `doFilter()`.
@@ -698,30 +697,464 @@ Available Abstract Classes for Filter Implementation:
     - This is a Spring-specific class that implements the `jakarta.servlet.Filter` interface and offers more Spring-friendly features, such as dependency injection.
     - It allows you to easily integrate Spring beans into your filter, which is helpful for service or repository injections.
 
-#### Methods of Registration
+#### Registration Methods
+In Spring Boot, filters can be defined by either implementing the `jakarta.servlet.Filter` interface or by extending a superclass like `OncePerRequestFilter`. After defining the filter, you need to register it to make it part of the Spring Boot application context. Depending on how you define and register the filter, the filter may or may not be a Spring Bean. Below are the main methodologies for filter registration:
 
-    
+1. **Registering a Filter as a Bean in a `@Configuration` Class**:
+    - **Filter Definition**: The filter is defined as a standard class, often implementing the `jakarta.servlet.Filter` interface or extending `OncePerRequestFilter`. It is not necessarily a Spring Bean at this point.
+    - **Registration Flow**: The filter is **registered as a Spring Bean** within a `@Configuration` class, typically using the `@Bean` annotation. The registration is done through a `FilterRegistrationBean`, which allows you to configure details such as URL patterns, filter order, and other properties.
+    - **Bean Creation**: The filter itself is **not a Spring Bean initially**, but it is instantiated and registered as a Spring Bean during the configuration process. The `FilterRegistrationBean` acts as a container that allows customization of the filter's behavior.
+    - **Summary**: This approach gives you full control over the filter's lifecycle, and the filter is explicitly registered as a Spring Bean during the registration process.
 
-...............
-### Overview of the Class
+````java
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-This class extends Spring's `OncePerRequestFilter`, ensuring that the filter logic is executed once for every request that comes through the filter chain. It works by validating the JWT token extracted from the `Authorization` header of the HTTP request. If the token is valid, it sets the authenticated user’s details in the Spring Security context, allowing the user to proceed with the request.
+import java.io.IOException;
 
-Key points:
-- **Token Extraction**: The JWT token is extracted from the `Authorization` header.
-- **Token Validation**: The token is validated using the `AdminTokenProvider` class.
-- **Authentication Context**: If the token is valid, the user's details are set in the authentication context.
-- **Proceeding with the Request**: After handling the authentication, the filter continues the request processing by invoking the `filterChain.doFilter()` method.
+@Configuration
+public class FilterConfig {
+
+    // Registering the filter as a Spring Bean within a @Configuration class
+    @Bean
+    public FilterRegistrationBean<CustomFilter> registrationBean() {
+        FilterRegistrationBean<CustomFilter> registrationBean = new FilterRegistrationBean<>();
+        
+        // Create an instance of CustomFilter and register it
+        registrationBean.setFilter(new CustomFilter());
+        
+        // Specify URL patterns where the filter should apply
+        registrationBean.addUrlPatterns("/api/*");
+
+        // Set the filter order to 1, which means this filter has the highest priority 
+        // and will be executed first in the filter chain. Filters with lower order values 
+        // are given higher priority and are executed before those with higher order values.
+        // This setting ensures that this filter runs early in the processing sequence, 
+        // allowing it to handle requests or responses before any other filters with a higher 
+        // order (i.e., values greater than 1) are applied.
+        registrationBean.setOrder(1);
+        return registrationBean;
+    }
+}
+````
+
+````java
+// Custom filter class implementing jakarta.servlet.Filter
+public class CustomFilter implements Filter {
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // Filter initialization logic (if needed)
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        // Custom logic for request processing (e.g., JWT validation)
+        System.out.println("Authenticating request...");
+
+        // Pass the request/response along the filter chain
+        chain.doFilter(request, response);
+    }
+
+    @Override
+    public void destroy() {
+        // Cleanup logic (if needed)
+    }
+}
+````
+
+2. **Using `@WebFilter` Annotation with `@ServletComponentScan`**:
+    - **Filter Definition**: The filter is defined by implementing the `jakarta.servlet.Filter` interface or extending `OncePerRequestFilter`, and it is annotated with the `@WebFilter` annotation.
+    - **Registration Flow**: The filter **is not a Spring Bean**. Instead, the `@ServletComponentScan` annotation in the Spring Boot application automatically registers the filter with the servlet container.
+    - **Bean Creation**: The filter definition itself is **not a Spring Bean**, but Spring Boot automatically detects and registers it via the servlet container without requiring a Spring Bean definition.
+    - **Summary**: This is a more automated registration process where the filter is integrated into the servlet context without explicitly being a Spring Bean.
+
+````java
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
+import java.io.IOException;
+
+@WebFilter(urlPatterns = "/api/*") // Define the URL pattern this filter applies to
+public class CustomFilter implements Filter {
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // Filter initialization logic (if needed)
+        System.out.println("Filter initialized");
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        // Pre-processing logic before passing the request along the filter chain
+        System.out.println("Request is being filtered");
+
+        // Pass request and response to the next filter in the chain
+        chain.doFilter(request, response);
+
+        // Post-processing logic after the request has been processed by the chain
+        System.out.println("Response is being filtered");
+    }
+
+    @Override
+    public void destroy() {
+        // Cleanup resources (if needed)
+        System.out.println("Filter destroyed");
+    }
+}
+````
+
+````java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import jakarta.servlet.annotation.ServletComponentScan;
+
+@SpringBootApplication
+@ServletComponentScan  // This enables automatic scanning and registration of filters and servlets
+public class MySpringBootApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MySpringBootApplication.class, args);
+    }
+}
+````
+
+3. **Using `@Component` with `FilterRegistrationBean`**:
+    - **Filter Definition**: The filter is defined as a Spring Bean by annotating it with `@Component`, either implementing the `jakarta.servlet.Filter` interface or extending `OncePerRequestFilter`.
+    - **Registration Flow**: The filter is **already a Spring Bean** due to the `@Component` annotation. The filter is automatically registered by Spring as part of the application context. You can customize the filter's registration by using a `FilterRegistrationBean`, where you can specify URL patterns, order, and other configurations.
+    - **Bean Creation**: The filter definition is a Spring Bean right from the start because of the `@Component` annotation. It’s registered directly with Spring Boot during application startup.
+    - **Summary**: This approach simplifies filter registration by letting Spring manage the filter as a bean while still allowing customization through `FilterRegistrationBean`.
+
+````java
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component  // This makes the filter a Spring Bean
+public class CustomFilter implements Filter {
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // Initialization logic (if needed)
+        System.out.println("Custom Filter Initialized");
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        // Pre-processing logic
+        System.out.println("Custom Filter Processing Request");
+
+        // Pass the request along the filter chain
+        chain.doFilter(request, response);
+
+        // Post-processing logic
+        System.out.println("Custom Filter Processing Response");
+    }
+
+    @Override
+    public void destroy() {
+        // Cleanup logic (if needed)
+        System.out.println("Custom Filter Destroyed");
+    }
+}
+````
+
+4. **Registering a Custom Filter with Spring Security Using `HttpSecurity`**:
+    - **Filter Definition**: The filter is defined by implementing `jakarta.servlet.Filter` or extending `OncePerRequestFilter`, as a custom filter for Spring Security.
+    - **Registration Flow**: The filter may or may not be a Spring Bean. If it is a Spring Bean, it can be injected directly into the Spring Security configuration. If it's not a Spring Bean, it can still be registered programmatically using `http.addFilterBefore()` or `http.addFilterAfter()` within the `HttpSecurity` configuration to integrate it into the security filter chain; in Spring Security, the **security filter chain** is a sequence of filters that intercept HTTP requests and apply security-related logic, such as authentication and authorization. Each filter in the chain performs a specific task, such as checking credentials or verifying permissions. The filters are applied in a specific order to process incoming requests and outgoing responses.
+    - **Bean Creation**: The filter is **not automatically registered as a Spring Bean** unless explicitly defined as one (via `@Bean` or `@Component`). It is manually registered during Spring Security configuration.
+    - **Summary**: This method integrates the filter into the Spring Security filter chain, but the filter doesn't have to be a Spring Bean unless needed for dependency injection.
+
+````java
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    private final CustomSecurityFilter customSecurityFilter;
+
+    @Autowired
+    // Injecting the CustomSecurityFilter because it is a Spring Bean
+    public SecurityConfig(CustomSecurityFilter customSecurityFilter) {
+        this.customSecurityFilter = customSecurityFilter;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+                .antMatchers("/api/**").authenticated()  // Example: Secure endpoints
+                .anyRequest().permitAll()               // Allow other requests
+            .and()
+            .addFilterBefore(customSecurityFilter, UsernamePasswordAuthenticationFilter.class);  // Register filter before Spring Security's default filter
+
+        return http.build();
+    }
+}
+````
+
+````java
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+
+import java.io.IOException;
+
+@Component  // Making the filter a Spring Bean
+public class CustomSecurityFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        // Custom filter logic here
+        System.out.println("Custom Security Filter Applied");
+        
+        // Continue the filter chain
+        filterChain.doFilter(request, response);
+    }
+}
+````
+
+- **Method 1**: Register as a `@Bean` in a `@Configuration` class with `FilterRegistrationBean`. The filter is defined as a class and is **later registered as a Spring Bean** during the registration process.
+- **Method 2**: Use `@WebFilter` annotation and `@ServletComponentScan`. The filter is **not a Spring Bean**, and Spring Boot automatically registers it with the servlet container.
+- **Method 3**: Use `@Component` annotation with `FilterRegistrationBean`. The filter is defined as a Spring Bean and automatically registered by Spring.
+- **Method 4**: Register the custom filter using `HttpSecurity` in Spring Security. The filter may or may not be a Spring Bean, but it is directly integrated into the security filter chain.
+
+#### Overview of the custom Filter class
+
+The `AuthenticationTokenFilter` is a Spring Security filter responsible for processing JSON Web Tokens (JWT) from incoming HTTP requests. It is part of a security mechanism used to authenticate requests to protected endpoints in a stateless manner. By intercepting each HTTP request, the filter ensures that a valid JWT token is present and sets the authentication context for authenticated users.
+
+This filter is implemented by extending Spring's `OncePerRequestFilter`, ensuring it runs once per request. It extracts the JWT token from the `Authorization` header, validates it using the `AdminTokenProvider`, and sets the authenticated user's details in the `SecurityContext`. This setup is commonly used in stateless authentication where no session is maintained.
+
+The `AuthenticationTokenFilter` bean will be registered within the `SecurityConfig` class via the `HttpSecurity` configuration. It will be added to the Spring Security filter chain before the `UsernamePasswordAuthenticationFilter` to ensure JWTs are processed before any standard authentication mechanisms. Here's how it is registered:
+
+```java
+public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
+    http
+            .authorizeHttpRequests(authz -> authz
+                    .requestMatchers("/shop/users", "/shop/items").authenticated()
+                    .anyRequest().permitAll()
+            )
+            .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .csrf(AbstractHttpConfigurer::disable);
+
+    return http.build();
+}
+```
+
+##### Annotations
+
+- `@Component`: Marks this class as a Spring-managed component, allowing it to be auto-detected through classpath scanning and registered as a bean in the application context.
+- `@Autowired`: Used on the constructor to inject the `AdminTokenProvider` dependency automatically from the Spring container.
+
+###### Constructor
+
+```java
+@Autowired
+public AuthenticationTokenFilter(AdminTokenProvider adminTokenProvider) {
+    this.adminTokenProvider = adminTokenProvider;
+}
+```
+
+This constructor injects the `AdminTokenProvider`, which is a utility class responsible for validating the JWT and extracting its claims. The use of `@Autowired` allows Spring to provide this dependency automatically when creating an instance of `AuthenticationTokenFilter`.
+
+###### `doFilterInternal()` Method
+
+```java
+@Override
+protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
+    String token = getTokenFromRequest(request);
+
+    if (token != null && adminTokenProvider.validateToken(token)) {
+        var claims = adminTokenProvider.getClaims(token);
+        String username = claims.getSubject();
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(username, null, null);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    filterChain.doFilter(request, response);
+}
+```
+
+This is the core method of the filter and is executed for every HTTP request.
+
+- It begins by extracting the JWT from the `Authorization` header.
+- If the token exists and is valid, it retrieves the claims and extracts the username.
+- It creates a `UsernamePasswordAuthenticationToken` object, representing an authenticated user.
+- It then sets this authentication object into Spring's `SecurityContext`, enabling downstream components to identify the user as authenticated.
+- Finally, it proceeds with the filter chain.
+
+###### `getTokenFromRequest()` Method
+
+```java
+private String getTokenFromRequest(HttpServletRequest request) {
+    String bearerToken = request.getHeader("Authorization");
+
+    if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+        return bearerToken.substring(7);
+    }
+
+    return null;
+}
+```
+
+This helper method extracts the JWT token from the HTTP `Authorization` header.
+
+- It first fetches the `Authorization` header from the request.
+- It checks whether the header starts with the `Bearer ` prefix.
+- If it does, it removes the prefix and returns the token.
+- If the header is missing or improperly formatted, it returns `null`.
+
+This ensures that only properly formatted Bearer tokens are processed by the filter.
+
+With this setup, the `AuthenticationTokenFilter` acts as a gatekeeper for protected routes, authenticating users based on JWT tokens and integrating seamlessly into the Spring Security filter chain.
+
+````java
+package com.example.security.jwt.filter;
+
+import com.example.security.jwt.provider.AdminTokenProvider;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+/**
+ * Filter responsible for extracting the JWT token from incoming requests, validating it,
+ * and setting the authentication context for authenticated users.
+ *
+ * This filter ensures that for every request (except those that are excluded from security),
+ * the token is checked, and if valid, the user's authentication details are set in the SecurityContext.
+ *
+ * Flow:
+ * 1. Extract the JWT token from the "Authorization" header of the incoming request.
+ * 2. Validate the token using the AdminTokenProvider.
+ * 3. If valid, extract the claims from the token and create an Authentication object.
+ * 4. Set the Authentication object in the SecurityContext to authenticate the user.
+ * 5. Proceed with the request by calling filterChain.doFilter().
+ */
+@Component
+public class AuthenticationTokenFilter extends OncePerRequestFilter {
+
+    // AdminTokenProvider is used to validate the JWT token and extract claims from it.
+    private final AdminTokenProvider adminTokenProvider;
+
+    /**
+     * Constructor for injecting the AdminTokenProvider.
+     *
+     * @param adminTokenProvider The AdminTokenProvider used for validating and processing the JWT token.
+     */
+    @Autowired
+    public AuthenticationTokenFilter(AdminTokenProvider adminTokenProvider) {
+        this.adminTokenProvider = adminTokenProvider;
+    }
+
+    /**
+     * This method is invoked for every HTTP request that passes through the filter chain.
+     * It extracts the JWT token from the request, validates it, and sets the authentication in the SecurityContext
+     * if the token is valid.
+     *
+     * @param request The HttpServletRequest, which contains the incoming request details.
+     * @param response The HttpServletResponse, which is used to send the response to the client.
+     * @param filterChain The FilterChain, which allows further filtering of the request.
+     *
+     * @throws ServletException If a servlet-specific error occurs.
+     * @throws IOException If an input/output error occurs.
+     */
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        // Extract the token from the request's Authorization header
+        String token = getTokenFromRequest(request);
+
+        // If the token is not null and valid, authenticate the user
+        if (token != null && adminTokenProvider.validateToken(token)) {
+            // Get claims from the JWT token
+            var claims = adminTokenProvider.getClaims(token);
+
+            // Extract the username from the claims
+            String username = claims.getSubject();
+
+            // Create an authentication token with the username (null credentials as we use JWT for authentication)
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(username, null, null);
+
+            // Set the authentication in the SecurityContext, marking the user as authenticated
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        // Continue with the filter chain
+        filterChain.doFilter(request, response);
+    }
+
+    /**
+     * Extracts the JWT token from the Authorization header of the HTTP request.
+     *
+     * The token should be sent with the "Bearer " prefix in the Authorization header.
+     * This method checks for that prefix and returns the actual token.
+     *
+     * @param request The HttpServletRequest object from which the token is extracted.
+     * @return The JWT token as a string, or null if the token is not present or improperly formatted.
+     */
+    private String getTokenFromRequest(HttpServletRequest request) {
+        // Get the Authorization header
+        String bearerToken = request.getHeader("Authorization");
+
+        // Check if the header contains a valid Bearer token
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            // Extract the token by removing the "Bearer " prefix
+            return bearerToken.substring(7);  // Return the token without the "Bearer " prefix
+        }
+
+        // Return null if the token is missing or improperly formatted
+        return null;
+    }
+}
+````
 
 ---
-
-
-
-
-
-
-
-
 
 ## SecurityConfig
 

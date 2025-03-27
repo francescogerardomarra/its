@@ -12,8 +12,10 @@ The key steps for securing the admin-only endpoints are as follows:
 ---
 
 ## pom.xml
-To enhance an already built Spring Boot REST web service by integrating **JWT authentication**, we need to add the following dependencies to the `pom.xml`. Each of these plays a crucial role in enabling secure authentication and authorization using JSON Web Tokens (JWTs):
 
+To enhance an already built Spring Boot REST web service by integrating **JWT authentication**, we need to add the following dependencies to the `pom.xml`. Each of these plays a crucial role in enabling secure authentication and authorization using JSON Web Tokens (JWTs).
+
+**spring-boot-starter-security**
 ```xml
 <!-- Spring Boot Starter Security for enabling authentication and authorization features in the application -->
 <dependency>
@@ -24,6 +26,7 @@ To enhance an already built Spring Boot REST web service by integrating **JWT au
 ```
 This dependency brings in Spring Security, which is the backbone of our authentication and authorization mechanisms. It provides the framework for securing endpoints, managing credentials, and integrating JWT authentication seamlessly.
 
+**jjwt-api**
 ```xml
 <!-- JJWT API - Provides the interface for creating and parsing JSON Web Tokens (JWTs). -->
 <dependency>
@@ -34,6 +37,7 @@ This dependency brings in Spring Security, which is the backbone of our authenti
 ```
 This is the core library that defines the API for creating, signing, and parsing JWT tokens.
 
+**jjwt-impl**
 ```xml
 <!-- JJWT Impl - Contains the implementation for creating and verifying JWTs, including signing and validation. -->
 <dependency>
@@ -45,6 +49,7 @@ This is the core library that defines the API for creating, signing, and parsing
 ```
 This dependency contains the actual implementation for JWT creation, signing, and verification. It's needed at runtime to ensure tokens are properly generated and validated.
 
+**jjwt-jackson**
 ```xml
 <!-- JJWT Jackson - Provides support for serializing and deserializing JWTs using Jackson, which is the JSON library used by Spring Boot. -->
 <dependency>
@@ -56,6 +61,7 @@ This dependency contains the actual implementation for JWT creation, signing, an
 ```
 This integrates Jackson with JJWT to handle the conversion of JWT claims to and from JSON.
 
+**jackson-databind**
 ```xml
 <!-- Jackson Databind - Core dependency for JSON binding (serialization/deserialization) used by Spring Boot. -->
 <dependency>
@@ -66,6 +72,7 @@ This integrates Jackson with JJWT to handle the conversion of JWT claims to and 
 ```
 Manually added to ensure Jackson is available when dealing with JWTs. Spring Boot would normally provide this via `spring-boot-starter-web`, but it’s explicitly added here to ensure compatibility and avoid class resolution issues when JWT dependencies are included.
 
+**jackson-core**
 ```xml
 <!-- Jackson Core - Core library for Jackson, needed for JSON processing, including parsing JSON into objects. -->
 <dependency>
@@ -75,7 +82,9 @@ Manually added to ensure Jackson is available when dealing with JWTs. Spring Boo
 </dependency>
 ```
 A core part of the Jackson library that is essential for parsing and generating JSON.
+Similar to `jackson-databind`, this was not necessary before adding JWT dependencies, but now is required to avoid issues.
 
+**jackson-datatype-jsr310**
 ```xml
 <!-- Jackson JSR310 - Jackson module for handling Java 8 Date/Time API types (like LocalDate, LocalDateTime, etc.). -->
 <dependency>
@@ -86,8 +95,7 @@ A core part of the Jackson library that is essential for parsing and generating 
 ```
 Provides support for serializing and deserializing Java 8 Date and Time API objects like `LocalDateTime`, which is particularly useful when timestamps are part of JWT payloads or API responses.
 
-The full snippet of the newly added dependencies:
-
+**Full snippet**
 ````xml
         <!-- Spring Boot Starter Security for enabling authentication and authorization features in the application -->
         <dependency>

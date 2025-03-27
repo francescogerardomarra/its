@@ -1,6 +1,6 @@
 # Jwt Hello World
 
-In this article, we'll enhance an already built Spring Boot REST web service by integrating **JWT authentication**. Our goal is to secure specific endpoints while keeping others publicly accessible. Specifically, we’ll secure the endpoints `/shop/items` and `/shop/users`, allowing **admin-only** access using **JWT-based stateless authentication**.
+We'll enhance an already built Spring Boot REST web service by integrating **JWT authentication**. Our goal is to secure specific endpoints while keeping others publicly accessible. Specifically, we’ll secure the endpoints `/shop/items` and `/shop/users`, allowing **admin-only** access using **JWT-based stateless authentication**.
 
 We will build on a previously implemented Spring Boot 3.4.4 project using **Java 21**, introducing a robust and scalable authentication flow. The process will include utilizing **Basic Authentication** for the login and generating a **JWT token** that needs to be included in the `Authorization` header as a `Bearer` token when accessing protected resources.
 
@@ -9,27 +9,84 @@ The key steps for securing the admin-only endpoints are as follows:
 2. If the credentials are valid, a **JWT token** will be generated and returned.
 3. The generated JWT token must be included as a `Bearer` token in the `Authorization` header to access protected endpoints such as `/shop/items` and `/shop/users`.
 
-By the end of this article, you’ll have successfully added JWT authentication to an existing Spring Boot REST web service, ensuring secure, stateless access to specific endpoints. This solution will minimize session management overhead and allow for easy scalability in the future.
-
 ---
 
 ## pom.xml
+To enhance an already built Spring Boot REST web service by integrating **JWT authentication**, we need to add the following dependencies to the `pom.xml`. Each of these plays a crucial role in enabling secure authentication and authorization using JSON Web Tokens (JWTs):
 
-To implement JWT authentication in your Spring Boot application, several dependencies need to be added to support different aspects of the process. Here's an overview of each one:
+```xml
+<!-- Spring Boot Starter Security for enabling authentication and authorization features in the application -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+    <version>3.4.4</version> <!-- Updated Spring Boot version for security support -->
+</dependency>
+```
+This dependency brings in Spring Security, which is the backbone of our authentication and authorization mechanisms. It provides the framework for securing endpoints, managing credentials, and integrating JWT authentication seamlessly.
 
-- **spring-boot-starter-security**: This dependency enables Spring Security, which is essential for providing authentication and authorization features in your application. It integrates with Spring Boot to secure your API endpoints, allowing you to manage user authentication, including support for JWT-based authentication. It is included to enable authentication and authorization features in the application.
+```xml
+<!-- JJWT API - Provides the interface for creating and parsing JSON Web Tokens (JWTs). -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+```
+This is the core library that defines the API for creating, signing, and parsing JWT tokens.
 
-- **jjwt-api**: This is the interface layer of the JJWT library. It provides the necessary methods for creating and parsing **JSON Web Tokens (JWTs)**. This dependency allows your application to handle the structure and claims of the JWTs securely, defining how tokens should be created and validated. It provides the interface for creating and parsing JSON Web Tokens (JWTs).
+```xml
+<!-- JJWT Impl - Contains the implementation for creating and verifying JWTs, including signing and validation. -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope> <!-- Runtime scope indicates that this dependency is required only at runtime -->
+</dependency>
+```
+This dependency contains the actual implementation for JWT creation, signing, and verification. It's needed at runtime to ensure tokens are properly generated and validated.
 
-- **jjwt-impl**: This dependency contains the actual implementation for creating and verifying JWTs. It provides the necessary code for signing and validating JWTs, ensuring the integrity of the token. It is required only at runtime, as it is not needed during the compile phase. It contains the implementation for creating and verifying JWTs, including signing and validation.
+```xml
+<!-- JJWT Jackson - Provides support for serializing and deserializing JWTs using Jackson, which is the JSON library used by Spring Boot. -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope> <!-- Runtime scope as this is used only during runtime to work with JWTs -->
+</dependency>
+```
+This integrates Jackson with JJWT to handle the conversion of JWT claims to and from JSON.
 
-- **jjwt-jackson**: This module provides support for serializing and deserializing JWTs using **Jackson**, which is the default JSON library used by Spring Boot. It enables the conversion of JWTs to and from JSON format, allowing your application to process tokens effectively. This dependency is necessary to work with JWTs in a Spring Boot environment, which relies on Jackson for JSON processing. It provides support for serializing and deserializing JWTs using Jackson.
+```xml
+<!-- Jackson Databind - Core dependency for JSON binding (serialization/deserialization) used by Spring Boot. -->
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.15.0</version>
+</dependency>
+```
+Manually added to ensure Jackson is available when dealing with JWTs. Spring Boot would normally provide this via `spring-boot-starter-web`, but it’s explicitly added here to ensure compatibility and avoid class resolution issues when JWT dependencies are included.
 
-- **jackson-databind**: This is a core Jackson library responsible for serializing Java objects to JSON and deserializing JSON into Java objects. It is explicitly added because the JWT-related dependencies, such as **jjwt-jackson**, do not include Jackson by default. Before adding JWT dependencies, Spring Boot automatically included Jackson as part of the **spring-boot-starter-web** dependency. However, after adding JWT dependencies, you need to manually include Jackson to ensure proper compatibility with Spring Boot and avoid issues with missing classes, such as `DatatypeFeature`.
+```xml
+<!-- Jackson Core - Core library for Jackson, needed for JSON processing, including parsing JSON into objects. -->
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-core</artifactId>
+    <version>2.15.0</version>
+</dependency>
+```
+A core part of the Jackson library that is essential for parsing and generating JSON.
 
-- **jackson-core**: This is the core library for Jackson, providing low-level functionality for parsing and generating JSON. It is required to ensure compatibility with other Jackson modules like **jackson-databind** and **jackson-datatype-jsr310**. This library is needed for JSON processing, including parsing JSON into Java objects.
+```xml
+<!-- Jackson JSR310 - Jackson module for handling Java 8 Date/Time API types (like LocalDate, LocalDateTime, etc.). -->
+<dependency>
+    <groupId>com.fasterxml.jackson.datatype</groupId>
+    <artifactId>jackson-datatype-jsr310</artifactId>
+    <version>2.15.0</version>
+</dependency>
+```
+Provides support for serializing and deserializing Java 8 Date and Time API objects like `LocalDateTime`, which is particularly useful when timestamps are part of JWT payloads or API responses.
 
-- **jackson-datatype-jsr310**: This module is needed to handle Java 8 Date/Time API types (such as `LocalDate`, `LocalDateTime`, etc.) for serialization and deserialization. It ensures that Java 8 Date/Time types are properly processed when working with JWTs. It is necessary for handling Date/Time types, which may be used in your application when working with JWTs in Spring Boot.
+The full snippet of the newly added dependencies:
 
 ````xml
         <!-- Spring Boot Starter Security for enabling authentication and authorization features in the application -->
@@ -93,6 +150,75 @@ To implement JWT authentication in your Spring Boot application, several depende
 
 ---
 
+## application.properties
+
+### Logging Configuration
+```properties
+logging.level.org.springframework.security=DEBUG
+logging.level.org.springframework.web=DEBUG
+```
+- `logging.level.org.springframework.security=DEBUG`: Enables detailed logging for Spring Security internals—useful for debugging authentication and authorization issues.
+- `logging.level.org.springframework.web=DEBUG`: Enables detailed logging for HTTP requests and controller responses within Spring Web.
+
+### Basic Authentication
+```properties
+admin.username=admin
+admin.password=password123
+```
+- `admin.username`: Defines the static username for admin login.
+- `admin.password`: Defines the static password for admin login.
+  These credentials can be used for initial or fallback access where JWTs are not yet generated.
+
+### JWT Configuration
+```properties
+jwt.secret=VGhpcyBpcyBhIHNlY3VyZSBqZXN0IGtleSB0aGF0IGlzIGJlYXJlZCBvbiBhIFNoYTI1NiBtZWRpYSB0aGF0IGlzIGxvbmcgaW5vdWdoIHRoZSBjZXJ0YWluIHNlY3VyaXR5IHN0YW5kYXJkLCBhbmQgaXMgZXhwbGVjdGVkIHRvIGJlIGF1dGhvcml6ZWQuIFRoaXMga2V5IHdpbGwgYmUgc2lnbmVkIHdpdGggc2lnbmVkYXR1cmUgYWxnb3JpdGhtcyBzbyBpdCBpcyBhIHN0cm9uZyBzZWNyZXQuCg==
+```
+- This is a **Base64-encoded** string representing the JWT secret key.
+- The encoded secret is used with the `HS512` algorithm to sign and validate JWTs.
+- **Decoded value:**
+  ```
+  This is a secure jwt key that is beared on a Sha256 media that is long inouh the certain security standard, and is expected to be authorized.
+  ```
+- Even though the decoded version looks human-readable, it’s not directly used in code. The encoded value is used to ensure security compatibility.
+- **Why HS512?** This algorithm requires a long, secure key to avoid brute-force attacks. A short key could compromise token integrity.
+
+```properties
+admin.jwt.claim.sub=admin_sub
+admin.jwt.claim.role=admin
+admin.jwt.claim.permission=read,write,delete
+admin.jwt.admin.expiration.ms=600000
+admin.jwt.claim.refresh.expiration.ms=1800000
+```
+- `admin.jwt.claim.sub`: The subject (`sub`) claim that identifies the principal—typically the username or user ID.
+- `admin.jwt.claim.role`: Sets the `role` claim in the JWT—used to authorize endpoints.
+- `admin.jwt.claim.permission`: A custom `permission` claim listing specific actions allowed by the token bearer.
+- `admin.jwt.admin.expiration.ms`: JWT expiration time in milliseconds (10 minutes here).
+- `admin.jwt.claim.refresh.expiration.ms`: Refresh token expiration time in milliseconds (30 minutes).
+
+---
+
+### Final application.properties
+```properties
+# Logging
+logging.level.org.springframework.security=DEBUG
+logging.level.org.springframework.web=DEBUG
+
+# Basic authentication
+admin.username=admin
+admin.password=password123
+
+# JWT
+jwt.secret=VGhpcyBpcyBhIHNlY3VyZSBqZXN0IGtleSB0aGF0IGlzIGJlYXJlZCBvbiBhIFNoYTI1NiBtZWRpYSB0aGF0IGlzIGxvbmcgaW5vdWdoIHRoZSBjZXJ0YWluIHNlY3VyaXR5IHN0YW5kYXJkLCBhbmQgaXMgZXhwbGVjdGVkIHRvIGJlIGF1dGhvcml6ZWQuIFRoaXMga2V5IHdpbGwgYmUgc2lnbmVkIHdpdGggc2lnbmVkYXR1cmUgYWxnb3JpdGhtcyBzbyBpdCBpcyBhIHN0cm9uZyBzZWNyZXQuCg==
+
+admin.jwt.claim.sub=admin_sub
+admin.jwt.claim.role=admin
+admin.jwt.claim.permission=read,write,delete
+admin.jwt.admin.expiration.ms=600000
+admin.jwt.claim.refresh.expiration.ms=1800000
+```
+
+---
+
 ## Directory Structure
 After integrating JWT authentication, the project directory structure is updated with the addition of new classes. Here’s a breakdown of the key changes:
 
@@ -102,7 +228,7 @@ After integrating JWT authentication, the project directory structure is updated
     - **AdminUserConfig.java**: This class defines configurations specific to the admin user, ensuring proper access control and security settings.
     - **SecurityConfig.java**: This configuration class handles the overall security settings for the application, including JWT authentication and authorization mechanisms.
     - **AdminTokenProvider.java**: Responsible for generating and validating JWT tokens specifically for admin users.
-    - **TokenAuthenticationFilter.java**: This filter intercepts incoming requests to check for a valid JWT token in the request headers, ensuring protected endpoints are only accessible with valid tokens.
+    - **AuthenticationTokenFilter.java**: This filter intercepts incoming requests to check for a valid JWT token in the request headers, ensuring protected endpoints are only accessible with valid tokens.
 
 These new classes are part of the security mechanism that enforces JWT authentication for certain endpoints, enabling admin-only access.
 
@@ -177,7 +303,7 @@ These new classes are part of the security mechanism that enforces JWT authentic
     │   │           │       ├── admin
     │   │           │       │   └── AdminTokenProvider.java
     │   │           │       └── filter
-    │   │           │           └── TokenAuthenticationFilter.java
+    │   │           │           └── AuthenticationTokenFilter.java
     │   │           ├── service
     │   │           │   ├── ItemService.java
     │   │           │   ├── OrderItemService.java

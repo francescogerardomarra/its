@@ -426,12 +426,283 @@ This validation is fundamental to the security of any endpoint protected by JWT-
 
 The `AdminTokenProvider` is thus a reusable, secure, and configurable utility for JWT management, facilitating both token generation during login and token verification during request filtering.
 
+````java
+package com.example.security.jwt.provider;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.util.Date;
+
+/**
+ * This class is responsible for generating and validating JWT tokens for admin users.
+ * It allows you to create a JWT token with claims such as subject, role, and permissions,
+ * as well as validate and extract the claims from an incoming JWT token.
+ * <p>
+ * The JWT token is signed using a secret key, which is injected from the application properties.
+ * This class also provides the logic to validate whether the token has expired.
+ * <p>
+ * Flow:
+ * 1. The JWT token is generated with various claims (subject, role, permissions) and signed with a secret key.
+ * 2. The generated token can be returned to the user (e.g., after a successful login).
+ * 3. When the token is sent back to the server, it can be validated to ensure the user is authenticated and authorized.
+ * 4. Claims from the token can be extracted and used to make authorization decisions.
+ */
+@Component
+public class AdminTokenProvider {
+
+    // Injected properties for secret key and various claims.
+    @Value("${jwt.secret}")
+    private String secretKeyString;
+
+    @Value("${admin.jwt.claim.sub}")
+    private String subject;  // The subject for the JWT comes from properties file.
+
+    @Value("${admin.jwt.claim.role}")
+    private String role;  // The role claim comes from properties file.
+
+    @Value("${admin.jwt.claim.permission}")
+    private String permissions;  // Permissions are specified in the properties file.
+
+    @Value("${admin.jwt.claim.expiration.ms}")
+    private long expirationTime;  // Token expiration time is specified in the properties file.
+
+    /**
+     * Generates a JWT token with the subject, role, permissions, and expiration time.
+     * <p>
+     * This method uses the JJWT library to create a JWT token, adds claims (such as subject, role, and permissions),
+     * sets the issued and expiration times, and signs the token with the secret key.
+     *
+     * @return The generated JWT token as a string.
+     */
+    public String generateToken() {
+        /**
+         * Initializes the secret key from the provided secret string in the application properties.
+         * This secret key is used to sign the JWT token with the HS512 algorithm.
+         *
+         * The secret key is passed to the `SecretKeySpec` constructor to create a `Key` object
+         * which will be used to sign the JWT token.
+         */
+        Key secretKey = new SecretKeySpec(secretKeyString.getBytes(), SignatureAlgorithm.HS512.getJcaName());
+
+        return Jwts.builder()
+                .setSubject(subject)  // Set the subject for the JWT token (admin identity).
+                .claim("role", role)  // Add the user's role to the claims.
+                .claim("permissions", permissions)  // Add the user's permissions to the claims.
+                .setIssuedAt(new Date())  // Set the current date/time as the token issue date.
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))  // Set the token expiration time.
+                .signWith(secretKey, SignatureAlgorithm.HS512)  // Sign the token with the secret key using HS512 algorithm.
+                .compact();  // Return the JWT token as a string.
+    }
+
+    /**
+     * Extracts and parses the claims from the provided JWT token.
+     * <p>
+     * The JWT token is parsed using the secret key, and the claims are returned in the form of a `Claims` object.
+     * The claims can include subject, role, permissions, and expiration date, which are used for authorization checks.
+     *
+     * @param token The JWT token from which the claims will be extracted.
+     * @return The claims extracted from the JWT token.
+     */
+    public Claims getClaims(String token) {
+        /**
+         * Initializes the secret key from the provided secret string in the application properties.
+         * This secret key is used to sign the JWT token with the HS512 algorithm.
+         *
+         * The secret key is passed to the `SecretKeySpec` constructor to create a `Key` object.
+         */
+        Key secretKey = new SecretKeySpec(secretKeyString.getBytes(), SignatureAlgorithm.HS512.getJcaName());
+
+        // Parse the JWT token and extract the claims using the secret key.
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)  // Set the secret key to validate the JWT signature.
+                .build()
+                .parseClaimsJws(token)  // Parse the JWT and extract claims.
+                .getBody();  // Return the claims body (excluding the header and signature).
+    }
+
+    /**
+     * Validates the provided JWT token.
+     * <p>
+     * This method validates the token by checking if the signature is correct and if the token has expired.
+     * If the token is valid, it returns `true`; otherwise, it returns `false`.
+     *
+     * @param token The JWT token to validate.
+     * @return `true` if the token is valid, `false` if the token is invalid or expired.
+     */
+    public boolean validateToken(String token) {
+        try {
+            // Extract claims from the token to check validity.
+            Claims claims = getClaims(token);
+
+            // Check if the token has expired by comparing the expiration date with the current time.
+            Date expirationDate = claims.getExpiration();
+            if (expirationDate.before(new Date())) {
+                throw new JwtException("Token has expired");  // Token has expired, throw an exception.
+            }
+
+            // Token is valid if not expired and signature is correct.
+            return true;
+        } catch (JwtException e) {
+            // Return false if the token is invalid (e.g., incorrect signature, expired).
+            return false;
+        }
+    }
+}
+````
+
 ---
 
-## TokenAuthenticationFilter
+## AuthenticationTokenFilter
+The `AuthenticationTokenFilter` is a custom filter that is responsible for extracting, validating, and processing JWT tokens from incoming HTTP requests.
 
-The `TokenAuthenticationFilter` is a filter that is responsible for extracting, validating, and processing JWT tokens from incoming HTTP requests. It ensures that users are authenticated based on the validity of their JWT tokens. If a token is valid, the user's authentication context is set, enabling access to secured resources.
+This is the definition of a custom filter that will later be registered with Spring Security to apply JWT authentication.
 
+In Spring Security, using `HttpSecurity`, you can register a custom filter and integrate it into the security filter chain. This registration will happen in the `SecurityConfig` class, where the filter will be added to the security filter chain to ensure that custom authentication logic, such as JWT token validation, is applied. By doing so, the custom filter ensures that only authenticated requests are allowed to access protected resources.
+
+### Overview about Filters
+A **filter** is an object that performs filtering tasks on either the **request** or the **response** in a Spring-based application. Filters are part of the servlet container and allow you to manipulate the request and/or response before it reaches the targeted servlet or after the servlet has processed it.
+
+In Spring, filters are commonly used to process requests or responses in a way that is **independent of the business logic**. Filters sit in between the client and the servlet (or controller), intercepting and potentially modifying the request and/or response before the request reaches the servlet or after the servlet generates the response.
+
+#### Definition, Chaining Registration
+From a theoretical point of view, the implementation lifecycle of a filter can be broken down into three main stages:
+
+1. **Definition**: In this stage, the filter is created by implementing the `jakarta.servlet.Filter` interface or by extending an abstract class like `GenericFilter`. The filter class contains the logic that defines how incoming requests and outgoing responses should be processed, typically by overriding methods like `doFilter()`.
+2. **Chaining**: As part of the definition, the **filter chain** comes into play. A filter chain allows multiple filters to be executed in a specific order. When the `doFilter()` method is called, the filter can either continue processing the request by calling `chain.doFilter(request, response)` or halt the chain. This chaining mechanism ensures that each filter in the chain can perform its task before passing the request to the next filter or the target resource (like a servlet or a JSP).
+3. **Registration**: Once defined, the filter must be registered with the web application so that it can be invoked during the request-response cycle. This registration can be done either through the `web.xml` file (in older servlet versions) or via annotations like `@WebFilter` (in modern servlet-based applications). The filter is mapped to specific URL patterns or servlet paths to determine when it should be executed.
+
+In summary, the filter lifecycle involves:
+- **Definition** of the filter's behavior.
+- **Chaining** of filters to ensure that multiple filters can work in sequence on the request and response.
+- **Registration** of the filter within the web application's configuration.
+
+#### Lifecycle
+As soon as a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle. Here's how this flow works in the context of filters:
+
+1. **Request Handling**:
+    - When the HTTP request reaches the application, a **request object** is created, and a **response object** is also prepared, even though it is initially empty (the response body hasn't been generated yet). This response object is created early by the servlet container to ensure that a response can be sent back to the client once the request is processed.
+    - Both the request and response are passed through the filter chain together.
+
+2. **Filters and Request-Response Interaction**:
+    - Filters receive both the **request** and **response** objects and can interact with them.
+    - **Request Interception**: Filters can inspect, log, or modify the incoming **request** before it reaches the servlet or controller.
+    - **Response Interception**: Even before the controller processes the request, the filter has access to the **response** object. Although the response body is empty at this point, filters can set or modify **response headers**, like setting authentication or CORS headers.
+
+   The key here is that the **response object** exists from the very beginning of the request lifecycle, even before the controller generates any content for it. Filters can modify headers or perform actions like logging, authentication checks, or other pre-processing tasks on the response, even though its body hasn't been populated yet.
+
+3. **Controller Processing**:
+    - After the request passes through all filters, it reaches the controller, where the request is processed. The controller generates content for the **response** object, such as setting the HTTP status, adding headers, and generating the response body.
+
+4. **Post-Processing by Filters**:
+    - Once the controller has generated the response, the response object travels back through the filter chain. Filters can now inspect or modify the **response** before it is sent to the client. This is typically where you can perform logging or modify the content of the response (e.g., adding custom headers or logging response times).
+
+Filters can intercept and modify both **requests** and **responses** at various stages of the HTTP request lifecycle:
+- **Request Interception**: Filters can alter or inspect the request before it reaches the servlet or controller.
+- **Response Interception**: Filters can manipulate the response that is sent back to the client after the servlet has processed the request.
+
+Filters have the ability to:
+- **Modify the request**: Add additional headers, parameters, or modify the request body.
+- **Log request details**: Useful for auditing or debugging.
+- **Authenticate requests**: A typical use case is JWT (JSON Web Token) authentication.
+- **Modify the response**: Add headers, change the response body, or handle logging.
+- **Redirect or terminate the request/response**: For example, if authentication fails, you might stop the request processing and return a 401 Unauthorized response.
+
+#### Use Cases
+**Authentication**
+A filter can intercept incoming requests to verify the presence of a JWT token in the request headers, validate the token, and allow or deny access to the resources based on the token's validity.
+
+**Logging**
+A filter can log details about incoming requests (e.g., request method, URL, headers, body) for auditing, debugging, or monitoring purposes.
+
+#### Filter Chain
+A **filter chain** is a sequence of filters that process a request and/or response in the order they are defined. Each filter in the chain can:
+
+1. Perform its own task (e.g., authentication, logging, etc.).
+2. Decide whether to pass control to the next filter in the chain.
+3. Optionally modify the request or response.
+
+The **Filter Chain** is an essential part of Spring’s filter mechanism. The filter chain determines the order in which filters are executed and ensures that the request and response are passed from one filter to another, ultimately reaching the servlet or controller.
+
+#### jakarta.servlet.Filter
+In Spring Boot, a filter is an object that implements the `jakarta.servlet.Filter` interface.
+
+The most generic approach is to directly implement the `jakarta.servlet.Filter` interface, overriding its methods:
+
+````java
+package jakarta.servlet;
+
+public interface Filter {
+    void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+        throws IOException, ServletException;
+
+    void init(FilterConfig filterConfig) throws ServletException;
+    void destroy();
+}
+````
+
+The `jakarta.servlet.Filter` interface has the three key methods above.
+
+If a filter is correctly **defined, registered and chained**, its three methods (`init()`, `doFilter()`, and `destroy()`) will be called automatically by the servlet container at the appropriate points in the lifecycle. Here's how each method fits into the lifecycle:
+
+1. **`init(FilterConfig filterConfig)`**:
+    - This method is called once when the filter is created. It’s typically used for initialization tasks, like reading configuration parameters, setting up resources, or preparing anything that the filter needs to operate. The `FilterConfig` provides access to the filter's initialization parameters and the `ServletContext` for the filter.
+
+2. **`doFilter(ServletRequest request, ServletResponse response, FilterChain chain)`**:
+    - This is the main method that intercepts the request and response. You can modify the request and response, perform logging, check authentication, manipulate headers, or any other tasks before passing control along the chain.
+    - **Request-Response Pair**: As soon as a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle. This pair represents the HTTP request (from the client) and the response (that will be sent back to the client). In the context of filters:
+        - The `request` object represents the HTTP request received from the client.
+        - The `response` object represents the HTTP response that will be returned to the client.
+    - You **must** call `chain.doFilter(request, response)` to pass the request and response to the next filter or servlet in the chain. If you don't call this method, the request/response will be stuck in the filter, and no further processing will occur. It’s crucial to allow the request to continue through the chain to complete the processing and return the response.
+    - The `doFilter` method provides `ServletRequest` and `ServletResponse` objects, which are generic types. In many cases, you'll need more specific functionality, such as working with HTTP-specific headers, request parameters, or status codes. This is where **casting** becomes useful:
+        - **`HttpServletRequest`**: By casting the generic `ServletRequest` to an `HttpServletRequest`, you can access HTTP-specific features like headers, cookies, parameters, and methods such as `getMethod()` or `getRequestURI()`.
+        - **`HttpServletResponse`**: Similarly, casting the generic `ServletResponse` to an `HttpServletResponse` allows you to interact with HTTP-specific features like status codes, headers, and the response body.
+      
+3. **`destroy()`**:
+    - This method is called when the filter is destroyed, typically when the servlet container shuts down or when the filter is no longer needed. You can use this method for cleanup tasks, such as releasing resources (e.g., closing database connections or cleaning up thread pools). The container automatically calls this method before destroying the filter instance.
+
+As mentioned earlier, when a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle. Here’s how this flow works in the context of filters:
+
+- When a request is made, the `ServletRequest` object is created to represent the HTTP request.
+- The `ServletResponse` object is created to represent the HTTP response that will be sent back to the client.
+- In the `doFilter()` method, the filter can inspect and modify both the request and the response objects before passing them to the next entity in the chain (whether it’s another filter or the target servlet).
+- The filter must call `chain.doFilter(request, response)` to continue the request-response flow, allowing other filters or the servlet to process the request and generate a response.
+- Without calling `chain.doFilter()`, the request/response processing will be halted in the filter, and no further action will be taken.
+
+#### OncePerRequestFilter, GenericFilterBean
+Apart from implementing this interface directly, a filter can be defined by extending specific abstract filter classes always of type `jakarta.servlet.Filter`.
+
+These abstract classes simply offer default implementations of some of the methods from the `Filter` interface, allowing you to focus on overriding just the `doFilter()` method if no other customization is needed. You can define a filter either by directly implementing the `jakarta.servlet.Filter` interface or by extending an abstract class like `GenericFilter`, which is still part of the `jakarta.servlet.Filter` ecosystem.
+
+Available Abstract Classes for Filter Implementation:
+
+1. **`OncePerRequestFilter`**:
+    - This class ensures that the filter is executed only once per request, even if the request undergoes multiple forwarding or dispatching during its lifecycle. In traditional servlet-based applications, requests can be forwarded from one resource to another (e.g., from one servlet to another or from a controller to a view). This means that a single HTTP request may pass through multiple resources, and without proper handling, a filter might execute multiple times during these forwards.
+    - **Forwarding and Its Impact**: When forwarding occurs, the same HTTP request is internally routed to a different resource without the client being aware. However, this can cause filters to be executed repeatedly if the forwarding process isn't managed carefully. For example, if a filter is responsible for tasks like logging, authentication, or setting headers, it could execute multiple times across different forwards, resulting in duplicate log entries, unnecessary re-authentication, or redundant changes to the response.
+    - **How `OncePerRequestFilter` Avoids Multiple Executions**: The `OncePerRequestFilter` class is specifically designed to prevent filters from running multiple times during the same request, even when forwarding or dispatching occurs. It achieves this by ensuring that the filter's actions are only performed once during the entire request lifecycle. The filter tracks whether it has already been executed for the current request and skips further executions if it has.
+    - This is especially important when filters are involved in critical tasks like session validation, logging, or resource cleanup. Without this safeguard, a filter could cause unintended side effects if executed multiple times, potentially leading to errors or performance issues.
+    - **Benefits**:
+        - **Simplicity**: The `OncePerRequestFilter` reduces the complexity of filter management by handling forwarding and dispatching transparently, without requiring developers to manually track filter executions.
+        - **Efficiency**: It ensures that the filter only performs necessary tasks once, preventing redundant actions and improving the overall efficiency of the web application.
+        - **Consistency**: By guaranteeing that the filter runs only once, it avoids issues like double logging or reapplying filters that could cause inconsistencies in behavior.
+
+    - **Example Use Case**: Imagine a filter that logs request details for monitoring purposes. Without `OncePerRequestFilter`, this logging could be duplicated if the request is forwarded to several resources (like different servlets or views). By using `OncePerRequestFilter`, the logging will happen only once for the entire request, regardless of how many forwards or dispatches occur.
+
+2. **`GenericFilterBean`**:
+    - This is a Spring-specific class that implements the `jakarta.servlet.Filter` interface and offers more Spring-friendly features, such as dependency injection.
+    - It allows you to easily integrate Spring beans into your filter, which is helpful for service or repository injections.
+
+#### Methods of Registration
+
+    
+
+...............
 ### Overview of the Class
 
 This class extends Spring's `OncePerRequestFilter`, ensuring that the filter logic is executed once for every request that comes through the filter chain. It works by validating the JWT token extracted from the `Authorization` header of the HTTP request. If the token is valid, it sets the authenticated user’s details in the Spring Security context, allowing the user to proceed with the request.
@@ -442,55 +713,15 @@ Key points:
 - **Authentication Context**: If the token is valid, the user's details are set in the authentication context.
 - **Proceeding with the Request**: After handling the authentication, the filter continues the request processing by invoking the `filterChain.doFilter()` method.
 
-### Detailed Explanation of Methods
-
-#### `doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)`
-
-This is the core method of the filter, which is invoked for every incoming HTTP request that passes through the filter chain.
-
-- **Extracts the Token**: The method starts by extracting the JWT token from the request using the `getTokenFromRequest()` helper method. The token is expected to be in the `Authorization` header with a "Bearer " prefix.
-
-- **Validates the Token**: If the token is present, it calls `adminTokenProvider.validateToken(token)` to validate the token's integrity and check its expiration.
-
-- **Authentication Creation**: If the token is valid, it extracts the claims using `adminTokenProvider.getClaims(token)`. The subject of the token, which is typically the admin's username, is retrieved from the claims. A `UsernamePasswordAuthenticationToken` is then created with the username (the credentials are `null` since JWT is used for authentication).
-
-- **Set Authentication Context**: The `SecurityContextHolder.getContext().setAuthentication(authentication)` line sets the created authentication in the Spring Security context, which marks the user as authenticated.
-
-- **Proceeding with the Request**: After setting the authentication, the `filterChain.doFilter(request, response)` method is called to continue the request processing, allowing other filters or the controller logic to execute.
-
-**Purpose**: This method ensures that the user is authenticated before accessing secured resources. If the JWT token is invalid or missing, the user will not be authenticated and will likely receive an HTTP 401 Unauthorized response.
-
-#### `getTokenFromRequest(HttpServletRequest request)`
-
-This method is responsible for extracting the JWT token from the `Authorization` header of the HTTP request.
-
-- **Extract Authorization Header**: The method first retrieves the `Authorization` header from the incoming request using `request.getHeader("Authorization")`.
-
-- **Check for Bearer Token**: The method checks if the header starts with the "Bearer " prefix, which is the standard format for passing JWT tokens. If the prefix is found, it strips off the prefix and returns the actual JWT token.
-
-- **Return Token or Null**: If the token is present and correctly formatted, it is returned. If the header is missing or doesn't contain a valid Bearer token, the method returns `null`.
-
-**Purpose**: This method ensures that the token is extracted correctly from the request and formatted properly (with the "Bearer " prefix removed). It enables the rest of the filter to work with the JWT token as a string.
-
-### Why This Filter is Important
-
-- **Secure API Endpoints**: The `TokenAuthenticationFilter` helps secure your application by checking the authenticity of the JWT token for each incoming request to protected endpoints.
-
-- **Decouples Authentication Logic**: It separates the logic of authentication (validating and processing JWT tokens) from the rest of the application. This helps keep your authentication process modular and clean.
-
-- **Efficient Authentication**: It ensures that once a user’s JWT token is validated, their identity is set in the `SecurityContext`, allowing subsequent requests to be authenticated automatically without needing to re-authenticate the user each time.
-
-- **Supports Stateless Authentication**: By relying on JWT tokens for authentication, this filter supports a stateless authentication model, where there is no need to store session data on the server. All necessary information is stored within the JWT itself.
-
-### Conclusion
-
-- **Purpose**: The `TokenAuthenticationFilter` is a security filter that ensures only authenticated users with valid JWT tokens can access protected resources.
-- **How it Works**: It extracts the JWT token from the request, validates it, and sets the authentication context if the token is valid. The filter continues the request processing after authentication.
-- **Role in Application Security**: It provides an important piece of the security infrastructure, making sure that only authenticated users with valid tokens can interact with the application’s secured endpoints.
-
-This filter plays a crucial role in ensuring that your application's authentication is handled securely and efficiently using JWT tokens.
-
 ---
+
+
+
+
+
+
+
+
 
 ## SecurityConfig
 

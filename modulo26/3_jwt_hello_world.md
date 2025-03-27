@@ -328,83 +328,103 @@ These new classes are part of the security mechanism that enforces JWT authentic
 ---
 
 ## AdminTokenProvider
+The `AdminTokenProvider` is a Spring-managed component responsible for generating, validating, and parsing JWT tokens specifically for administrative users. It encapsulates the logic to securely construct a JWT token with defined claims (subject, role, permissions), sign it with a secret key, and subsequently validate and parse incoming tokens to authorize admin-level access.
 
-The `AdminTokenProvider` class is a critical component in handling JSON Web Tokens (JWT) for admin users within an application. It is responsible for generating, validating, and parsing JWT tokens, which are used to authenticate and authorize admin users.
+This bean is a central security component used in the authentication and authorization flows:
 
-### Overview of the Class
+- **In `AuthenticationTokenFilter`**, it is injected and used to:
+    - `validateToken(token)`: Ensure the token is authentic and has not expired.
+    - `getClaims(token)`: Extract claims to identify the admin's identity, role, and permissions.
 
-This class works with Spring's dependency injection and the JJWT library to manage the lifecycle of JWT tokens, allowing for secure user authentication. Here's a breakdown of what each part of the class does:
+- **In `LoginController`**, it is used to generate tokens upon successful login:
+  ```java
+  String token = tokenProvider.generateToken();
+  ```
+  This token is returned to the client for future authenticated requests.
 
-- **Secret Key Initialization:**
-    - The class uses a secret key for signing JWT tokens. This secret key is injected from the application’s properties file and is used in the creation of the JWT signature.
+### Annotations
 
-- **Token Creation:**
-    - The `generateToken()` method creates a new JWT with embedded claims such as the user's role, permissions, and subject (the identity of the admin). The generated token is signed with the secret key.
+- `@Component`: This annotation marks `AdminTokenProvider` as a Spring component, allowing Spring to detect it during component scanning and manage it as a singleton bean. It makes the class eligible for dependency injection into other beans like `AuthenticationTokenFilter` and `LoginController`.
 
-- **Token Validation:**
-    - The `validateToken()` method ensures that the token is valid, checking both its signature and expiration date to confirm its authenticity.
+- `@Value`: Used to inject configuration properties (defined in the application properties file) into the bean's fields. This includes the JWT secret, claims such as subject, role, permissions, and expiration duration.
 
-- **Claims Extraction:**
-    - The `getClaims()` method allows the extraction of claims from a given token, which can be used to determine the user's role, permissions, and whether the token is still valid.
+### `generateToken()`
 
-### Detailed Explanation of Methods
+```java
+public String generateToken() {
+    Key secretKey = new SecretKeySpec(secretKeyString.getBytes(), SignatureAlgorithm.HS512.getJcaName());
 
-#### `init()`
+    return Jwts.builder()
+            .setSubject(subject)
+            .claim("role", role)
+            .claim("permissions", permissions)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+            .signWith(secretKey, SignatureAlgorithm.HS512)
+            .compact();
+}
+```
 
-The `init()` method is annotated with `@Autowired` and is responsible for initializing the secret key that will be used to sign JWT tokens. It takes the secret key string (injected from the application properties file) and converts it into a `Key` object, which is used for cryptographic signing.
+**Explanation:**
+- Initializes a secret key from the configured secret string using the HS512 algorithm.
+- Constructs a JWT token using the JJWT builder:
+    - Sets the `subject`, `role`, and `permissions` claims.
+    - Assigns the current time as the issue date.
+    - Calculates the expiration based on the configured duration.
+    - Signs the token with the generated secret key.
+- Returns the final compact JWT string.
 
-**Why is it called `init()`?**
+### `getClaims(String token)`
 
-- The method is called `init()` because it serves as an initialization function, configuring the class by converting the secret key string into a format suitable for cryptographic operations.
-- In Spring, `@Autowired` annotation ensures that this method is called during the bean's lifecycle, and it will be invoked automatically when the `AdminTokenProvider` class is instantiated. The method doesn't require explicit invocation anywhere else in the code; Spring manages its call.
+```java
+public Claims getClaims(String token) {
+    Key secretKey = new SecretKeySpec(secretKeyString.getBytes(), SignatureAlgorithm.HS512.getJcaName());
 
-While you don't see `init()` being explicitly called in other parts of the code, Spring uses dependency injection to invoke it behind the scenes when the `AdminTokenProvider` is created, ensuring that the secret key is set up before the provider is used to generate or validate tokens.
+    return Jwts.parserBuilder()
+            .setSigningKey(secretKey)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+}
+```
 
-#### `generateToken()`
+**Explanation:**
+- Reconstructs the secret key used to sign the JWT.
+- Uses JJWT's parser to:
+    - Validate the signature.
+    - Parse the token and extract the `Claims` (like subject, role, and permissions).
+- Returns only the claims body of the token.
 
-This method is responsible for generating a new JWT. It:
+This method is crucial for extracting meaningful data from the token, used during request authorization.
 
-- Sets the **subject**, **role**, and **permissions** claims from the injected values.
-- Adds an issued timestamp (`setIssuedAt(new Date())`) to indicate when the token was created.
-- Adds an expiration timestamp, calculated based on the expiration time configured in the properties file.
-- Signs the JWT with the **secret key** using the **HS512** algorithm for security.
-- Returns the generated JWT token as a compact string.
+### `validateToken(String token)`
 
-**What it does:**
-- This method is called when you need to issue a new JWT token (e.g., after a successful login). It ensures that the JWT contains essential information, such as who the user is (subject), what they can do (permissions), and when their token will expire.
+```java
+public boolean validateToken(String token) {
+    try {
+        Claims claims = getClaims(token);
 
-#### `getClaims(String token)`
+        Date expirationDate = claims.getExpiration();
+        if (expirationDate.before(new Date())) {
+            throw new JwtException("Token has expired");
+        }
 
-The `getClaims()` method extracts the claims from the JWT token. Claims in a JWT contain important data about the user, such as their identity (subject), roles, permissions, and expiration date.
+        return true;
+    } catch (JwtException e) {
+        return false;
+    }
+}
+```
 
-**What it does:**
-- The method parses the JWT token using the **secret key** and returns the body of the JWT, which contains the claims.
-- It uses the `Jwts.parserBuilder()` to validate the JWT’s signature using the `secretKey`, ensuring that the token has not been tampered with.
-- The method returns a `Claims` object, which can be used to access the claims, such as the subject, role, and expiration date.
+**Explanation:**
+- Retrieves the claims from the token.
+- Checks if the token's expiration time has passed.
+- If valid and not expired, returns `true`.
+- Catches and handles `JwtException` to safely return `false` for invalid or expired tokens.
 
-#### `validateToken(String token)`
+This validation is fundamental to the security of any endpoint protected by JWT-based authentication.
 
-This method checks the validity of the JWT token. It does two things:
-1. **Validates the Signature**: Ensures that the token’s signature matches the expected signature using the secret key.
-2. **Checks Expiration**: It verifies if the token has expired by comparing its expiration timestamp with the current system time.
-
-**What it does:**
-- It calls `getClaims()` to extract the claims from the token.
-- If the token is expired (i.e., if the expiration date is before the current date), it throws a `JwtException`.
-- If the signature is invalid or the token is expired, the method returns `false`.
-- If everything is valid, it returns `true`.
-
-**Why it is important:**
-- This method ensures that a JWT token is both authentic (signed with the correct secret key) and still valid (not expired). This is crucial for ensuring secure authentication and authorization processes.
-
-### Summary
-
-- **Purpose**: The `AdminTokenProvider` class is used to create and validate JWT tokens, specifically for admin users, ensuring secure authentication and authorization.
-- **Key Functions**: It generates JWT tokens with claims, validates their integrity and expiration, and allows claims to be extracted for further authorization checks.
-- **Dependency Injection**: Spring’s `@Autowired` manages the initialization of the secret key through the `init()` method. This method is crucial for setting up the key used for cryptographic signing and is automatically invoked during the bean initialization process.
-- **Security**: By using a secure signing algorithm (`HS512`), the class ensures that JWT tokens are cryptographically signed and cannot be tampered with, maintaining the integrity of the authentication process.
-
-This class forms the backbone of the JWT-based authentication system for admin users in the application, enabling both secure token creation and validation.
+The `AdminTokenProvider` is thus a reusable, secure, and configurable utility for JWT management, facilitating both token generation during login and token verification during request filtering.
 
 ---
 

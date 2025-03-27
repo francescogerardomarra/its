@@ -1,5 +1,5 @@
 ### Filters
-A **filter** is an object that performs filtering tasks on either the **request** or the **response** in a Spring-based application. Filters are part of the servlet container and allow you to manipulate the request and/or response before it reaches the targeted servlet or after the servlet has processed it.
+A **filter** is an object that performs filtering tasks on either the **request** or the **response** within an application such as a Web Service. Filters are part of the servlet container and allow you to manipulate the request and/or response before it reaches the targeted servlet or after the servlet has processed it.
 
 In Spring, filters are commonly used to process requests or responses in a way that is **independent of the business logic**. Filters sit in between the client and the servlet (or controller), intercepting and potentially modifying the request and/or response before the request reaches the servlet or after the servlet generates the response.
 

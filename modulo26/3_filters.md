@@ -16,7 +16,20 @@ In summary, the filter lifecycle involves:
 - **Registration** of the filter within the web application's configuration.
 
 #### Lifecycle
-As soon as a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle. Here's how this flow works in the context of filters:
+As soon as a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle.
+
+Filters can intercept and modify both **requests** and **responses** at various stages of the HTTP request lifecycle:
+- **Request Interception**: Filters can alter or inspect the request before it reaches the servlet or controller.
+- **Response Interception**: Filters can manipulate the response that is sent back to the client after the servlet has processed the request.
+
+Filters have the ability to:
+- **Modify the request**: Add additional headers, parameters, or modify the request body.
+- **Log request details**: Useful for auditing or debugging.
+- **Authenticate requests**: A typical use case is JWT (JSON Web Token) authentication.
+- **Modify the response**: Add headers, change the response body, or handle logging.
+- **Redirect or terminate the request/response**: For example, if authentication fails, you might stop the request processing and return a 401 Unauthorized response.
+
+Here's how this flow works in the context of filters:
 
 1. **Request Handling**:
     - When the HTTP request reaches the application, a **request object** is created, and a **response object** is also prepared, even though it is initially empty (the response body hasn't been generated yet). This response object is created early by the servlet container to ensure that a response can be sent back to the client once the request is processed.
@@ -34,17 +47,6 @@ As soon as a request is made to the application, a **request-response pair** is 
 
 4. **Post-Processing by Filters**:
     - Once the controller has generated the response, the response object travels back through the filter chain. Filters can now inspect or modify the **response** before it is sent to the client. This is typically where you can perform logging or modify the content of the response (e.g., adding custom headers or logging response times).
-
-Filters can intercept and modify both **requests** and **responses** at various stages of the HTTP request lifecycle:
-- **Request Interception**: Filters can alter or inspect the request before it reaches the servlet or controller.
-- **Response Interception**: Filters can manipulate the response that is sent back to the client after the servlet has processed the request.
-
-Filters have the ability to:
-- **Modify the request**: Add additional headers, parameters, or modify the request body.
-- **Log request details**: Useful for auditing or debugging.
-- **Authenticate requests**: A typical use case is JWT (JSON Web Token) authentication.
-- **Modify the response**: Add headers, change the response body, or handle logging.
-- **Redirect or terminate the request/response**: For example, if authentication fails, you might stop the request processing and return a 401 Unauthorized response.
 
 #### Use Cases
 **Authentication**

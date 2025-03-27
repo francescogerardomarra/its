@@ -659,6 +659,12 @@ If a filter is correctly **defined, registered and chained**, its three methods 
         - The `request` object represents the HTTP request received from the client.
         - The `response` object represents the HTTP response that will be returned to the client.
     - You **must** call `chain.doFilter(request, response)` to pass the request and response to the next filter or servlet in the chain. If you don't call this method, the request/response will be stuck in the filter, and no further processing will occur. It’s crucial to allow the request to continue through the chain to complete the processing and return the response.
+    - If you don't call `chain.doFilter(request, response)` in any filter—whether it's the last one or not:
+        - The **request will not proceed** to the next filter or to the controller (or servlet).
+        - The **response will not be generated** or sent back to the client.
+        - The **request will be blocked** in the current filter.
+        - Any **subsequent filters, including the controller or servlet, will not be reached**.
+        - The **response will not be processed** either.
     - The `doFilter` method provides `ServletRequest` and `ServletResponse` objects, which are generic types. In many cases, you'll need more specific functionality, such as working with HTTP-specific headers, request parameters, or status codes. This is where **casting** becomes useful:
         - **`HttpServletRequest`**: By casting the generic `ServletRequest` to an `HttpServletRequest`, you can access HTTP-specific features like headers, cookies, parameters, and methods such as `getMethod()` or `getRequestURI()`.
         - **`HttpServletResponse`**: Similarly, casting the generic `ServletResponse` to an `HttpServletResponse` allows you to interact with HTTP-specific features like status codes, headers, and the response body.

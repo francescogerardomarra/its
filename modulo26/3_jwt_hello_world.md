@@ -309,7 +309,7 @@ These new classes are part of the security mechanism that enforces JWT authentic
     │   │           │   │   └── chain
     │   │           │   │       └── SecurityConfig.java
     │   │           │   └── jwt
-    │   │           │       ├── admin
+    │   │           │       ├── provider
     │   │           │       │   └── AdminTokenProvider.java
     │   │           │       └── filter
     │   │           │           └── AuthenticationTokenFilter.java

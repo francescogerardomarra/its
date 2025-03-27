@@ -183,25 +183,27 @@ jwt.secret=VGhpcyBpcyBhIHNlY3VyZSBqZXN0IGtleSB0aGF0IGlzIGJlYXJlZCBvbiBhIFNoYTI1N
 ```
 - This is a **Base64-encoded** string representing the JWT secret key.
 - The encoded secret is used with the `HS512` algorithm to sign and validate JWTs.
+- **HS512** requires a long, secure key to avoid brute-force attacks. A short key could compromise token integrity.
+- **HS512** requires the key to be at least **512 bits (64 bytes)**, and this is the length of the **decoded key**.
+- The **decoded key** is the one that determines whether it meets the size requirements for **HS512**.
 - **Decoded value:**
   ```
   This is a secure jwt key that is beared on a Sha256 media that is long inouh the certain security standard, and is expected to be authorized.
   ```
 - Even though the decoded version looks human-readable, it’s not directly used in code. The encoded value is used to ensure security compatibility.
-- **Why HS512?** This algorithm requires a long, secure key to avoid brute-force attacks. A short key could compromise token integrity.
+- **Decoded length**: This decoded key has a length of **192 characters**, and since each character is **1 byte**, this gives us a **192-byte key**.
+- **HS512** requires a **64-byte (512-bit)** minimum length, so this key is **longer than necessary** for **HS512**, making it suitable.
 
 ```properties
 admin.jwt.claim.sub=admin_sub
 admin.jwt.claim.role=admin
 admin.jwt.claim.permission=read,write,delete
-admin.jwt.admin.expiration.ms=600000
-admin.jwt.claim.refresh.expiration.ms=1800000
+admin.jwt.claim.expiration.ms=600000
 ```
 - `admin.jwt.claim.sub`: The subject (`sub`) claim that identifies the principal—typically the username or user ID.
 - `admin.jwt.claim.role`: Sets the `role` claim in the JWT—used to authorize endpoints.
 - `admin.jwt.claim.permission`: A custom `permission` claim listing specific actions allowed by the token bearer.
-- `admin.jwt.admin.expiration.ms`: JWT expiration time in milliseconds (10 minutes here).
-- `admin.jwt.claim.refresh.expiration.ms`: Refresh token expiration time in milliseconds (30 minutes).
+- `admin.jwt.claim.expiration.ms`: JWT expiration time in milliseconds (10 minutes here).
 
 ---
 
@@ -221,8 +223,7 @@ jwt.secret=VGhpcyBpcyBhIHNlY3VyZSBqZXN0IGtleSB0aGF0IGlzIGJlYXJlZCBvbiBhIFNoYTI1N
 admin.jwt.claim.sub=admin_sub
 admin.jwt.claim.role=admin
 admin.jwt.claim.permission=read,write,delete
-admin.jwt.admin.expiration.ms=600000
-admin.jwt.claim.refresh.expiration.ms=1800000
+admin.jwt.claim.expiration.ms=600000
 ```
 
 ---
@@ -323,52 +324,6 @@ These new classes are part of the security mechanism that enforces JWT authentic
     └── test
         └── java
 ````
-
----
-
-## application.properties
-
-- **Logging Configuration:**
-    - `logging.level.org.springframework.security=DEBUG`: Enables detailed logging for security operations within Spring Security.
-    - `logging.level.org.springframework.web=DEBUG`: Enables detailed logging for web operations within Spring Web.
-
-- **Basic Authentication:**
-    - `admin.username=admin`: Defines the username for the admin user for Basic Authentication.
-    - `admin.password=password123`: Defines the password for the admin user for Basic Authentication.
-
-- **JWT Configuration:**
-    - `jwt.secret=VGhpcyBpcyBhIHNlY3VyZSBqZXN0IGtleSB0aGF0IGlzIGJlYXJlZCBvbiBhIFNoYTI1NiBtZWRpYSB0aGF0IGlzIGxvbmcgaW5vdWdoIHRoZSBjZXJ0YWluIHNlY3VyaXR5IHN0YW5kYXJkLCBhbmQgaXMgZXhwbGVjdGVkIHRvIGJlIGF1dGhvcml6ZWQuIFRoaXMga2V5IHdpbGwgYmUgc2lnbmVkIHdpdGggc2lnbmVkYXR1cmUgYWxnb3JpdGhtcyBzbyBpdCBpcyBhIHN0cm9uZyBzZWNyZXQuCg==`:
-        - The `jwt.secret` value is a **Base64-encoded string** used as the **secret key** to sign and verify JWT tokens.
-        - **Why Base64 encoding?**
-            - Base64 encoding is commonly used to represent binary data (like the secret key) in an ASCII string format. This is helpful because the secret key is often a binary string, which may contain characters that are not easily handled in standard text formats.
-            - Base64 encoding makes the secret key compatible with systems that are not binary-friendly (such as HTTP headers or configuration files).
-            - Base64 ensures the key can be easily transferred or stored as text, while still being reversible to its original binary form when needed for cryptographic operations like signing the JWT.
-        - **Decoding the secret:**
-            - If we decode this Base64 string, we get the following result:
-
-            ```
-            This is a secure jwt key that is beared on a Sha256 media that is long inouh the certain security standard, and is expected to be authorized.
-            ```
-
-            - **What does this mean?**
-                - The decoded string is a human-readable version of the secret, but it is not a cryptographic key in its usable form.
-                - In practice, we don't use the decoded string directly for signing JWTs, but rather, we use the original Base64-encoded string to ensure the cryptographic process is secure.
-                - This decoded string seems to provide context or documentation regarding the secret key, such as its purpose (`secure jwt key`) and intended use (with SHA256 media and security standards).
-                - However, **you should never expose your decoded secrets publicly** as they could provide hints or insight into how the key is used and potentially compromise your system.
-
-        - The key is long because it is used with the `HS512` signing algorithm, which requires a sufficiently long and secure key to prevent brute-force attacks.
-        - When signing the token with this key, we use the `HS512` algorithm, which ensures that the token is both secure and verifiable.
-        - If the key were shorter, it wouldn't be sufficient for the `HS512` algorithm, which requires the secret to be at least 512 bits for the signing process to be cryptographically secure.
-
-    - `admin.jwt.claim.sub=admin_sub`: Specifies the subject claim (`sub`) for the JWT token, representing the admin user's unique identifier (`admin_sub`).
-
-    - `admin.jwt.claim.role=admin`: Specifies the role claim for the JWT token, setting the user role to `admin`.
-
-    - `admin.jwt.claim.permission=read,write,delete`: Defines the permissions claim for the JWT token, listing the actions (`read`, `write`, and `delete`) the `admin` user is allowed to perform.
-
-    - `admin.jwt.admin.expiration.ms=600000`: Sets the expiration time for the JWT token in milliseconds. `600000` ms equals 10 minutes, meaning the token will expire after 10 minutes.
-
-    - `admin.jwt.claim.refresh.expiration.ms=1800000`: Sets the expiration time for the refresh token in milliseconds. `1800000` ms equals 30 minutes, meaning the refresh token will expire after 30 minutes.
 
 ---
 

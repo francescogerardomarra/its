@@ -1,5 +1,11 @@
-### Filters
-A **filter** is an object that performs filtering tasks on either the **request** or the **response** within an application such as a Web Service. Filters are part of the servlet container and allow you to manipulate the request and/or response before it reaches the targeted servlet or after the servlet has processed it.
+### Spring Filters
+A **filter** is an object that performs filtering tasks on either the **request** or the **response** within an application such as a Web Service. 
+
+Recall that a **servlet** is a Java class that handles HTTP requests and responses in a web application.  
+It runs on a web server, typically an application server like Apache Tomcat.  
+Servlets are used to extend the capabilities of a server by providing dynamic content.
+
+Filters are part of the servlet container and allow you to manipulate the request and/or response before it reaches the targeted servlet or after the servlet has processed it.
 
 In Spring, filters are commonly used to process requests or responses in a way that is **independent of the business logic**. Filters sit in between the client and the servlet (or controller), intercepting and potentially modifying the request and/or response before the request reaches the servlet or after the servlet generates the response.
 
@@ -7,7 +13,7 @@ In Spring, filters are commonly used to process requests or responses in a way t
 From a theoretical point of view, the implementation lifecycle of a filter can be broken down into three main stages:
 
 1. **Definition**: In this stage, the filter is created by implementing the `jakarta.servlet.Filter` interface or by extending an abstract class like `GenericFilter`. The filter class contains the logic that defines how incoming requests and outgoing responses should be processed, typically by overriding methods like `doFilter()`.
-2. **Chaining**: As part of the definition, the **filter chain** comes into play. A filter chain allows multiple filters to be executed in a specific order. When the `doFilter()` method is called, the filter can either continue processing the request by calling `chain.doFilter(request, response)` or halt the chain. This chaining mechanism ensures that each filter in the chain can perform its task before passing the request to the next filter or the target resource (like a servlet or a JSP).
+2. **Chaining**: As part of the definition, the **filter chain** comes into play. A filter chain allows multiple filters to be executed in a specific order. When the `doFilter()` method is called, the filter can either continue processing the request by calling `chain.doFilter(request, response)` or halt the chain. This chaining mechanism ensures that each filter in the chain can perform its task before passing the request to the next filter or the target resource (like a servlet or controller).
 3. **Registration**: Once defined, the filter must be registered with the web application so that it can be invoked during the request-response cycle. This registration can be done either through the `web.xml` file (in older servlet versions) or via annotations like `@WebFilter` (in modern servlet-based applications). The filter is mapped to specific URL patterns or servlet paths to determine when it should be executed.
 
 In summary, the filter lifecycle involves:

@@ -1,4 +1,4 @@
-# Jwt Hello World
+# Security Hello World
 
 We'll enhance an already built Spring Boot REST web service by integrating **JWT authentication**. Our goal is to secure specific endpoints while keeping others publicly accessible. Specifically, we’ll secure the endpoints `/shop/items` and `/shop/users`, allowing **admin-only** access using **JWT-based stateless authentication**.
 

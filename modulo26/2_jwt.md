@@ -183,22 +183,6 @@ Encoded payload:
 eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTcxMDMzNjAwMH0
 ```
 
-#### Example of Registered Claim Validation in Code (Java)
-Here's a simplified example of how a JWT library might use registered claims during validation in Java using the `java-jwt` library:
-
-```java
-Algorithm algorithm = Algorithm.HMAC256("secret");
-JWTVerifier verifier = JWT.require(algorithm)
-    .withIssuer("https://auth.myapp.com")
-    .withAudience("my-api")
-    .build();
-
-DecodedJWT jwt = verifier.verify(token);
-System.out.println("Token is valid. Subject: " + jwt.getSubject());
-```
-
-In this example, the verifier will check whether the `iss` and `aud` claims match the expected values. If they don’t, an exception is thrown.
-
 ### 🧩 Public Claims (with Examples)
 
 #### What Are Public Claims?
@@ -301,16 +285,6 @@ Example:
   "theme": "dark-mode"
 }
 ```
-
-#### Example Use of a Private Claim in Java
-```java
-String department = jwt.getClaim("department").asString();
-if ("engineering".equals(department)) {
-    // custom app logic for engineering department
-}
-```
-
-You are free to include any number of private claims to carry information your application needs. Just be aware that because the payload is readable, sensitive data should not be stored unless the token is encrypted.
 
 ---
 
@@ -607,11 +581,8 @@ In the user authentication flow, JWTs are primarily used to assert the identity 
 ```
 POST /api/login
 Content-Type: application/json
-
-{
-  "username": "alice",
-  "password": "securepassword123"
-}
+Authorization: Basic YWxpY2U6c2VjdXJlcGFzc3dvcmQxMjM=
+{}
 ```
 
 2. **Token Generation**: If the credentials are valid, the server generates a JWT containing claims such as the user ID, issued time (`iat`), and expiration time (`exp`). Optionally, custom claims may be included.
@@ -960,7 +931,11 @@ In other words:
 
 This makes JWE ideal for scenarios where **sensitive information** must be protected, even from intermediaries.
 
-#### 🧱 JWE Token Structure
+**A JSON Web Encryption (JWE) is only encrypted, not signed.** It is used to encrypt the payload to ensure confidentiality, but it does not inherently provide authenticity or integrity like a signature would.
+
+If you need both confidentiality (encryption) and authenticity (signature), you typically use a combination of JWE and JSON Web Signature (JWS).
+
+#### JWE Token Structure
 A JWE consists of 5 base64url-encoded parts, separated by dots:
 ```
 <Protected Header>.<Encrypted Key>.<Initialization Vector>.<Ciphertext>.<Authentication Tag>
@@ -973,7 +948,7 @@ Each part serves a specific purpose:
 - **Ciphertext**: The encrypted payload data.
 - **Authentication Tag**: Verifies the integrity and authenticity of the encrypted content.
 
-#### 🧾 Example JWE Header
+#### Example JWE Header
 ```json
 {
   "alg": "RSA-OAEP",      // Key encryption algorithm
@@ -981,14 +956,6 @@ Each part serves a specific purpose:
   "kid": "5678"           // Key identifier
 }
 ```
-
-#### 🔄 Encryption Process (Step-by-Step)
-1. **Generate a CEK (Content Encryption Key)** – a temporary symmetric key to encrypt the payload.
-2. **Encrypt the payload** using the CEK and the algorithm from `enc` (e.g., `A256GCM`).
-3. **Encrypt the CEK** using the recipient’s public key and algorithm from `alg` (e.g., `RSA-OAEP`).
-4. **Generate an Initialization Vector (IV)** to ensure unique ciphertext.
-5. **Calculate an Authentication Tag** to ensure tamper-proofing.
-6. **Assemble the final JWE** using base64url-encoded segments.
 
 #### 📦 Illustrative JWE Token Example
 ```

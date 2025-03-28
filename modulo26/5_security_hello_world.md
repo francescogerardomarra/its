@@ -318,7 +318,7 @@ These new classes are part of the security mechanism that enforces JWT authentic
     │   │           │   ├── OrderItemService.java
     │   │           │   ├── OrderService.java
     │   │           │   └── UserService.java
-    │   │           └── WebServiceRest.java
+    │   │           └── WebServiceRestSecurity.java
     │   └── resources
     │       └── application.properties
     └── test
@@ -892,7 +892,7 @@ This controller fits into the broader **Spring Security** framework by allowing 
 
 ---
 
-# WebServiceRestJWT - API Testing & Authentication Guide
+# API Testing & Authentication Guide
 
 ## Connecting to PostgreSQL
 
@@ -912,7 +912,7 @@ sudo -u postgres psql
 
 ## Running the Spring Boot Application
 
-To run the `WebServiceRestJWT` application in IntelliJ:
+To run the `WebServiceRestSecurity` application in IntelliJ:
 
 **Open the Project in IntelliJ IDEA**
 - Launch IntelliJ IDEA and choose **File -> Open**.
@@ -923,8 +923,8 @@ To run the `WebServiceRestJWT` application in IntelliJ:
 - Set **Project SDK** to **JDK 21**. If not available, add it manually.
 
 **Run the Application**
-- Locate the main class `WebServiceRest` (the one with the `main` method).
-- Click the green Run arrow or use **Run -> Run 'WebServiceRestJwt'**.
+- Locate the main class `WebServiceRestSecurity` (the one with the `main` method).
+- Click the green Run arrow or use **Run -> Run 'WebServiceRestSecurity'**.
 
 **Verify Startup**
 - Check logs in IntelliJ’s terminal. Look for confirmation that Spring Boot started successfully.

@@ -215,7 +215,7 @@ You need to use methods like:
 - `anyRequest().authenticated()` ensures that all other requests require authentication.
 
 ## In-Memory Authentication
-Spring Security provides `InMemoryUserDetailsManager` for storing users and roles in memory. This is ideal for small applications or testing where persistence is unnecessary.
+Spring Security provides `InMemoryUserDetailsManager` for storing users in memory. This is ideal for small applications or testing where persistence is unnecessary.
 
 ```java
 package com.example.security;
@@ -281,7 +281,7 @@ Spring Security then compares the provided password (sent in the HTTP request) w
 If the provided password matches the stored hashed password, authentication is successful, and the user is granted access to the requested resource.
 
 ### Explanation:
-- `InMemoryUserDetailsManager` stores user credentials and roles in memory.
+- `InMemoryUserDetailsManager` stores user credentials in memory.
 - `passwordEncoder().encode("password")` encodes passwords before storing.
 
 ## Authentication with JDBC
@@ -442,14 +442,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   - If the URL matches `/public/**`, it is allowed without authentication (`permitAll()`).
   - If the URL matches `/admin/**`, the user must have the "ADMIN" role.
   - If the URL matches `/user/**`, the user must have the "USER" role.
+  - **Important**: rules about the role are defined before authentication but are **only applied after the user is authenticated**.
   - Any other request requires authentication (`authenticated()`).
 
 #### Authentication
 - If a user is not authenticated, Spring Security triggers basic authentication (`httpBasic()`), prompting for credentials.
 - The username and password are verified against the in-memory user store (`InMemoryUserDetailsManager`).
+- **Authentication happens first**: This process establishes the user’s identity and retrieves the roles associated with that user. Only after successful authentication will Spring Security apply the role-based rules.
 
 #### Role Authorization
-- After authentication, Spring checks if the user has the required role for the requested URL.
+- After the user is authenticated, Spring Security checks if the user has the required role for the requested URL.
+  - For example, if the request matches `/admin/**`, Spring Security will check if the user has the "ADMIN" role using the `hasRole()` method.
+- **Role checks only happen after authentication**. Until authentication is successful, Spring Security cannot determine the user's roles.
 - If the user lacks the appropriate role, the request is denied.
 
 #### Successful Access
@@ -458,7 +462,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 #### Unsuccessful Access
 - If authentication or role checks fail, an HTTP 401 (Unauthorized) or 403 (Forbidden) response is returned.
 
-This setup ensures that requests are properly secured and only authorized users can access certain parts of the application based on their roles.
+This setup ensures that requests are properly secured, and only authenticated and authorized users can access certain parts of the application based on their roles.
 
 ---
 

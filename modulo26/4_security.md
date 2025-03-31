@@ -34,7 +34,7 @@ To set up Spring Security in a Spring Boot project, add the following dependenci
 
 ---
 
-### First Example
+## First Example
 
 Here’s a basic Spring Security configuration with HTTP Basic Authentication and in-memory authentication:
 
@@ -111,8 +111,6 @@ public PasswordEncoder passwordEncoder() {
 **Purpose**: The PasswordEncoder bean is used to hash user passwords securely before storing them. The `BCryptPasswordEncoder` is a cryptographic algorithm that provides secure, slow hashing designed to be resistant to brute-force attacks.
 
 **Why BCrypt?**: BCrypt is a strong, adaptive hashing algorithm designed to be slow, which makes it more difficult for attackers to crack passwords using brute-force methods.
-
----
 
 ### UserDetailsService Bean and InMemoryUserDetailsManager
 
@@ -192,7 +190,7 @@ More details follow:
 
 ---
 
-# Basic Authentication
+## Basic Authentication
 Basic Authentication is a simple way to secure an API or web application by requiring the client to send a username and password in the request header.
 
 Here is an example of how the credentials are expected in a POST request when Basic Authentication is used:
@@ -214,7 +212,7 @@ You need to use methods like:
 - `antMatchers("/public/**").permitAll()` allows public resources to be accessed without authentication.
 - `anyRequest().authenticated()` ensures that all other requests require authentication.
 
-## In-Memory Authentication
+### In-Memory Authentication
 Spring Security provides `InMemoryUserDetailsManager` for storing users in memory. This is ideal for small applications or testing where persistence is unnecessary.
 
 ```java
@@ -280,11 +278,7 @@ Spring Security then compares the provided password (sent in the HTTP request) w
 
 If the provided password matches the stored hashed password, authentication is successful, and the user is granted access to the requested resource.
 
-### Explanation:
-- `InMemoryUserDetailsManager` stores user credentials in memory.
-- `passwordEncoder().encode("password")` encodes passwords before storing.
-
-## Authentication with JDBC
+### Authentication with JDBC
 For persistent user data, use `JdbcUserDetailsManager`, which loads user details from a database.
 
 ```java
@@ -330,7 +324,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
-### Explanation:
+`JdbcUserDetailsManager` works as follows:
+- It interacts with a relational database to retrieve user credentials.
+- By default, it queries standard Spring Security tables (`users` and `authorities`).
+- It loads users using SQL queries and validates credentials against the stored encrypted passwords.
+- You can customize queries by overriding default SQL statements.
+
+More details follow:
 - **`@Bean` annotation**:
   - Marks the method as a bean definition, allowing Spring to manage the lifecycle of the returned object.
   - This method will return a `JdbcUserDetailsManager` bean, which is responsible for managing user details in a JDBC-based store (usually a relational database).
@@ -352,13 +352,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   - `return userDetailsManager;`
     - Returns the configured `JdbcUserDetailsManager` bean, which will now be managed by Spring and can be injected wherever needed (e.g., for user authentication in Spring Security).
 
-### How `JdbcUserDetailsManager` Works:
-- It interacts with a relational database to retrieve user credentials.
-- By default, it queries standard Spring Security tables (`users` and `authorities`).
-- It loads users using SQL queries and validates credentials against the stored encrypted passwords.
-- You can customize queries by overriding default SQL statements.
-
-### SQL Database Schema
+#### SQL Database Schema
 ```sql
 CREATE TABLE users (
     username VARCHAR(50) NOT NULL PRIMARY KEY,
@@ -372,6 +366,8 @@ CREATE TABLE authorities (
     FOREIGN KEY (username) REFERENCES users(username)
 );
 ```
+
+---
 
 ## Role-Based Authentication
 Role-based authorization restricts access based on assigned roles.

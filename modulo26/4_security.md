@@ -723,7 +723,7 @@ Pragma: no-cache
 {
     "status": "success",
     "message": "CSRF token generated successfully",
-    "csrfToken": "abc123xyz456"  // The Anti-CSRF token sent in the response body
+    "csrfToken": "abc123xyz456"
 }
 ```
 

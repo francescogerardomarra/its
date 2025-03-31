@@ -248,9 +248,6 @@ public class CustomFilter implements Filter {
 
         // Pass request and response to the next filter in the chain
         chain.doFilter(request, response);
-
-        // Post-processing logic after the request has been processed by the chain
-        System.out.println("Response is being filtered");
     }
 
     @Override
@@ -310,9 +307,6 @@ public class CustomFilter implements Filter {
 
         // Pass the request along the filter chain
         chain.doFilter(request, response);
-
-        // Post-processing logic
-        System.out.println("Custom Filter Processing Response");
     }
 
     @Override
@@ -327,7 +321,9 @@ public class CustomFilter implements Filter {
     - **Filter Definition**: The filter is defined by implementing `jakarta.servlet.Filter` or extending `OncePerRequestFilter`, as a custom filter for Spring Security.
     - **Registration Flow**: The filter may or may not be a Spring Bean. If it is a Spring Bean, it can be injected directly into the Spring Security configuration. If it's not a Spring Bean, it can still be registered programmatically using `http.addFilterBefore()` or `http.addFilterAfter()` within the `HttpSecurity` configuration to integrate it into the security filter chain; in Spring Security, the **security filter chain** is a sequence of filters that intercept HTTP requests and apply security-related logic, such as authentication and authorization. Each filter in the chain performs a specific task, such as checking credentials or verifying permissions. The filters are applied in a specific order to process incoming requests and outgoing responses.
     - **Bean Creation**: The filter is **not automatically registered as a Spring Bean** unless explicitly defined as one (via `@Bean` or `@Component`). It is manually registered during Spring Security configuration.
-    - **Summary**: This method integrates the filter into the Spring Security filter chain, but the filter doesn't have to be a Spring Bean unless needed for dependency injection.
+    - **Summary**: This method integrates the filter into the Spring Security filter chain.
+
+Here it follows an example where the filter is a bean at the definition level:
 
 ````java
 import org.springframework.context.annotation.Bean;
@@ -390,7 +386,171 @@ public class CustomSecurityFilter extends OncePerRequestFilter {
 }
 ````
 
+Here it follows an example where the filter is **not** a bean at the definition level:
+
+````java
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import jakarta.servlet.Filter;
+
+@Configuration
+public class SecurityConfig {
+
+   @Bean
+   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+      http
+              .authorizeRequests()
+              .antMatchers("/api/**").authenticated()  // Example: Secure endpoints
+              .anyRequest().permitAll()               // Allow other requests
+              .and()
+              .addFilterBefore(customSecurityFilter(), UsernamePasswordAuthenticationFilter.class);  // Register filter before Spring Security's default filter
+
+      return http.build();
+   }
+
+   @Bean
+   public Filter customSecurityFilter() {
+      return new CustomSecurityFilter();  // Return the custom filter bean
+   }
+}
+````
+
+````java
+import org.springframework.web.filter.OncePerRequestFilter;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+
+import java.io.IOException;
+
+public class CustomSecurityFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        // Custom filter logic here
+        System.out.println("Custom Security Filter Applied");
+
+        // Continue the filter chain
+        filterChain.doFilter(request, response);
+    }
+}
+````
+
+#### Summary
 - **Method 1**: Register as a `@Bean` in a `@Configuration` class with `FilterRegistrationBean`. The filter is defined as a class and is **later registered as a Spring Bean** during the registration process.
 - **Method 2**: Use `@WebFilter` annotation and `@ServletComponentScan`. The filter is **not a Spring Bean**, and Spring Boot automatically registers it with the servlet container.
 - **Method 3**: Use `@Component` annotation. The filter is defined as a Spring Bean and automatically registered by Spring; you can customize the filter's registration by using a `FilterRegistrationBean`
 - **Method 4**: Register the custom filter using `HttpSecurity` in Spring Security. The filter may or may not be a Spring Bean, but it is directly integrated into the security filter chain.
+
+# Chain of Responsibility
+In Java web applications, the `doFilter` method in the servlet filter API is a concrete implementation of the Chain of Responsibility pattern. Each filter in the chain can decide whether to process the request and response, or pass them along to the next filter. This allows for the dynamic composition of filters, where each filter is responsible for a specific task in the processing of the request and response.
+
+The Chain of Responsibility is a behavioral design pattern that allows multiple objects to handle a request sequentially. Instead of sending a request directly to a handler, it is passed along a chain of potential handlers until one of them processes it.
+
+## Analogy: Help Desk Support
+Imagine a technical support system where a customer contacts support with an issue. The request first goes to a Level 1 technician. If they can resolve the issue, they do. Otherwise, they escalate it to Level 2. If Level 2 cannot handle it, they pass it to Level 3, and so on. This structured escalation mechanism ensures that the request is handled by the most suitable handler in the chain.
+
+## When to Use Chain of Responsibility
+- When multiple handlers could process a request, and the handler isn't determined until runtime.
+- When decoupling the sender and receiver of a request is required.
+- When implementing request processing pipelines (e.g., middleware in web frameworks).
+
+## Pseudocode
+```plaintext
+class Handler {
+    nextHandler: Handler
+    
+    method handleRequest(request):
+        if canHandle(request):
+            process(request)
+        else if nextHandler != null:
+            nextHandler.handleRequest(request)
+}
+
+// Usage
+handler1 = new ConcreteHandler1()
+handler2 = new ConcreteHandler2()
+handler3 = new ConcreteHandler3()
+
+handler1.setNext(handler2)
+handler2.setNext(handler3)
+
+handler1.handleRequest(request)
+```
+
+## Java Implementation
+```java
+abstract class Handler {
+    protected Handler nextHandler;
+
+    public void setNextHandler(Handler nextHandler) {
+        this.nextHandler = nextHandler;
+    }
+
+    public void handleRequest(String request) {
+        if (nextHandler != null) {
+            nextHandler.handleRequest(request);
+        }
+    }
+}
+
+class Level1Support extends Handler {
+    public void handleRequest(String request) {
+        if (request.equals("basic issue")) {
+            System.out.println("Level 1 resolved the issue.");
+        } else {
+            super.handleRequest(request);
+        }
+    }
+}
+
+class Level2Support extends Handler {
+    public void handleRequest(String request) {
+        if (request.equals("intermediate issue")) {
+            System.out.println("Level 2 resolved the issue.");
+        } else {
+            super.handleRequest(request);
+        }
+    }
+}
+
+class Level3Support extends Handler {
+    public void handleRequest(String request) {
+        System.out.println("Level 3 handling the request.");
+    }
+}
+
+public class ChainOfResponsibilityExample {
+    public static void main(String[] args) {
+        Handler level1 = new Level1Support();
+        Handler level2 = new Level2Support();
+        Handler level3 = new Level3Support();
+        
+        level1.setNextHandler(level2);
+        level2.setNextHandler(level3);
+        
+        level1.handleRequest("basic issue");
+        level1.handleRequest("intermediate issue");
+        level1.handleRequest("complex issue");
+    }
+}
+```
+
+## Explanation
+1. **Handler (Abstract Class)**: Defines a method for handling requests and maintains a reference to the next handler.
+2. **Concrete Handlers**: Each subclass checks if it can handle the request. If not, it forwards the request to the next handler.
+3. **Client Code**: The request starts at the first handler and propagates through the chain until it is processed.
+
+## Advantages
+- Reduces coupling between sender and receivers.
+- Supports dynamic composition of handlers.
+- Provides flexibility to add new handlers without modifying existing ones.
+
+## Conclusion
+The Chain of Responsibility pattern is useful for scenarios where requests need to be processed by multiple handlers dynamically. It promotes decoupling and enhances code maintainability.

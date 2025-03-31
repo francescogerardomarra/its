@@ -144,7 +144,7 @@ public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
 - **Multiple users**:
   - If you need to define additional users, you can simply add more `manager.createUser()` calls to the `InMemoryUserDetailsManager`. For example:
 
-    ```java
+    ```text
     manager.createUser(User.withUsername("admin")
             .password(passwordEncoder.encode("adminPassword"))
             .build());
@@ -152,31 +152,61 @@ public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
             .password(passwordEncoder.encode("guestPassword"))
             .build());
     ```
-    
----
 
-## Chained HTTP Security Configuration
+### Chained HTTP Security Configuration
+A **security filter chain** is a sequence of filters that Spring Security automatically uses to secure the application by handling authentication, authorization, and other security-related tasks.
+
+In Spring Security, the chained method calls you see in the code below provide a **fluent API** to configure various security mechanisms for your web application.
+
+This approach makes the configuration concise, readable, and intuitive. It's important to understand that these methods do not explicitly define individual filters but instead configure how Spring Security’s **security filter chain** behaves.
 
 ```java
 http
-    .authorizeRequests()                     // Step 1: Begin authorization configuration
-    .antMatchers("/public/**").permitAll()   // Step 2: Permit access to /public/** for everyone
-    .anyRequest().authenticated()           // Step 3: Require authentication for all other requests
-    .and()
-    .httpBasic();                            // Step 4: Enable HTTP Basic Authentication
+        .authorizeRequests()                     // Step 1: Begin authorization configuration
+        .antMatchers("/public/**").permitAll()   // Step 2: Permit access to /public/** for everyone
+        .anyRequest().authenticated()           // Step 3: Require authentication for all other requests
+        .and()
+        .httpBasic();                            // Step 4: Enable HTTP Basic Authentication
 ```
 
-- **authorizeRequests()**: This begins the configuration of URL-based authorization. It defines which URLs are accessible and who can access them.
-- **antMatchers("/public/**").permitAll()**: This allows any user (authenticated or not) to access any URLs matching `/public/**`. These URLs are publicly available.
-- **anyRequest().authenticated()**: This requires authentication for any other URL that does not match `/public/**`. If a user tries to access a protected URL without being authenticated, they will be prompted to log in.
-- **httpBasic()**: This enables HTTP Basic Authentication. This means that clients will send their username and password in the `Authorization` header of the HTTP request. Spring Security will then validate the credentials using the `UserDetailsService` (which in our case is backed by `InMemoryUserDetailsManager`).
+Essentially:
+
+- this configuration is part of the **security filter chain** in Spring Security, though you're not manually defining each individual filter;
+- you are specifying the **behavior** of the security filters that Spring Security will automatically use when processing HTTP requests;
+- the filters themselves are built-in components in Spring Security, and this configuration simply influences how they operate;
+- you're configuring the **security filter chain**, which is a sequence of security-related filters that Spring Security uses behind the scenes to secure your application;
+- when a request is processed, Spring Security applies a series of filters in a specific order to handle different security tasks such as authentication, authorization, and protection against common attacks;
+- the chained method calls, such as `.authorizeRequests()` and `.httpBasic()`, modify how these built-in filters behave, but they don’t explicitly define or create new filters;
+
+More details follow:
+
+1. **authorizeRequests()**: This method starts the process of configuring URL-based authorization. It tells Spring Security to begin analyzing incoming HTTP requests and applying the necessary security measures for different URL patterns.
+
+2. **antMatchers("/public/**")**: This method defines the URL pattern to which specific authorization rules will apply. In this case, it targets all URLs that start with `/public/`. This is part of how Spring Security configures the behavior of the **authorization filters**. **ant** in `antMatchers` comes from "Ant-style path patterns", which is a pattern matching system similar to how files are matched in a file system, using wildcards (`*` and `**`).
+
+3. **permitAll()**: After specifying the URL pattern with `antMatchers()`, the `permitAll()` method allows unrestricted access to those URLs. The result is that the URLs matching `/public/**` will be accessible by any user, regardless of whether they are authenticated or not. This alters the behavior of the **authorization filter**, making sure that these URLs are not protected by any authentication rules.
+
+4. **anyRequest().authenticated()**: This method ensures that any request not matching the previously defined patterns (such as `/public/**`) will require authentication. It modifies the behavior of the **authorization filter** to enforce access restrictions for all other URLs.
+
+5. **httpBasic()**: By calling `httpBasic()`, you are instructing Spring Security to use **HTTP Basic Authentication**. This means that Spring Security will check for a username and password in the HTTP request header and will validate them using the `UserDetailsService`. In this case, the `UserDetailsService` is configured to look up user details from an in-memory store, where user credentials are stored.
 
 ---
 
 # Basic Authentication
-
-## Enabling Basic Authentication
 Basic Authentication is a simple way to secure an API or web application by requiring the client to send a username and password in the request header.
+
+Here is an example of how the credentials are expected in a POST request when Basic Authentication is used:
+
+```http
+POST /api/protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==  // Base64-encoded username:password
+Content-Type: application/json
+
+{
+    "data": "sample data"
+}
+```
 
 You need to use methods like:
 
@@ -235,6 +265,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 }
 ```
+
+Because of the configuration:
+
+```java
+.authenticated()           // Require authentication for all other requests
+        .and()
+        .httpBasic();               // Enable HTTP Basic Authentication
+```
+
+when Spring Security receives a request with Basic Authentication credentials (username and password), it will invoke the `userDetailsService` bean to retrieve the user details from the `InMemoryUserDetailsManager`, which may contain multiple user-password pairs.
+
+Spring Security then compares the provided password (sent in the HTTP request) with the hashed passwords stored in memory for the corresponding username.
+
+If the provided password matches the stored hashed password, authentication is successful, and the user is granted access to the requested resource.
 
 ### Explanation:
 - `InMemoryUserDetailsManager` stores user credentials and roles in memory.

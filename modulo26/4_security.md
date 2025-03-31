@@ -515,7 +515,7 @@ You can configure Spring Security with the `HttpSecurity` object to specify how 
 
 Let’s look at how different session policies affect what happens with sessions.
 
-#### Default Behavior: `SessionCreationPolicy.IF_REQUIRED`
+#### `SessionCreationPolicy.IF_REQUIRED`
 
 By default, Spring Security uses `SessionCreationPolicy.IF_REQUIRED`. This means that a session is created only when deemed necessary by the framework.
 
@@ -611,39 +611,150 @@ protected void configure(HttpSecurity http) throws Exception {
 
 ---
 
-## CSRF Protection
-
+## CSRF protection
 Cross-Site Request Forgery (CSRF) is an attack where an attacker tricks an authenticated user into performing an unwanted action on a web application. The attacker exploits the trust the web application has in the user's browser.
 
-### How a CSRF Attack Unfolds
+### Unfolding
+1. User Login and Session Cookies:
+   - The user logs into a web application and is authenticated.
+   - The server issues a session cookie (e.g., `JSESSIONID`), which identifies the user's session.
+   - The browser automatically includes this session cookie with every request to the server.
 
-#### User Login and Session Cookies:
-- The user logs into a web application and is authenticated.
-- The server issues a session cookie (e.g., `JSESSIONID`), which identifies the user's session.
-- The browser automatically includes this session cookie with every request to the server.
+2. Attacker's Malicious Website:
+   - The attacker creates a malicious website that tricks the user into visiting it while logged into the vulnerable site.
+   - The attacker injects JavaScript into the malicious website that automatically sends a state-changing request to the vulnerable web application.
+   - The malicious site sends a state-changing request (e.g., POST, PUT, DELETE) to the vulnerable web application. The browser includes the session cookie with the request, making it seem legitimate.
 
-#### Attacker's Malicious Website:
-- The attacker creates a malicious website that tricks the user into visiting it while logged into the vulnerable site.
-- The malicious site sends a state-changing request (e.g., POST, PUT, DELETE) to the vulnerable web application. The browser includes the session cookie with the request, making it seem legitimate.
+3. Outcome:
+   - The attacker successfully performs actions that the user didn’t intend by exploiting the user’s session.
 
-#### SameSite Cookie Policy:
-- If the session cookie is not set with the `SameSite` attribute, it will be sent with cross-site requests, leaving the application vulnerable to CSRF.
-  - `SameSite=Strict`: Cookies are only sent if the request originates from the same site.
-  - `SameSite=Lax`: Cookies are sent with top-level navigations but not with subrequests.
-  - `SameSite=None`: Cookies are sent with both same-site and cross-site requests.
+### SameSite Cookie Policy
+The **SameSite=Strict** attribute ensures that the cookie is **only sent** when the request originates from the same domain as the cookie. This means the cookie **will not be sent** with **cross-site requests**, even if the user navigates to the site from a different domain or performs an action such as clicking a link from another site.
 
-#### Automatic Request Submission:
-- The attacker injects JavaScript into the malicious website that automatically sends a state-changing request to the vulnerable web application.
+This security feature helps to prevent **Cross-Site Request Forgery (CSRF)** attacks by ensuring that **cookies** (such as session cookies) are **not automatically sent** with requests made from a different origin (i.e. another website).
 
-#### Outcome:
-- The attacker successfully performs actions that the user didn’t intend by exploiting the user’s session.
+```http
+HTTP/1.1 200 OK
+Set-Cookie: jsessionid=abc123; SameSite=Strict; Path=/; HttpOnly; Secure
+```
 
 ### Anti-CSRF token
-In a REST client scenario, Spring Security will generate an anti-CSRF token for each session. This token must be included in state-changing requests (such as POST, PUT, DELETE).
+Anti-CSRF tokens are **unique, randomly generated tokens** that are associated with a user's session.
 
-In Spring Security, the CSRF token is typically included in cookies or response headers (depending on your configuration). The client will retrieve this token and include it in the headers of subsequent state-changing requests.
+These tokens are **not stored in cookies** but are usually exchanged:
+- in the **request body**;
+- **custom HTTP headers** (e.g. `X-CSRF-Token` or `X-XSRF-Token`).
 
-By default, Spring Security enables CSRF protection. When enabled, it will generate a CSRF token for each session, which the client must include in state-changing requests. The token is usually returned to the client as a cookie or in the response headers.
+The server validates these tokens to ensure that the request originates from the legitimate user and not from a malicious website.
+
+The primary goal of Anti-CSRF tokens is to protect against **Cross-Site Request Forgery (CSRF)** attacks.
+
+Anti-CSRF tokens are **not stored in cookies** to prevent attackers from exploiting the token via **cross-site scripting (XSS)** attacks. Cookies are automatically sent with every request, which could lead to potential token theft or manipulation. By requiring the client to programmatically include the token in the request body or custom headers (e.g., `X-CSRF-Token` or `X-XSRF-Token`), the server ensures that the request is intentional and legitimate.
+
+Anti-CSRF tokens provide an **additional layer of protection** by ensuring that requests made to the server must contain a valid token that matches what the server expects.
+
+- Even if an attacker manages to **bypass the SameSite cookie restrictions** (for example, by tricking the user into making a request via a **malicious link**), the request will still be **rejected**.
+- This happens because the attacker does not have access to the **correct CSRF token**, which is required to make a valid request.
+
+Thus, Anti-CSRF tokens work alongside `SameSite` cookie settings, ensuring that **only legitimate requests** are processed, even in cases where `SameSite` protections are insufficient.
+
+#### As a Custom Header
+1. **Token Generation**:
+   - Upon session creation, the server generates a unique Anti-CSRF token and associates it with the user session (stored server-side).
+   - The server sends the token to the client, typically as part of the initial HTTP response in a custom response header (e.g., `X-CSRF-Token` or `X-XSRF-Token`).
+
+2. **Response example with anti-CSRF token**:
+   - **Content-Type: application/json**: Specifies that the response body contains JSON data, ensuring proper handling and parsing.
+   - **Cache-Control: no-cache**: Instructs the browser or intermediary caches that the response should not be cached, preventing potential attacks using stale tokens.
+   - **Pragma: no-cache**: An older HTTP/1.0 header similar to `Cache-Control: no-cache`, included for backward compatibility.
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-cache
+Pragma: no-cache
+X-CSRF-Token: abc123xyz456  // The Anti-CSRF token sent to the client
+
+{
+    "status": "success",
+    "message": "CSRF token generated successfully"
+}
+```
+
+3. **Client storage**
+   - The token is then stored client-side for future use.
+   - The client is responsible for programmatically including the token in each request that requires authentication.
+   - The token is added to the `X-CSRF-Token` header for API requests.
+
+4. **Request example with anti-CSRF token**:
+
+```http
+POST /protected-resource HTTP/1.1
+Host: example.com
+Content-Type: application/json
+X-CSRF-Token: abc123xyz456  // The CSRF token sent in the header
+
+{
+    "someData": "example"
+}
+```
+
+5. **Token Validation**:
+   - When the server receives the request, it verifies that the Anti-CSRF token provided by the client in the `X-CSRF-Token` header matches the one stored for the current session.
+   - If the token in the request does not match the server-side token, the server will reject the request as it may have originated from a malicious source.
+   - If the tokens match, the request is considered legitimate, and the server processes it.
+
+#### Within the Response Body
+1. **Token Generation**:
+    - Upon session creation, the server generates a unique Anti-CSRF token and associates it with the user session (usually stored server-side).
+    - The server sends the token to the client, typically as part of the **response body** (instead of a custom header).
+
+2. **Response example with Anti-CSRF token in the body**:
+    - **Content-Type: application/json**: Specifies that the response body contains JSON data, ensuring proper handling and parsing.
+    - **Cache-Control: no-cache**: Instructs the browser or intermediary caches not to cache the response, preventing attacks using stale tokens.
+    - **Pragma: no-cache**: Similar to `Cache-Control: no-cache` for backward compatibility with HTTP/1.0.
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-cache
+Pragma: no-cache
+
+{
+    "status": "success",
+    "message": "CSRF token generated successfully",
+    "csrfToken": "abc123xyz456"  // The Anti-CSRF token sent in the response body
+}
+```
+
+3. **Client storage**:
+    - The client stores the token locally (e.g. in memory) for future use.
+    - The client is responsible for programmatically including the token in each request that requires authentication.
+    - The token is typically added to the `X-CSRF-Token` header for API requests.
+
+4. **Request example with Anti-CSRF token**:
+
+```http
+POST /protected-resource HTTP/1.1
+Host: example.com
+Content-Type: application/json
+X-CSRF-Token: abc123xyz456  // The CSRF token sent in the request header
+
+{
+    "someData": "example"
+}
+```
+
+5. **Token Validation**:
+    - When the server receives the request, it checks that the Anti-CSRF token in the `X-CSRF-Token` header matches the token associated with the current session.
+    - If the token in the request doesn't match the server-side token, the server rejects the request as potentially originating from a malicious source (e.g., a CSRF attack).
+    - If the tokens match, the server considers the request legitimate and processes it accordingly, allowing the requested action to proceed (e.g., updating a resource, submitting a form).
+
+#### anti-CSRF and Spring Security
+
+how to generate an anti-csrf token in sprnig security
+how to check it upon requests
+how to enable disable
 
 ```java
 package com.example.security;
@@ -700,78 +811,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         return new InMemoryUserDetailsManager(admin, user);
     }
-}
-```
-
-### How CSRF Tokens Are Transmitted for REST Clients
-
-#### First Request (GET request):
-- When the REST client makes a GET request to the server, Spring Security will send the CSRF token either in the response headers or in a cookie. The cookie is usually named `XSRF-TOKEN`.
-
-#### Subsequent State-Changing Requests (POST, PUT, DELETE):
-- After the client retrieves the CSRF token, it will include this token in the `X-CSRF-TOKEN` header of any subsequent state-changing requests (e.g., POST, PUT, DELETE).
-
-##### Example of CSRF Token in Response
-
-```http
-HTTP/1.1 200 OK
-Set-Cookie: XSRF-TOKEN=csrf-token-value; Path=/; HttpOnly
-
-Response Body:
-{
-  "message": "Welcome!"
-}
-```
-
-The client can extract the CSRF token from the `XSRF-TOKEN` cookie and use it in the `X-CSRF-TOKEN` header in subsequent requests.
-
-#### 2. Sending the CSRF Token in Subsequent Requests
-
-Here is an example using Java to send a POST request with the CSRF token:
-
-```java
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.io.OutputStream;
-
-public class RestClient {
-    public static void main(String[] args) throws Exception {
-        String urlString = "https://example.com/api/submit";
-        URL url = new URL(urlString);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("X-CSRF-TOKEN", "csrf-token-value");
-        connection.setDoOutput(true);
-
-        String jsonBody = "{\"key\":\"value\"}";
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(jsonBody.getBytes("utf-8"));
-        }
-
-        int responseCode = connection.getResponseCode();
-        System.out.println("Response Code: " + responseCode);
-    }
-}
-```
-
-### 3. Disabling CSRF Protection (If Needed)
-
-If you are working with stateless authentication (e.g., JWT), you may not need CSRF protection. In such cases, you can disable CSRF protection:
-
-```java
-@Override
-protected void configure(HttpSecurity http) throws Exception {
-    http
-        .csrf().disable()
-        .authorizeRequests()
-        .antMatchers("/public/**").permitAll()
-        .antMatchers("/admin/**").hasRole("ADMIN")
-        .antMatchers("/user/**").hasRole("USER")
-        .anyRequest().authenticated()
-        .and()
-        .httpBasic();
 }
 ```
 

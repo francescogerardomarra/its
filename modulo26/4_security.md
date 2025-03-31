@@ -142,14 +142,27 @@ public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
 - **Multiple users**:
   - If you need to define additional users, you can simply add more `manager.createUser()` calls to the `InMemoryUserDetailsManager`. For example:
 
-    ```text
+```java
+@Bean
+@Override
+public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+
+    manager.createUser(User.withUsername("user")
+            .password(passwordEncoder.encode("password"))
+            .build());
+
     manager.createUser(User.withUsername("admin")
             .password(passwordEncoder.encode("adminPassword"))
             .build());
+
     manager.createUser(User.withUsername("guest")
             .password(passwordEncoder.encode("guestPassword"))
             .build());
-    ```
+    
+    return manager;
+}
+```
 
 ### Chained HTTP Security Configuration
 A **security filter chain** is a sequence of filters that Spring Security automatically uses to secure the application by handling authentication, authorization, and other security-related tasks.
@@ -208,11 +221,11 @@ Content-Type: application/json
 
 You need to use methods like:
 
-- `httpBasic()` enables Basic Authentication, requiring clients to send credentials in the request header.
 - `antMatchers("/public/**").permitAll()` allows public resources to be accessed without authentication.
 - `anyRequest().authenticated()` ensures that all other requests require authentication.
+- `httpBasic()` enables Basic Authentication, requiring clients to send credentials in the request header.
 
-### In-Memory Authentication
+### InMemoryUserDetailsManager
 Spring Security provides `InMemoryUserDetailsManager` for storing users in memory. This is ideal for small applications or testing where persistence is unnecessary.
 
 ```java
@@ -263,23 +276,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 }
 ```
-
-Because of the configuration:
+Due to the configuration:
 
 ```java
-.authenticated()           // Require authentication for all other requests
-        .and()
-        .httpBasic();               // Enable HTTP Basic Authentication
+.anyRequest().authenticated()           // Require authentication for all other requests
+.and()
+.httpBasic();                            // Enable HTTP Basic Authentication
 ```
 
-when Spring Security receives a request with Basic Authentication credentials (username and password), it will invoke the `userDetailsService` bean to retrieve the user details from the `InMemoryUserDetailsManager`, which may contain multiple user-password pairs.
+Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g., "/public/**"). When a client sends a request containing Basic Authentication credentials (i.e., a username and password), Spring Security delegates the authentication process to the `userDetailsService` bean.
 
-Spring Security then compares the provided password (sent in the HTTP request) with the hashed passwords stored in memory for the corresponding username.
+These credentials are typically included in the HTTP `Authorization` header using the Basic Authentication scheme. The header looks like this:
 
-If the provided password matches the stored hashed password, authentication is successful, and the user is granted access to the requested resource.
+```
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+```
 
-### Authentication with JDBC
-For persistent user data, use `JdbcUserDetailsManager`, which loads user details from a database.
+Here, `dXNlcjpwYXNzd29yZA==` is the Base64-encoded value of `username:password` (e.g., `user:password`).
+
+Spring Security extracts the credentials from this header and uses the `userDetailsService` (implemented with `InMemoryUserDetailsManager`) to retrieve the user details. It then uses the configured `PasswordEncoder` to compare the incoming plain-text password with the stored, hashed version.
+
+If the password matches, authentication succeeds, and the user gains access to the requested protected resource.
+
+### JdbcUserDetailsManager
+For persistent user credentials, use `JdbcUserDetailsManager`, which loads user details from a database.
 
 ```java
 package com.example.security;
@@ -326,7 +346,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 `JdbcUserDetailsManager` works as follows:
 - It interacts with a relational database to retrieve user credentials.
-- By default, it queries standard Spring Security tables (`users` and `authorities`).
+- By default, it queries standard Spring Security tables (`users` and `authorities`):
+
+```sql
+CREATE TABLE users (
+    username VARCHAR(50) NOT NULL PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    enabled BOOLEAN NOT NULL
+);
+
+CREATE TABLE authorities (
+    username VARCHAR(50) NOT NULL,
+    authority VARCHAR(50) NOT NULL,
+    FOREIGN KEY (username) REFERENCES users(username)
+);
+```
+
 - It loads users using SQL queries and validates credentials against the stored encrypted passwords.
 - You can customize queries by overriding default SQL statements.
 
@@ -352,20 +387,27 @@ More details follow:
   - `return userDetailsManager;`
     - Returns the configured `JdbcUserDetailsManager` bean, which will now be managed by Spring and can be injected wherever needed (e.g., for user authentication in Spring Security).
 
-#### SQL Database Schema
-```sql
-CREATE TABLE users (
-    username VARCHAR(50) NOT NULL PRIMARY KEY,
-    password VARCHAR(255) NOT NULL,
-    enabled BOOLEAN NOT NULL
-);
+Due to the configuration:
 
-CREATE TABLE authorities (
-    username VARCHAR(50) NOT NULL,
-    authority VARCHAR(50) NOT NULL,
-    FOREIGN KEY (username) REFERENCES users(username)
-);
+```java
+.anyRequest().authenticated()           // Require authentication for all other requests
+.and()
+.httpBasic();                            // Enable HTTP Basic Authentication
 ```
+
+Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g., "/public/**"). When a client sends a request containing Basic Authentication credentials (i.e., a username and password), Spring Security delegates the authentication process to the `userDetailsService` bean.
+
+In this case, authentication is handled by `JdbcUserDetailsManager`, which retrieves user details from a database via JDBC. This manager uses the configured `PasswordEncoder` to securely store and validate passwords. The credentials are included in the HTTP `Authorization` header using the Basic Authentication scheme:
+
+```
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+```
+
+Here, `dXNlcjpwYXNzd29yZA==` is the Base64-encoded value of `username:password` (e.g., `user:password`).
+
+Spring Security extracts the credentials from this header, retrieves the corresponding user details from the database using `JdbcUserDetailsManager`, and compares the provided password with the stored, hashed password using the configured `PasswordEncoder`.
+
+If the password matches, authentication succeeds, and the user gains access to the requested protected resource.
 
 ---
 
@@ -413,20 +455,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   @Bean
   public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-    // Create an "admin" user with role "ADMIN"
-    UserDetails admin = User.withUsername("admin")
-            .password(passwordEncoder.encode("admin"))  // Encode password using the injected PasswordEncoder
-            .roles("ADMIN")                               // Assign "ADMIN" role to the user
-            .build();
+      InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
 
-    // Create a "user" user with role "USER"
-    UserDetails user = User.withUsername("user")
-            .password(passwordEncoder.encode("user"))   // Encode password using the injected PasswordEncoder
-            .roles("USER")                                // Assign "USER" role to the user
-            .build();
+      // Create an "admin" user with role "ADMIN"
+      manager.createUser(User.withUsername("admin")
+              .password(passwordEncoder.encode("admin"))  // Encode password
+              .roles("ADMIN")                             // Assign role
+              .build());
 
-    // Return an InMemoryUserDetailsManager with the two users
-    return new InMemoryUserDetailsManager(admin, user);
+      // Create a "user" user with role "USER"
+      manager.createUser(User.withUsername("user")
+              .password(passwordEncoder.encode("user"))   // Encode password
+              .roles("USER")                              // Assign role
+              .build());
+
+      return manager;
   }
 }
 ```

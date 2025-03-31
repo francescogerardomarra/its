@@ -1,5 +1,5 @@
 # Spring Security
-Spring Security is a comprehensive framework for securing Java applications, especially those built with Spring. It provides a wide array of functionalities like authentication, authorization, protection against common vulnerabilities (e.g.: CSRF, session fixation), and integrates easily with both web and enterprise applications.
+Spring Security is a comprehensive framework for securing Java applications, especially those built with Spring. It provides a wide array of functionalities like authentication, authorization, protection against common vulnerabilities (e.g.: CSRF, session fixation, session hijacking), and integrates easily with both web and enterprise applications.
 
 Main concepts involved:
 
@@ -468,7 +468,7 @@ This setup ensures that requests are properly secured, and only authenticated an
 
 ## Session Management
 
-When Spring Security creates a session, it’s essentially managing the user's state across multiple HTTP requests. HTTP itself is stateless, meaning that each request is independent and doesn’t carry any information about previous requests. A session helps to maintain state by storing data that can be used in subsequent requests (like the user's authentication status, roles, and permissions).
+When Spring Security creates a session, it’s essentially managing the user's authentication state across multiple HTTP requests. HTTP itself is stateless, meaning that each request is independent and doesn’t carry any information about previous requests. A session helps to maintain state by storing data that can be used in subsequent requests (like the user's authentication status, roles, and permissions).
 
 In Spring Security, creating a session means generating a server-side session where certain information about the authenticated user is stored. This session is typically linked to the user’s interaction with the application, ensuring that subsequent requests can reference the same session and access the user’s authentication details without requiring them to log in again.
 
@@ -513,11 +513,19 @@ The server uses the session ID in the cookie to:
 
 ### SessionCreationPolicies
 
-In your original code, you are configuring Spring Security with the `HttpSecurity` object to specify how session management should be handled. Let’s look at how different session policies affect what happens with sessions.
+You can configure Spring Security with the `HttpSecurity` object to specify how session management should be handled.
 
-#### 1. Default Behavior: `SessionCreationPolicy.IF_REQUIRED`
+**Creating a session typically means that a `JSESSIONID` is introduced** (stored in the user's browser as a cookie) to maintain the session state across requests. This introduces session management overhead and can lead to security concerns. With stateless authentication, there's no need for the server to store session state, and the token (e.g., JWT) itself is sufficient for each request.
 
-By default, Spring Security uses `SessionCreationPolicy.IF_REQUIRED`. This means that a session is created only when necessary, such as when the user logs in and authentication needs to be persisted across requests.
+Let’s look at how different session policies affect what happens with sessions.
+
+#### Default Behavior: `SessionCreationPolicy.IF_REQUIRED`
+
+By default, Spring Security uses `SessionCreationPolicy.IF_REQUIRED`. This means that a session is created only when deemed necessary by the framework.
+
+That is, when no session creation policy is defined in the security filter chain, **Spring Security uses `SessionCreationPolicy.IF_REQUIRED` as the default**. This means that **the decision to create a session is left to the framework** based on the authentication mechanism being used.
+
+However, this behavior can be **unpredictable** because Spring Security might create a session when it deems it necessary (for example, if you're using stateful authentication methods like form login or HTTP Basic). This unpredictability can lead to issues, especially in stateless applications where you don’t want a session to be created.
 
 ```java
 @Override
@@ -531,9 +539,9 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-#### 2. `SessionCreationPolicy.ALWAYS`
+#### `SessionCreationPolicy.ALWAYS`
 
-With `SessionCreationPolicy.ALWAYS`, a session is created for every request, regardless of whether authentication is needed.
+With `SessionCreationPolicy.ALWAYS`, a session is created for every request even if one already exists.
 
 ```java
 @Override
@@ -550,9 +558,13 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-#### 3. `SessionCreationPolicy.NEVER`
+#### `SessionCreationPolicy.NEVER`
 
 With `SessionCreationPolicy.NEVER`, a session will never be created by Spring Security.
+
+Even though no new sessions will be created, existing session data could still persist and be used.
+
+The server may still have session data from previous requests and use them if sessions were created earlier (even though they won't create new ones).
 
 ```java
 @Override
@@ -569,9 +581,13 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-#### 4. `SessionCreationPolicy.STATELESS`
+#### `SessionCreationPolicy.STATELESS`
 
 With `SessionCreationPolicy.STATELESS`, no session is created, and the application remains fully stateless.
+
+Even if there was session data (such as a session ID) from a previous request, it will be ignored. Each request is treated independently, and all necessary information (like authentication) must be provided with the request itself, typically through tokens.
+
+**This ensures that each request is independent, with no session state maintained or used on the server, which is crucial for stateless architectures like REST APIs.**
 
 ```java
 @Override
@@ -588,20 +604,22 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-### Summary
+#### Summary
 
-| Policy                                        | What happens on the server                                  | What happens in the response                        | What happens in subsequent requests                                           |
-|-----------------------------------------------|-------------------------------------------------------------|-----------------------------------------------------|-------------------------------------------------------------------------------|
-| `SessionCreationPolicy.ALWAYS`                | A session is always created.                                | `JSESSIONID` cookie is set with a session ID.       | The client sends the `JSESSIONID` cookie with each request.                   |
-| `SessionCreationPolicy.IF_REQUIRED` (default) | A session is created only when required (e.g., user login). | `JSESSIONID` cookie is set if a session is created. | The client sends the `JSESSIONID` cookie with each request.                   |
-| `SessionCreationPolicy.NEVER`                 | No session is created.                                      | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., Basic Auth). |
-| `SessionCreationPolicy.STATELESS`             | No session is created and no state is maintained.           | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., Basic Auth). |
+| Policy                                        | What happens on the server                                                         | What happens in the response                        | What happens in subsequent requests                                           |
+|-----------------------------------------------|------------------------------------------------------------------------------------|-----------------------------------------------------|-------------------------------------------------------------------------------|
+| `SessionCreationPolicy.ALWAYS`                | A session is always created, even if one already exists.                           | `JSESSIONID` cookie is set with a session ID.       | The client sends the `JSESSIONID` cookie with each request.                   |
+| `SessionCreationPolicy.IF_REQUIRED` (default) | A session is created only when deemed necessary (unpredictable).                   | `JSESSIONID` cookie is set if a session is created. | The client sends the `JSESSIONID` cookie with each request.                   |
+| `SessionCreationPolicy.NEVER`                 | No session is created. However, pre-existing session data **might** still be used. | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., Basic Auth). |
+| `SessionCreationPolicy.STATELESS`             | No session is created, and no state is maintained.                                 | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., JWT).        |
+
+---
 
 ## CSRF Protection
 
 Cross-Site Request Forgery (CSRF) is an attack where an attacker tricks an authenticated user into performing an unwanted action on a web application. The attacker exploits the trust the web application has in the user's browser.
 
-### How a CSRF Attack Unfolds (Step-by-Step)
+### How a CSRF Attack Unfolds
 
 #### User Login and Session Cookies:
 - The user logs into a web application and is authenticated.
@@ -624,17 +642,12 @@ Cross-Site Request Forgery (CSRF) is an attack where an attacker tricks an authe
 #### Outcome:
 - The attacker successfully performs actions that the user didn’t intend by exploiting the user’s session.
 
-### CSRF Protection
-
+### Anti-CSRF token
 In a REST client scenario, Spring Security will generate an anti-CSRF token for each session. This token must be included in state-changing requests (such as POST, PUT, DELETE).
 
 In Spring Security, the CSRF token is typically included in cookies or response headers (depending on your configuration). The client will retrieve this token and include it in the headers of subsequent state-changing requests.
 
-#### 1. CSRF Protection Enabled (Default)
-
 By default, Spring Security enables CSRF protection. When enabled, it will generate a CSRF token for each session, which the client must include in state-changing requests. The token is usually returned to the client as a cookie or in the response headers.
-
-##### Code Example: Spring Security Configuration (CSRF Enabled)
 
 ```java
 package com.example.security;

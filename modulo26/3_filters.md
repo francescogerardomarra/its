@@ -276,7 +276,7 @@ public class MySpringBootApplication {
 }
 ````
 
-3. **Using `@Component` with `FilterRegistrationBean`**:
+3. **Using `@Component`**:
     - **Filter Definition**: The filter is defined as a Spring Bean by annotating it with `@Component`, either implementing the `jakarta.servlet.Filter` interface or extending `OncePerRequestFilter`.
     - **Registration Flow**: The filter is **already a Spring Bean** due to the `@Component` annotation. The filter is automatically registered by Spring as part of the application context. You can customize the filter's registration by using a `FilterRegistrationBean`, where you can specify URL patterns, order, and other configurations.
     - **Bean Creation**: The filter definition is a Spring Bean right from the start because of the `@Component` annotation. It’s registered directly with Spring Boot during application startup.
@@ -392,5 +392,5 @@ public class CustomSecurityFilter extends OncePerRequestFilter {
 
 - **Method 1**: Register as a `@Bean` in a `@Configuration` class with `FilterRegistrationBean`. The filter is defined as a class and is **later registered as a Spring Bean** during the registration process.
 - **Method 2**: Use `@WebFilter` annotation and `@ServletComponentScan`. The filter is **not a Spring Bean**, and Spring Boot automatically registers it with the servlet container.
-- **Method 3**: Use `@Component` annotation with `FilterRegistrationBean`. The filter is defined as a Spring Bean and automatically registered by Spring.
+- **Method 3**: Use `@Component` annotation. The filter is defined as a Spring Bean and automatically registered by Spring; you can customize the filter's registration by using a `FilterRegistrationBean`
 - **Method 4**: Register the custom filter using `HttpSecurity` in Spring Security. The filter may or may not be a Spring Bean, but it is directly integrated into the security filter chain.

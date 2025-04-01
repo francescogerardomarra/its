@@ -646,7 +646,7 @@ protected void configure(HttpSecurity http) throws Exception {
 | `SessionCreationPolicy.NEVER`                 | No session is created. However, pre-existing session data **might** still be used. | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., Basic Auth). |
 | `SessionCreationPolicy.STATELESS`             | No session is created, and no state is maintained.                                 | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., JWT).        |
 
-### Session Length
+### Timeout
 Session timeout determines how long a session remains active before expiring due to inactivity. In Spring Security, this can be configured using the `sessionManagement()` method in the `HttpSecurity` configuration.
 
 When using `SessionCreationPolicy.IF_REQUIRED`, a session is created only if necessary. If a session is created, it remains active until it times out due to inactivity. You can define the session timeout both in Spring Security and at the servlet container level.
@@ -737,7 +737,7 @@ How Session Expiration Works:
 - **Redirection on Expiry**: Users are redirected to a predefined URL (e.g., `/session-expired`).
 - **Manual Session Invalidation**: Sessions can also be manually invalidated by calling `session.invalidate()` in a Spring MVC controller.
 
-### Session Logout
+### Logout
 Spring Security offers an efficient way to manage user logout behavior. You can customize the logout process by defining the logout URL, handling session invalidation, and setting up redirection after the user logs out.
 
 To enable logout functionality in Spring Security, you can use the `logout()` method within your `HttpSecurity` configuration. This allows you to specify key elements such as the logout URL, the URL to redirect users after they log out, and whether the session should be invalidated during the process.

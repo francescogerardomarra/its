@@ -1079,7 +1079,6 @@ protected void configure(HttpSecurity http) throws Exception {
   - There's no session management, and token handling is done client-side.
 - For traditional web applications, where sessions are used, CSRF protection should remain enabled.
 
-
-
 ---
 
+## Authentication-related vs Non-Authentication session data

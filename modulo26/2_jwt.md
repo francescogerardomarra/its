@@ -13,7 +13,7 @@ JWT is widely used due to its efficiency and security features. Some of its key 
 
 ---
 
-## Authenticating Multiple Requests: JWT as a replacement for session cookies
+## Authenticating Multiple Requests: JWT as a replacement for authentication-related session cookies
 
 Modern applications often require users to be authenticated across multiple requests. Managing this authentication process securely and efficiently is crucial. This article explores the common issues developers face with authentication, the evolution from Basic Authentication to session management, and how JWT (JSON Web Token) has become a standard solution to overcome many of these challenges.
 

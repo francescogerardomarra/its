@@ -503,14 +503,12 @@ This setup ensures that requests are properly secured, and only authenticated an
 
 ---
 
-## Session Management
+## Authentication-related session management
+In Spring Security, **creating a session means generating a server-side session where certain information about the authenticated user is stored**. This session is typically linked to the user’s interaction with the application, ensuring that subsequent requests can reference the same session and access the user’s authentication details without requiring them to log in again.
 
 When Spring Security creates a session, it’s essentially managing the user's authentication state across multiple HTTP requests. HTTP itself is stateless, meaning that each request is independent and doesn’t carry any information about previous requests. A session helps to maintain state by storing data that can be used in subsequent requests (like the user's authentication status, roles, and permissions).
 
-In Spring Security, creating a session means generating a server-side session where certain information about the authenticated user is stored. This session is typically linked to the user’s interaction with the application, ensuring that subsequent requests can reference the same session and access the user’s authentication details without requiring them to log in again.
-
 ### JSESSIONID
-
 When Spring Security creates a session, it typically adds a session identifier (JSESSIONID) to the HTTP response. This session identifier is placed in the response as a cookie (by default) or as part of the response headers. This allows the client (usually a browser) to track the session across requests.
 
 For example, a server-side session might result in the following:

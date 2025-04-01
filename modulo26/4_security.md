@@ -1001,18 +1001,7 @@ To explicitly enable CSRF protection in Spring Security, you can configure it wi
 Here’s how you can enable CSRF protection:
 
 ```java
-@Override
-protected void configure(HttpSecurity http) throws Exception {
-    http
-        .authorizeRequests()
-            .antMatchers("/public/**").permitAll()  // Allow public URLs to be accessed without authentication
-            .anyRequest().authenticated()  // Require authentication for other requests
-        .and()
-        .httpBasic()  // Enable basic HTTP authentication
-        .and()
-        .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // Only create a session when required
-        .and()
+        ...........
         .logout()
             .logoutUrl("/logout")  // URL that triggers the logout process
             .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout

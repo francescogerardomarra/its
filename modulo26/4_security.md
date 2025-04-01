@@ -9,9 +9,7 @@ Main concepts involved:
 
 ---
 
-## Setup
-
-### pom.xml
+## pom.xml
 
 To set up Spring Security in a Spring Boot project, add the following dependencies to your `pom.xml`:
 
@@ -36,7 +34,7 @@ To set up Spring Security in a Spring Boot project, add the following dependenci
 
 ## First Example
 
-Here’s a basic Spring Security configuration with HTTP Basic Authentication and in-memory authentication:
+Here’s a basic Spring Security configuration with HTTP Basic Authentication and in-memory details:
 
 ```java
 package com.example.security;
@@ -685,7 +683,7 @@ Set-Cookie: jsessionid=abc123; SameSite=Strict; Path=/; HttpOnly; Secure
 Anti-CSRF tokens are **unique, randomly generated tokens** that are associated with a user's session.
 
 These tokens are **not stored in cookies** but are usually exchanged:
-- in the **request body**;
+- within the **HTTP body**;
 - **custom HTTP headers** (e.g. `X-CSRF-Token` or `X-XSRF-Token`).
 
 The server validates these tokens to ensure that the request originates from the legitimate user and not from a malicious website.
@@ -747,7 +745,7 @@ X-CSRF-Token: abc123xyz456  // The CSRF token sent in the header
    - If the token in the request does not match the server-side token, the server will reject the request as it may have originated from a malicious source.
    - If the tokens match, the request is considered legitimate, and the server processes it.
 
-#### Within the Response Body
+#### Within the HTTP Body
 1. **Token Generation**:
     - Upon session creation, the server generates a unique Anti-CSRF token and associates it with the user session (usually stored server-side).
     - The server sends the token to the client, typically as part of the **response body** (instead of a custom header).

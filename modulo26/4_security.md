@@ -653,6 +653,14 @@ protected void configure(HttpSecurity http) throws Exception {
 ## CSRF protection
 Cross-Site Request Forgery (CSRF) is an attack where an attacker tricks an authenticated user into performing an unwanted action on a web application. The attacker exploits the trust the web application has in the user's browser.
 
+**CSRF** is primarily a concern for **stateful, session-based** applications, where the server maintains session data and identifies users based on session IDs stored in **cookies**. In these applications, browsers automatically send cookies with each request to the same domain, which can be exploited by attackers. For instance, an attacker could trick a user into making a malicious request, and the browser would automatically send the session cookie with that request, making it appear legitimate to the server.
+
+However, **CSRF** is *not* generally a concern for **stateless applications**, such as those using **JWT** (JSON Web Tokens) for authentication. In these applications, the token is typically passed explicitly in the HTTP headers (e.g., in the `Authorization: Bearer <token>` header), *not* as cookies. Since tokens are not automatically included in requests by the browser, attackers cannot trigger requests that would automatically include the token. As a result, stateless **JWT-based** applications are less vulnerable to CSRF.
+
+That said, **CSRF** can still be a problem in stateless applications under certain conditions. If the **JWT** is stored in **cookies** (instead of being passed in headers), it could be vulnerable to **CSRF**, as cookies would be sent automatically with cross-site requests. Additionally, if tokens are stored insecurely in places like *localStorage* or *sessionStorage*, they could be exposed through **XSS** (Cross-Site Scripting) attacks, potentially allowing attackers to use the token in malicious requests, which could resemble **CSRF** attacks.
+
+In summary, while **CSRF** is mostly a concern for **session-based applications**, it can still be a risk for stateless **JWT-based** applications if the token is improperly stored in **cookies** or exposed through other vulnerabilities like **XSS**. Therefore, while **CSRF** is less of an issue in stateless systems, proper token storage and handling are still essential to maintain security.
+
 ### Unfolding
 1. User Login and Session Cookies:
    - The user logs into a web application and is authenticated.

@@ -1026,8 +1026,8 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-**Customizing Token Storage:** The `.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())` stores the CSRF token in a cookie rather than in the session. The cookie is marked with the `HttpOnly` flag set to `false`, meaning it can be accessed by JavaScript running in the browser. This approach is often used for single-page applications (SPAs) or situations where the CSRF token needs to be shared across multiple requests.
-**Important:** Storing the CSRF token in cookies exposes you to XSS (Cross-Site Scripting) risks, as malicious scripts can potentially steal tokens from the cookie. As a result, this customization is generally not recommended unless you have additional security measures in place, such as Content Security Policy (CSP) and XSS protection. It's safer to stick to the default behavior of storing the CSRF token in the session.
+- **Customizing Token Storage:** The `.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())` stores the CSRF token in a cookie rather than in the session. The cookie is marked with the `HttpOnly` flag set to `false`, meaning it can be accessed by JavaScript running in the browser. This approach is often used for single-page applications (SPAs) or situations where the CSRF token needs to be shared across multiple requests.
+- **Important:** Storing the CSRF token in cookies exposes you to XSS (Cross-Site Scripting) risks, as malicious scripts can potentially steal tokens from the cookie. As a result, this customization is generally not recommended unless you have additional security measures in place, such as Content Security Policy (CSP) and XSS protection. It's safer to stick to the default behavior of storing the CSRF token in the session.
 
 #### Disable
 In cases where you're working with a stateless application (e.g., using JWT or token-based authentication), you might want to disable CSRF protection since sessions are not used and thus no anti-CSRF token is needed.

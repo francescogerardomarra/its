@@ -35,7 +35,7 @@ For example:
 - Data used to prove identity, including passwords, PINs, security keys, or biometric data.
 - Strong credentials reduce the risk of impersonation and unauthorized access.
 
-### **Session Management**
+### **Authentication-related session management**
 - Maintains an authenticated user's state across multiple interactions with a system.
 - Techniques include:
   - Session cookies (HTTP cookies storing session identifiers)

@@ -558,9 +558,7 @@ Let’s look at how different session policies affect what happens with sessions
 
 By default, Spring Security uses `SessionCreationPolicy.IF_REQUIRED`. This means that a session is created only when deemed necessary by the framework.
 
-That is, when no session creation policy is defined in the security filter chain, **Spring Security uses `SessionCreationPolicy.IF_REQUIRED` as the default**. This means that **the decision to create a session is left to the framework** based on the authentication mechanism being used.
-
-However, this behavior can be **unpredictable** because Spring Security might create a session when it deems it necessary (for example, if you're using stateful authentication methods like form login or HTTP Basic). This unpredictability can lead to issues, especially in stateless applications where you don’t want a session to be created.
+That is, when no session creation policy is defined in the security filter chain, **Spring Security uses `SessionCreationPolicy.IF_REQUIRED` as the default**. This means that **the decision to create a session is left to the framework** based on the authentication mechanism being used (e.g. Basic Authentication).
 
 ```java
 @Override
@@ -644,13 +642,161 @@ protected void configure(HttpSecurity http) throws Exception {
 | Policy                                        | What happens on the server                                                         | What happens in the response                        | What happens in subsequent requests                                           |
 |-----------------------------------------------|------------------------------------------------------------------------------------|-----------------------------------------------------|-------------------------------------------------------------------------------|
 | `SessionCreationPolicy.ALWAYS`                | A session is always created, even if one already exists.                           | `JSESSIONID` cookie is set with a session ID.       | The client sends the `JSESSIONID` cookie with each request.                   |
-| `SessionCreationPolicy.IF_REQUIRED` (default) | A session is created only when deemed necessary (unpredictable).                   | `JSESSIONID` cookie is set if a session is created. | The client sends the `JSESSIONID` cookie with each request.                   |
+| `SessionCreationPolicy.IF_REQUIRED` (default) | A session is created only when deemed necessary.                                   | `JSESSIONID` cookie is set if a session is created. | The client sends the `JSESSIONID` cookie with each request.                   |
 | `SessionCreationPolicy.NEVER`                 | No session is created. However, pre-existing session data **might** still be used. | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., Basic Auth). |
 | `SessionCreationPolicy.STATELESS`             | No session is created, and no state is maintained.                                 | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., JWT).        |
+
+### Session Length
+Session timeout determines how long a session remains active before expiring due to inactivity. In Spring Security, this can be configured using the `sessionManagement()` method in the `HttpSecurity` configuration.
+
+When using `SessionCreationPolicy.IF_REQUIRED`, a session is created only if necessary. If a session is created, it remains active until it times out due to inactivity. You can define the session timeout both in Spring Security and at the servlet container level.
+
+```java
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+                .antMatchers("/public/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .httpBasic()
+                .and()
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only if required
+                .invalidSessionUrl("/session-expired") // Redirect if session is invalid
+                .maximumSessions(1) // Optional: Limit concurrent sessions per user
+                .expiredUrl("/session-expired"); // Redirect if session expires
+    }
+}
+```
+
+- **`sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)`**
+
+    - This setting defines when Spring Security should create a session.
+
+    - **`SessionCreationPolicy.IF_REQUIRED`** (default behavior): A session is created **only if needed**.
+        - If your application is **stateful** (e.g., maintains user session information), a session will be created when the user first authenticates.
+        - If your application is **stateless** (e.g., REST APIs), no session will be created unless explicitly required.
+
+    - This approach provides flexibility, ensuring that a session is created only when necessary, based on your application's needs.
+
+- **`invalidSessionUrl("/session-expired")`**
+
+    - This setting specifies the URL to redirect the user if their session is considered **invalid**.
+
+    - **Invalid Session**: A session is invalid if it is explicitly invalidated or if there is an issue (e.g., session data corruption or missing session cookies).
+
+    - **Behavior**: If a user tries to access a resource with an invalid session, they will be redirected to `/session-expired`.
+        - This page informs the user that their session is no longer valid and may prompt them to log in again.
+
+- **`maximumSessions(1)`**
+
+    - This configuration limits the number of concurrent sessions a user can have.
+
+    - **One Session per User**: Setting `maximumSessions(1)` ensures that only one active session is allowed per user.
+        - If the user logs in from one device and then logs in from another, the first session will be invalidated.
+
+    - **Behavior**: This is useful when you want to enforce **single-session login**, meaning users cannot have multiple sessions across different devices or browsers.
+
+- **`expiredUrl("/session-expired")`**
+
+    - This setting defines the URL to redirect the user when their session **expires** due to inactivity.
+
+    - **Expired Session**: A session expires when it has been inactive for a certain period, defined by the session timeout setting.
+
+    - **Behavior**: If the session expires due to inactivity (e.g., the user hasn't made any request for a specified period), they will be redirected to `/session-expired`.
+        - This page typically informs the user that their session has timed out and prompts them to log in again.
+
+In addition to configuring session management in Spring Security, you must also configure session timeout at the servlet container level (e.g., Tomcat, Jetty). This ensures the session automatically expires after a defined period of inactivity.
+
+Using `application.properties`:
+
+```properties
+server.servlet.session.timeout=30m  # Set session timeout to 30 minutes
+```
+
+Using `application.yml`:
+
+```yaml
+server:
+  servlet:
+    session:
+      timeout: 30m  # Set session timeout to 30 minutes
+```
+
+How Session Expiration Works:
+
+- **Inactivity-Based Timeout**: The session expires if no activity occurs within the specified duration.
+- **Redirection on Expiry**: Users are redirected to a predefined URL (e.g., `/session-expired`).
+- **Manual Session Invalidation**: Sessions can also be manually invalidated by calling `session.invalidate()` in a Spring MVC controller.
+
+### Session Logout
+Spring Security offers an efficient way to manage user logout behavior. You can customize the logout process by defining the logout URL, handling session invalidation, and setting up redirection after the user logs out.
+
+To enable logout functionality in Spring Security, you can use the `logout()` method within your `HttpSecurity` configuration. This allows you to specify key elements such as the logout URL, the URL to redirect users after they log out, and whether the session should be invalidated during the process.
+
+Here’s an example of how to configure logout:
+
+```java
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+                .antMatchers("/public/**").permitAll()  // Allow public URLs to be accessed without authentication
+                .anyRequest().authenticated()  // Require authentication for other requests
+                .and()
+            .httpBasic()  // Enable basic HTTP authentication
+                .and()
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // Only create a session when required
+                .invalidSessionUrl("/session-expired")  // Redirect users if their session becomes invalid
+                .maximumSessions(1)  // Limit to one concurrent session per user (optional)
+                .expiredUrl("/session-expired")  // Redirect when the session expires
+                .and()
+            .logout()
+                .logoutUrl("/logout")  // URL that triggers the logout process
+                .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
+                .invalidateHttpSession(true)  // Invalidate the session when logging out
+                .clearAuthentication(true)  // Clear authentication data on logout
+                .deleteCookies("JSESSIONID")  // Delete session cookies (e.g., JSESSIONID)
+                .permitAll();  // Allow all users to access the logout URL
+    }
+}
+```
+
+- `logoutUrl("/logout")`: Specifies the URL endpoint that triggers the logout process. When a user accesses this URL, the session will be invalidated, and the logout process will begin.
+- `logoutSuccessUrl("/login?logout")`: After a successful logout, users will be redirected to this URL (for example, a login page). The query parameter `logout` can be used to display a message confirming the successful logout.
+- `invalidateHttpSession(true)`: This ensures that the session is invalidated during the logout process, removing all session-related data (such as user details).
+- `clearAuthentication(true)`: Clears any authentication data, ensuring that no residual authentication information remains in the session after logout.
+- `deleteCookies("JSESSIONID")`: Deletes the `JSESSIONID` cookie, making sure no session remnants remain on the client side, ensuring that the session is completely destroyed.
+
+In addition to manually triggering logout through the `/logout` URL, you can also configure Spring Security to log users out automatically after a period of inactivity. This is achieved by setting a session timeout. Once the session expires, users are logged out automatically.
+
+You can configure automatic logout by combining session timeout with the `invalidSessionUrl()` configuration, which redirects users to a specified URL when their session is invalid.
+
+For example, in the above configuration, we define:
+
+- `invalidSessionUrl("/session-expired")`: This will redirect users to `/session-expired` if their session becomes invalid, which may happen due to inactivity or other reasons.
 
 ---
 
 ## CSRF protection
+
+### Overview
 Cross-Site Request Forgery (CSRF) is an attack where an attacker tricks an authenticated user into performing an unwanted action on a web application. The attacker exploits the trust the web application has in the user's browser.
 
 **CSRF** is primarily a concern for **stateful, session-based** applications, where the server maintains session data and identifies users based on session IDs stored in **cookies**. In these applications, browsers automatically send cookies with each request to the same domain, which can be exploited by attackers. For instance, an attacker could trick a user into making a malicious request, and the browser would automatically send the session cookie with that request, making it appear legitimate to the server.
@@ -661,7 +807,7 @@ That said, **CSRF** can still be a problem in stateless applications under certa
 
 In summary, while **CSRF** is mostly a concern for **session-based applications**, it can still be a risk for stateless **JWT-based** applications if the token is improperly stored in **cookies** or exposed through other vulnerabilities like **XSS**. Therefore, while **CSRF** is less of an issue in stateless systems, proper token storage and handling are still essential to maintain security.
 
-### Unfolding
+#### 1. Unfolding
 1. User Login and Session Cookies:
    - The user logs into a web application and is authenticated.
    - The server issues a session cookie (e.g., `JSESSIONID`), which identifies the user's session.
@@ -675,7 +821,7 @@ In summary, while **CSRF** is mostly a concern for **session-based applications*
 3. Outcome:
    - The attacker successfully performs actions that the user didn’t intend by exploiting the user’s session.
 
-### SameSite Cookie Policy
+#### 2. SameSite Cookie Policy
 The **SameSite=Strict** attribute ensures that the cookie is **only sent** when the request originates from the same domain as the cookie. This means the cookie **will not be sent** with **cross-site requests**, even if the user navigates to the site from a different domain or performs an action such as clicking a link from another site.
 
 This security feature helps to prevent **Cross-Site Request Forgery (CSRF)** attacks by ensuring that **cookies** (such as session cookies) are **not automatically sent** with requests made from a different origin (i.e. another website).
@@ -685,7 +831,7 @@ HTTP/1.1 200 OK
 Set-Cookie: jsessionid=abc123; SameSite=Strict; Path=/; HttpOnly; Secure
 ```
 
-### Anti-CSRF token
+#### 3. Anti-CSRF token
 Anti-CSRF tokens are **unique, randomly generated tokens** that are associated with a user's session.
 
 These tokens are **not stored in cookies** but are usually exchanged:
@@ -705,7 +851,8 @@ Anti-CSRF tokens provide an **additional layer of protection** by ensuring that 
 
 Thus, Anti-CSRF tokens work alongside `SameSite` cookie settings, ensuring that **only legitimate requests** are processed, even in cases where `SameSite` protections are insufficient.
 
-#### As a Custom Header
+**As a Custom Header:**
+
 1. **Token Generation**:
    - Upon session creation, the server generates a unique Anti-CSRF token and associates it with the user session (stored server-side).
    - The server sends the token to the client, typically as part of the initial HTTP response in a custom response header (e.g., `X-CSRF-Token` or `X-XSRF-Token`).
@@ -751,7 +898,8 @@ X-CSRF-Token: abc123xyz456  // The CSRF token sent in the header
    - If the token in the request does not match the server-side token, the server will reject the request as it may have originated from a malicious source.
    - If the tokens match, the request is considered legitimate, and the server processes it.
 
-#### Within the HTTP Body
+**Within the HTTP Body:**
+
 1. **Token Generation**:
     - Upon session creation, the server generates a unique Anti-CSRF token and associates it with the user session (usually stored server-side).
     - The server sends the token to the client, typically as part of the **response body** (instead of a custom header).
@@ -796,6 +944,9 @@ X-CSRF-Token: abc123xyz456  // The CSRF token sent in the request header
     - When the server receives the request, it checks that the Anti-CSRF token in the `X-CSRF-Token` header matches the token associated with the current session.
     - If the token in the request doesn't match the server-side token, the server rejects the request as potentially originating from a malicious source (e.g., a CSRF attack).
     - If the tokens match, the server considers the request legitimate and processes it accordingly, allowing the requested action to proceed (e.g., updating a resource, submitting a form).
+
+### CSRF and Spring Security
+
 
 #### anti-CSRF and Spring Security
 

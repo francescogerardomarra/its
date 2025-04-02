@@ -32,7 +32,7 @@ To set up Spring Security in a Spring Boot project, add the following dependenci
 
 ---
 
-## First Example
+## Basic Example
 
 Here’s a basic Spring Security configuration with HTTP Basic Authentication and in-memory details:
 
@@ -83,17 +83,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
----
-
-## Code digging
-
-### WebSecurityConfigurerAdapter and `@Override`
+### WebSecurityConfigurerAdapter
 
 `WebSecurityConfigurerAdapter` is a base class in Spring Security that provides default implementations for several methods related to configuring web security. When you extend this class, you can override its methods to customize the security configuration for your application.
 
-- **`WebSecurityConfigurerAdapter`**: This is a convenience class that makes it easy to set up security configurations in Spring. By extending this class, you gain access to several methods that can be overridden to configure HTTP security, authentication mechanisms, and more.
+That it, it is a convenience class that makes it easy to set up security configurations in Spring. By extending this class, you gain access to several methods that can be overridden to configure HTTP security, authentication mechanisms, and more.
 
-- **`@Override` Annotation**: This annotation is used to indicate that a method is overriding a method in the superclass. In this case, the `@Override` annotation is applied to the `configure(HttpSecurity http)` method, which is inherited from `WebSecurityConfigurerAdapter`. By overriding this method, you can customize how HTTP security is applied to the web application, such as controlling which URLs are accessible and how users are authenticated.
+The `@Override`  annotation is used to indicate that a method is overriding a method in the superclass. In this case, the `@Override` annotation is applied to the `configure(HttpSecurity http)` method, which is inherited from `WebSecurityConfigurerAdapter`. By overriding this method, you can customize how HTTP security is applied to the web application, such as controlling which URLs are accessible and how users are authenticated.
 
 By extending `WebSecurityConfigurerAdapter` and overriding its methods, you can tailor the security settings to meet your specific requirements. For example, you can decide which endpoints are publicly accessible, configure authentication types, and apply authorization rules as needed.
 
@@ -231,16 +227,10 @@ Essentially:
 - when a request is processed, Spring Security applies a series of filters in a specific order to handle different security tasks such as authentication, authorization, and protection against common attacks;
 - the chained method calls, such as `.authorizeRequests()` and `.httpBasic()`, modify how these built-in filters behave, but they don’t explicitly define or create new filters;
 
-More details follow:
-
 1. **authorizeRequests()**: This method starts the process of configuring URL-based authorization. It tells Spring Security to begin analyzing incoming HTTP requests and applying the necessary security measures for different URL patterns.
-
 2. **antMatchers("/public/**")**: This method defines the URL pattern to which specific authorization rules will apply. In this case, it targets all URLs that start with `/public/`. This is part of how Spring Security configures the behavior of the **authorization filters**. **ant** in `antMatchers` comes from "Ant-style path patterns", which is a pattern matching system similar to how files are matched in a file system, using wildcards (`*` and `**`).
-
 3. **permitAll()**: After specifying the URL pattern with `antMatchers()`, the `permitAll()` method allows unrestricted access to those URLs. The result is that the URLs matching `/public/**` will be accessible by any user, regardless of whether they are authenticated or not. This alters the behavior of the **authorization filter**, making sure that these URLs are not protected by any authentication rules.
-
 4. **anyRequest().authenticated()**: This method ensures that any request not matching the previously defined patterns (such as `/public/**`) will require authentication. It modifies the behavior of the **authorization filter** to enforce access restrictions for all other URLs.
-
 5. **httpBasic()**: By calling `httpBasic()`, you are instructing Spring Security to use **HTTP Basic Authentication**. This means that Spring Security will check for a username and password in the HTTP request header and will validate them using the `UserDetailsService`. In this case, the `UserDetailsService` is configured to look up user details from an in-memory store, where user credentials are stored.
 
 ---

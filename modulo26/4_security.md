@@ -98,6 +98,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 By extending `WebSecurityConfigurerAdapter` and overriding its methods, you can tailor the security settings to meet your specific requirements. For example, you can decide which endpoints are publicly accessible, configure authentication types, and apply authorization rules as needed.
 
 ### PasswordEncoder Bean
+Imagine you have a special secret codebook where you write down all of your passwords. But instead of writing the password out directly, you mix it up using a secret pattern that only you know. This way, if someone finds your codebook, they won’t be able to read the passwords without knowing the secret pattern.
+
+In this case, the object returned by `passwordEncoder()` is like a magical codebook that helps mix up your password so that nobody can read it easily. It makes your password safe and unreadable unless someone has the key to unlock it.
 
 ```java
 @Bean
@@ -110,7 +113,48 @@ public PasswordEncoder passwordEncoder() {
 
 **Why BCrypt?**: BCrypt is a strong, adaptive hashing algorithm designed to be slow, which makes it more difficult for attackers to crack passwords using brute-force methods.
 
+**Alternatives**:
+
+````java
+// Using BCryptPasswordEncoder for secure password hashing that is resistant to brute-force attacks
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+}
+
+// Using NoOpPasswordEncoder which does not encode passwords (for testing or non-secure use cases)
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return NoOpPasswordEncoder.getInstance(); 
+}
+
+// Using Pbkdf2PasswordEncoder, a strong and configurable algorithm for password hashing, secure against dictionary attacks
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return new Pbkdf2PasswordEncoder();
+}
+
+// Using Argon2PasswordEncoder, one of the most secure password hashing algorithms, resistant to side-channel and GPU-based attacks
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return new Argon2PasswordEncoder();
+}
+
+// Using SCryptPasswordEncoder, designed to be memory and CPU-intensive, providing strong resistance to hardware-based attacks
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return new SCryptPasswordEncoder();
+}
+````
+
 ### UserDetailsService Bean and InMemoryUserDetailsManager
+Think of `UserDetailsService` like a phone book, but for users on a website. It keeps track of all the people who can enter and what their passwords are. So, when someone tries to log in, we ask this phone book, "Do you know this person, and do they have the correct password?"
+
+The `UserDetailsService` is like the helper who looks up the details about each person and checks if they are allowed to enter.
+
+Now, `InMemoryUserDetailsManager` is like a special phone book that keeps all of the people’s details in a notebook inside the computer's memory. It’s really fast to look through because it’s all kept in the computer’s brain, but it’s not stored anywhere permanent (like a library). If you turn off the computer, the phone book gets erased.
+
+So, the `InMemoryUserDetailsManager` is like a phone book that’s kept in the computer’s short-term memory for quick lookups, but if you restart the computer, it forgets who was in the phone book.
 
 ```java
 @Bean
@@ -217,14 +261,12 @@ Content-Type: application/json
 }
 ```
 
-You need to use methods like:
-
-- `antMatchers("/public/**").permitAll()` allows public resources to be accessed without authentication.
-- `anyRequest().authenticated()` ensures that all other requests require authentication.
-- `httpBasic()` enables Basic Authentication, requiring clients to send credentials in the request header.
-
 ### InMemoryUserDetailsManager
-Spring Security provides `InMemoryUserDetailsManager` for storing users in memory. This is ideal for small applications or testing where persistence is unnecessary.
+As we know, in Spring Security, the "phone book" for user credentials (username and password) is the `UserDetailsService`. This service is responsible for looking up user details and checking if the provided credentials match. However, there are different types of "phone books" that can be used to store and manage these credentials.
+
+One such implementation is the `InMemoryUserDetailsManager`, which allows you to inject hardcoded user-password pairs directly into the system. While this is simple and useful for small applications or testing scenarios, it does not scale well for larger applications. As the number of users grows, hardcoding all user credentials in memory becomes impractical and inefficient. Additionally, the `InMemoryUserDetailsManager` is volatile, meaning that once the application is restarted, all stored user data is lost.
+
+For applications with many users or those requiring persistence, relying on an in-memory solution is not ideal. In such cases, a more scalable solution, like storing user credentials in a database or using an external identity provider, would be necessary to ensure security, scalability, and persistence over time.
 
 ```java
 package com.example.security;
@@ -282,22 +324,37 @@ Due to the configuration:
 .httpBasic();                            // Enable HTTP Basic Authentication
 ```
 
-Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g., "/public/**"). When a client sends a request containing Basic Authentication credentials (i.e., a username and password), Spring Security delegates the authentication process to the `userDetailsService` bean.
+- **Step 1**: Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g., `/public/**`).
+- **Step 2**: When a client sends a request with **Basic Authentication credentials**, it includes the credentials in the HTTP `Authorization` header. The header looks like this:
 
-These credentials are typically included in the HTTP `Authorization` header using the Basic Authentication scheme. The header looks like this:
+  `Authorization: Basic dXNlcjpwYXNzd29yZA==`
 
-```
-Authorization: Basic dXNlcjpwYXNzd29yZA==
-```
+  Here, `dXNlcjpwYXNzd29yZA==` is the **Base64-encoded** value of `username:password` (e.g., `user:password`).
 
-Here, `dXNlcjpwYXNzd29yZA==` is the Base64-encoded value of `username:password` (e.g., `user:password`).
+- **Step 3**: Spring Security extracts the **Base64-encoded credentials** from the `Authorization` header.
 
-Spring Security extracts the credentials from this header and uses the `userDetailsService` (implemented with `InMemoryUserDetailsManager`) to retrieve the user details. It then uses the configured `PasswordEncoder` to compare the incoming plain-text password with the stored, hashed version.
+- **Step 4**: Spring Security decodes the **Base64** value to retrieve the username and password (e.g., `user:password`).
 
-If the password matches, authentication succeeds, and the user gains access to the requested protected resource.
+- **Step 5**: The **`userDetailsService`** bean (implemented with `InMemoryUserDetailsManager`) is called to retrieve the user details associated with the username.
+    - The `InMemoryUserDetailsManager` contains the hardcoded user credentials (e.g., `"user"` and `"admin"`) along with their corresponding **hashed passwords**.
+
+- **Step 6**: Spring Security uses the **configured `PasswordEncoder`** (in this case, `BCryptPasswordEncoder`) to hash the provided password and compare it with the stored, hashed version.
+    - The password from the `Authorization` header is compared against the hashed password stored in memory.
+
+- **Step 7**: If the **password matches** (i.e., the provided password's hash matches the stored hash), the authentication **succeeds**.
+    - The user is granted access to the protected resource they requested.
+
+- **Step 8**: If the **password does not match** or no matching user is found, authentication **fails**, and the user is denied access.
+    - In this case, Spring Security typically returns a **401 Unauthorized** HTTP status code.
 
 ### JdbcUserDetailsManager
-For persistent user credentials, use `JdbcUserDetailsManager`, which loads user details from a database.
+As we know, in Spring Security, the "phone book" for user credentials (username and password) is the `UserDetailsService`. This service is responsible for looking up user details and verifying if the provided credentials match. However, there are different types of "phone books" that can be used to store and manage these credentials.
+
+One such implementation is the `JdbcUserDetailsManager`, which allows you to retrieve user details from a relational database. Unlike the `InMemoryUserDetailsManager`, which stores credentials in memory, `JdbcUserDetailsManager` persists user data in a database, making it a more scalable and robust solution. This is especially useful for applications with many users or those requiring persistence beyond application restarts.
+
+While the `InMemoryUserDetailsManager` is great for small-scale or test applications, it doesn't scale well as the user base grows, since all user data is lost upon restart. In contrast, `JdbcUserDetailsManager` ensures that user credentials are stored securely in a database, which offers better scalability, persistence, and the ability to manage larger user populations.
+
+For applications that require persistence, such as those with a large user base or those requiring long-term storage, using a database-backed solution like `JdbcUserDetailsManager` provides a more reliable and secure option for handling user credentials.
 
 ```java
 package com.example.security;
@@ -342,48 +399,70 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
-`JdbcUserDetailsManager` works as follows:
-- It interacts with a relational database to retrieve user credentials.
-- By default, it queries standard Spring Security tables (`users` and `authorities`):
+The `JdbcUserDetailsManager` is used to retrieve and manage user credentials stored in a relational database. It provides a persistent solution for applications that need to scale and store user data, especially for large applications.
 
-```sql
-CREATE TABLE users (
-    username VARCHAR(50) NOT NULL PRIMARY KEY,
-    password VARCHAR(255) NOT NULL,
-    enabled BOOLEAN NOT NULL
-);
+- **Database Interaction**:  
+  It interacts with a relational database to load user credentials and authorities, which are necessary for user authentication and authorization.
 
-CREATE TABLE authorities (
-    username VARCHAR(50) NOT NULL,
-    authority VARCHAR(50) NOT NULL,
-    FOREIGN KEY (username) REFERENCES users(username)
-);
-```
+- **Default Database Schema**:  
+  By default, `JdbcUserDetailsManager` works with two core tables: `users` and `authorities`. These tables hold the necessary information for user authentication and the roles or permissions associated with the user.
 
-- It loads users using SQL queries and validates credentials against the stored encrypted passwords.
-- You can customize queries by overriding default SQL statements.
+  The `users` table stores the basic user information, including the username, password (encrypted), and the status of the user (enabled or disabled).
 
-More details follow:
-- **`@Bean` annotation**:
-  - Marks the method as a bean definition, allowing Spring to manage the lifecycle of the returned object.
-  - This method will return a `JdbcUserDetailsManager` bean, which is responsible for managing user details in a JDBC-based store (usually a relational database).
+  The `authorities` table is used to store user roles or permissions. It links the username to specific roles (e.g., `ADMIN`, `USER`, `GUEST`), which are then used by Spring Security to grant or restrict access to certain resources.
+
+  Example schema for these tables:
+
+  ```sql
+  CREATE TABLE users (
+      username VARCHAR(50) NOT NULL PRIMARY KEY,
+      password VARCHAR(255) NOT NULL,
+      enabled BOOLEAN NOT NULL
+  );
+
+  CREATE TABLE authorities (
+      username VARCHAR(50) NOT NULL,
+      authority VARCHAR(50) NOT NULL,
+      FOREIGN KEY (username) REFERENCES users(username)
+  );
+  ```
+  
+- **`users` Table**:  
+  The `users` table contains the basic information for each user, including the `username`, their `encrypted password`, and an `enabled` status. The `enabled` status indicates whether the user is allowed to authenticate and log into the system. If the user is marked as disabled (`enabled = false`), they cannot log in, even if they provide the correct username and password.
+
+- **`authorities` Table**:  
+  The `authorities` table stores the roles or permissions assigned to each user. Each entry in this table links a user (via their `username`) to a particular `authority` (which could be a role such as `ADMIN`, `USER`, `MANAGER`, etc.).
+
+  This table is critical for authorization. Once a user is authenticated, Spring Security checks the entries in the `authorities` table to determine what resources or actions the user is authorized to access. For example, if a user has the `ADMIN` authority, they may have access to admin-only pages, while a `USER` may have more limited access.
+
+- **Customizing SQL Queries**:  
+  While `JdbcUserDetailsManager` uses default SQL queries to interact with the `users` and `authorities` tables, you can customize these queries to fit the structure of your database. For example, if you have a custom schema or additional tables to store user data, you can override the default queries to match your specific setup.
+
+- **`@Bean` Annotation**:  
+  The `@Bean` annotation is used to define methods that return Spring-managed objects. In this case, the `JdbcUserDetailsManager` is defined as a bean, which means Spring will manage its lifecycle and inject it where necessary for user authentication and authorization.
 
 - **Method Parameters**:
-  - `DataSource dataSource`: This is the database connection that `JdbcUserDetailsManager` will use to interact with the database.
-  - `PasswordEncoder passwordEncoder`: This is the password encoder that will be used to encode passwords before storing them in the database.
+    - `DataSource dataSource`: The `DataSource` provides the connection to the database. The `JdbcUserDetailsManager` uses this connection to query the `users` and `authorities` tables and retrieve user details.
+    - `PasswordEncoder passwordEncoder`: The `PasswordEncoder` is used to encode passwords before storing them in the database. It also ensures that passwords are properly hashed during authentication so that the original password is never exposed.
 
-- **`JdbcUserDetailsManager` Creation**:
-  - `JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);`
-    - A new instance of `JdbcUserDetailsManager` is created, initialized with the provided `DataSource`. This class is responsible for user authentication and authorization using a JDBC-based data source.
+- **Creating the `JdbcUserDetailsManager`**:
+  The `JdbcUserDetailsManager` is created and initialized with a `DataSource` (the database connection). This class is responsible for handling user authentication and authorization via JDBC.
 
-- **Setting the Password Encoder**:
-  - `userDetailsManager.setPasswordEncoder(passwordEncoder);`
-    - Explicitly sets the `PasswordEncoder` to be used by the `JdbcUserDetailsManager`.
-    - The `PasswordEncoder` ensures that user passwords are securely hashed before being stored in the database and during authentication.
+  ```java
+  JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
+  ```
 
-- **Return Statement**:
-  - `return userDetailsManager;`
-    - Returns the configured `JdbcUserDetailsManager` bean, which will now be managed by Spring and can be injected wherever needed (e.g., for user authentication in Spring Security).
+- **Setting the Password Encoder**:  
+  By configuring the `PasswordEncoder`, we ensure that passwords are securely hashed before being stored in the database and during the authentication process. This is crucial for protecting sensitive information, as plain-text passwords are never stored. The `PasswordEncoder` ensures that even if the database is compromised, the actual passwords cannot be easily retrieved or used.
+
+  For example, using `BCryptPasswordEncoder` applies a strong hashing algorithm that makes it computationally expensive to crack the password hashes, enhancing the security of the system.
+
+- **Returning the Bean**:  
+  After configuring the `JdbcUserDetailsManager` with the necessary data source and password encoder, the manager is returned from the method as a Spring bean. By declaring it as a bean, Spring will manage its lifecycle, allowing it to be automatically injected into other components (such as Spring Security’s authentication filters) where user authentication is required.
+  This enables Spring Security to leverage the `JdbcUserDetailsManager` for authenticating users based on the credentials stored in the relational database.
+  ```java
+  return userDetailsManager;
+  ```
 
 Due to the configuration:
 
@@ -393,19 +472,32 @@ Due to the configuration:
 .httpBasic();                            // Enable HTTP Basic Authentication
 ```
 
-Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g., "/public/**"). When a client sends a request containing Basic Authentication credentials (i.e., a username and password), Spring Security delegates the authentication process to the `userDetailsService` bean.
+- **Step 1**: Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g., `/public/**`).
 
-In this case, authentication is handled by `JdbcUserDetailsManager`, which retrieves user details from a database via JDBC. This manager uses the configured `PasswordEncoder` to securely store and validate passwords. The credentials are included in the HTTP `Authorization` header using the Basic Authentication scheme:
+- **Step 2**: When a client sends a request with **Basic Authentication credentials**, it includes the credentials in the HTTP `Authorization` header. The header looks like this:
 
-```
-Authorization: Basic dXNlcjpwYXNzd29yZA==
-```
+  `Authorization: Basic dXNlcjpwYXNzd29yZA==`
 
-Here, `dXNlcjpwYXNzd29yZA==` is the Base64-encoded value of `username:password` (e.g., `user:password`).
+  Here, `dXNlcjpwYXNzd29yZA==` is the **Base64-encoded** value of `username:password` (e.g., `user:password`).
 
-Spring Security extracts the credentials from this header, retrieves the corresponding user details from the database using `JdbcUserDetailsManager`, and compares the provided password with the stored, hashed password using the configured `PasswordEncoder`.
+- **Step 3**: Spring Security extracts the **Base64-encoded credentials** from the `Authorization` header.
 
-If the password matches, authentication succeeds, and the user gains access to the requested protected resource.
+- **Step 4**: Spring Security decodes the **Base64** value to retrieve the username and password (e.g., `user:password`).
+
+- **Step 5**: Spring Security delegates the authentication process to the **`JdbcUserDetailsManager`** bean, which is configured to retrieve user details from the relational database.
+
+- **Step 6**: The **`JdbcUserDetailsManager`** queries the database (typically using SQL) to retrieve the user details associated with the provided username.
+    - It checks the `users` table for the matching username and retrieves the stored **hashed password**, **enabled status**, and any additional user details.
+
+- **Step 7**: Spring Security uses the **configured `PasswordEncoder`** (in this case, `BCryptPasswordEncoder`) to compare the provided password (after hashing it) with the stored, hashed password in the database.
+
+- **Step 8**: If the **password matches** (i.e., the hashed version of the provided password matches the stored hash), the authentication **succeeds**.
+    - The user is granted access to the requested protected resource.
+
+- **Step 9**: If the **password does not match** or no matching user is found, authentication **fails**.
+    - In this case, Spring Security typically returns a **401 Unauthorized** HTTP status code, indicating that the credentials were invalid or the user does not exist.
+
+- **Step 10**: If authentication is successful, Spring Security proceeds to handle the request, applying any security policies such as role-based access control (RBAC) or any other configured rules (e.g., permission checks) before granting access to the requested resource.
 
 ---
 

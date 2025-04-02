@@ -105,11 +105,11 @@ public PasswordEncoder passwordEncoder() {
 }
 ```
 
-**Purpose**: The PasswordEncoder bean is used to hash user passwords securely before storing them. The `BCryptPasswordEncoder` is a cryptographic algorithm that provides secure, slow hashing designed to be resistant to brute-force attacks.
+The PasswordEncoder bean is used to hash user passwords securely before storing them. The `BCryptPasswordEncoder` is a cryptographic algorithm that provides secure, slow hashing designed to be resistant to brute-force attacks.
 
-**Why BCrypt?**: BCrypt is a strong, adaptive hashing algorithm designed to be slow, which makes it more difficult for attackers to crack passwords using brute-force methods.
+BCrypt is a strong, adaptive hashing algorithm designed to be slow, which makes it more difficult for attackers to crack passwords using brute-force methods.
 
-**Alternatives**:
+Some alternatives are:
 
 ````java
 // Using BCryptPasswordEncoder for secure password hashing that is resistant to brute-force attacks

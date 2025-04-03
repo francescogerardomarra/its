@@ -861,7 +861,7 @@ For example, after a user logs out, they will be redirected to the login page wi
     - Ensures that the logout URL (`/logout`) is accessible to everyone, including unauthenticated users.
     - This allows any user to log out, even if they aren't currently logged in.
 
-- **`antMatchers("/public/**", "/session-expired", "/login", "/logout").permitAll()  // Allow unauthenticated access to /public/**, /session-expired, /login, and /logout`:**
+- **`antMatchers("/public/**", "/session-expired", "/login", "/logout").permitAll():**
   - **`/public/**`**, **`/session-expired`**, **`/login`**, and **`/logout`** are publicly accessible.
   - **`/logout`**: Allows users to log out, clearing session data and redirecting them to the login page.
   - **`/login?logout`**: Redirects to the login page after successful logout, with a `logout` parameter to indicate the logout success.

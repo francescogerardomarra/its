@@ -1068,6 +1068,9 @@ Having said that, in this case, using `addFilterBefore()` you add the **custom f
         - `.deleteCookies("JSESSIONID")` deletes the `JSESSIONID` cookie, which is used to identify the session.
         - `.permitAll()` ensures that the logout URL is accessible by everyone, even unauthenticated users.
 
+### Authentication-related vs Non-Authentication session data
+To do
+
 ---
 
 ## CSRF protection
@@ -1362,4 +1365,4 @@ protected void configure(HttpSecurity http) throws Exception {
 
 ---
 
-## Authentication-related vs Non-Authentication session data
+

@@ -10,18 +10,145 @@ Main concepts involved:
 ---
 
 ## pom.xml
+When building a Spring Boot project, you often define the dependencies required for your application using Maven. In many cases, you will need to explicitly include different Spring Boot starters for the features you want to use, such as `spring-boot-starter-web` for web functionality, `spring-boot-starter-data-jpa` for JPA (Java Persistence API) integration, and `spring-boot-starter-security` for security features.
 
-To set up Spring Security in an already existing Spring Boot project, add the following dependency to your `pom.xml`:
+If you're using explicit versioning for these dependencies, it's crucial to understand how these dependencies work together and why it's important that all Spring Boot-related starters use the same version.
+
+In this article, we will explore why Spring Boot starters are used separately in this manner and the importance of ensuring they share the same version.
+
+**spring-boot-starter**
+
+Spring Boot starters are a set of convenient dependency descriptors provided by Spring Boot to help you get started with various functionalities without having to manually configure all the dependencies.
+
+- **`spring-boot-starter-web`**: This starter is used for building web applications. It includes dependencies like Spring MVC, Jackson (for JSON binding), Tomcat (as the default embedded server), and other components required for web development.
+
+- **`spring-boot-starter-data-jpa`**: This starter provides the necessary libraries for integrating Spring Data JPA, which simplifies database operations using Java Persistence API (JPA). It includes dependencies like Hibernate, JPA, and other relevant libraries.
+
+- **`spring-boot-starter-security`**: This starter brings in Spring Security, which helps in securing your application with authentication and authorization features.
+
+Each of these starters represents a specific module in your application, and they can be included independently to include just the functionalities you need.
+
+**separate starters importing**
+
+In a typical Spring Boot project, it’s common to include separate starters like `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, and `spring-boot-starter-security` because each one serves a distinct role in the application. You may not need every feature from the `spring-boot-starter-web` module when building a web application, or you might want to separate the security layer from the web functionalities. This allows for modularity and flexibility in your project setup.
+
+For example:
+- You might want to use `spring-boot-starter-web` for a RESTful API but not yet integrate database persistence via JPA.
+- Similarly, you may want to secure your application using Spring Security (`spring-boot-starter-security`) but don’t require all the features provided by the `spring-boot-starter-web`.
+
+By importing these modules separately, you gain more control over which features are included in your project.
+
+**explicit versioning**
+
+In a Maven-based Spring Boot project, you can define the exact version of each dependency. Typically, the Spring Boot project provides "starter" dependencies that are versioned consistently across multiple modules, but when you explicitly specify the versions, it ensures that you are using the version you want without relying on any transitive dependencies.
+
+The versioning is often defined like this:
 
 ```xml
-    <!-- Spring Boot Starter Security (for security configurations) -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-security</artifactId>
-        <version>3.4.4</version>
-    </dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <version>2.5.0</version> <!-- Explicit version -->
+</dependency>
 
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+    <version>2.5.0</version> <!-- Explicit version -->
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+    <version>2.5.0</version> <!-- Explicit version -->
+</dependency>
 ```
+
+One of the key reasons for keeping all related Spring Boot starters at the same version is compatibility. Spring Boot is a cohesive framework, and different modules are often designed to work together. Using mismatched versions between starters (e.g., using `spring-boot-starter-web` version 2.5.0 and `spring-boot-starter-data-jpa` version 2.4.0) can cause unexpected behavior or incompatibilities, especially if Spring Boot introduces breaking changes between versions.
+
+Here’s why it’s important:
+
+- **Spring Boot Dependency Management**: When using Spring Boot's dependency management plugin (or `spring-boot-dependencies` BOM), it ensures that the dependencies are aligned across all Spring Boot-related modules. If you manually specify different versions, you might override this management and introduce compatibility issues.
+
+- **Feature Alignment**: New features or bug fixes in Spring Boot and its related modules are often released together. Using different versions might cause missing or broken features.
+
+- **Transitive Dependency Management**: Spring Boot starters may pull in other dependencies transitively. If you mix versions, you risk mismatched transitive dependencies between starters that rely on each other, leading to potential runtime errors or classpath issues.
+
+- **Upgrading and Maintenance**: When using a consistent version across all starters, it becomes easier to upgrade the project in the future, as you won’t have to worry about dependency mismatches or conflicts during version upgrades.
+
+Spring Security is a widely-used framework for securing Java-based applications. With the release of **Spring Security 6.x**, significant changes have been made compared to the earlier **Spring Security 5.x**. This article highlights the main differences between the two versions and provides insights into what to expect when upgrading from 5.x to 6.x.
+
+**Spring Security 5.x and 6.x**
+
+- **Java Version Support**:
+  - **Spring Security 5.x**: Supports **Java 8** and higher, which means it works with older Java versions.
+  - **Spring Security 6.x**: Requires **Java 17 or later**. This aligns with the broader move in the Spring Framework 6, which drops support for older Java versions. This shift ensures the framework leverages modern Java features, which provide better performance and security enhancements.
+
+- **Removal of Deprecated Classes**:
+  - **Spring Security 5.x**: Relies heavily on extending **WebSecurityConfigurerAdapter** for configuring security, where you override specific methods for HTTP security and authentication.
+  - **Spring Security 6.x**: Removes **WebSecurityConfigurerAdapter** and introduces a **bean-based configuration** approach using `SecurityFilterChain` and `AuthenticationManager`. This provides more flexibility and aligns with functional programming paradigms in modern Java development.
+
+- **New Configuration Approach**:
+  - **Spring Security 5.x**: Configuration typically involved extending `WebSecurityConfigurerAdapter` and overriding specific methods to configure security features.
+  - **Spring Security 6.x**: Adopts a more declarative, **bean-based approach** for configuration. This new configuration style uses `SecurityFilterChain` and `AuthenticationManager` beans to define security rules, offering a cleaner and more concise way to manage security.
+
+- **Improved OAuth 2.0 and OAuth 2.1 Support**:
+  - **Spring Security 5.x**: Introduced OAuth 2.0 support, but was more focused on client-side and resource server configurations.
+  - **Spring Security 6.x**: Expands on this by offering full support for the **OAuth 2.1 specification** and provides **improved integration** with external OAuth 2.0 identity providers, making it easier to implement modern authentication protocols.
+
+- **Password Encoding Enhancements**:
+  - **Spring Security 5.x**: Provided support for common password encoders like **BCrypt**, **PBKDF2**, and **NoOpPasswordEncoder**.
+  - **Spring Security 6.x**: Enhances password encoding with stronger, modern algorithms and better support for secure password management, making it easier to adopt the latest security standards.
+
+- **Updated Dependencies for Spring Boot Compatibility**:
+  - **Spring Security 5.x**: Compatible with **Spring Boot 2.x**, supporting Java 8 or higher.
+  - **Spring Security 6.x**: Aligned with **Spring Boot 3.x**, which requires **Java 17 or higher**. Developers using Spring Boot 3.x should use the updated Spring Security starter, ensuring compatibility with the latest versions of both Spring Boot and Java.
+
+For Spring Security 5.x (with Spring Boot 2.x and Java 8+):
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <version>2.7.10</version> <!-- Spring Boot version compatible with Spring Security 5.x -->
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+    <version>2.7.10</version> <!-- Spring Boot version compatible with Spring Security 5.x -->
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+    <version>2.7.10</version> <!-- Spring Boot version compatible with Spring Security 5.x -->
+</dependency>
+```
+
+For Spring Security 6.x (with Spring Boot 3.x and Java 17+):
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <version>3.4.4</version> <!-- Spring Boot version compatible with Spring Security 6.x -->
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+    <version>3.4.4</version> <!-- Spring Boot version compatible with Spring Security 6.x -->
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+    <version>3.4.4</version> <!-- Updated Spring Boot version for Spring Security 6.x -->
+</dependency>
+```
+
+In the following we will use Spring Security 5.x; in the upcoming `webservicerestsecurity` project we will use Security 6.x.
 
 ---
 

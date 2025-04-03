@@ -37,7 +37,7 @@ Here's why:
 - The XML declaration is not an element or a tag, it's an **instruction** to the XML parser.
 - It's used to specify important details, like the XML version and character encoding.
 - It doesn't have a start or end tag because it's just a single processing instruction, meant to be placed at the very beginning of the document. 
-- XML declarations are self-contained, meaning the `<?xml ... ?>` part is all you need. There's no need for a corresponding closing tag like you'd see with elements (e.g., `<tag></tag>`).
+- XML declarations are self-contained, meaning the `<?xml ... ?>` part is all you need. There's no need for a corresponding closing tag like you'd see with elements (e.g. `<tag></tag>`).
 
 
 The XML declaration is a single statement and doesn't have an "end" tag, which is a key characteristic of processing instructions in XML.
@@ -296,7 +296,7 @@ Example:
 
 - The text content inside the XML element is parsed.
 - Any XML markup (such as `<b>bold</b>`) is recognized and processed.
-- Special characters like `<` and `&` must be escaped (e.g., `&lt;` for `<` and `&amp;` for `&`).
+- Special characters like `<` and `&` must be escaped (e.g. `&lt;` for `<` and `&amp;` for `&`).
 - Since PCDATA is the default behavior, you do not need to explicitly declare it.
 
 By understanding the difference between CDATA and PCDATA, you can decide when to use raw text sections versus parsed text within your XML documents.
@@ -680,7 +680,7 @@ In this case, the `bookstore` root element declares a default namespace (`http:/
 
 **3. Tags belonging to one namespace**
 
-In this case, the `bookstore` root element declares a **non-default namespace** using the `xmlns:tech="http://example.com/tech"` attribute. The elements within `<bookstore>` (such as `<book>`, `<title>`, and `<author>`) are qualified with the `tech` prefix (e.g., `<tech:book>`, `<tech:title>`, and `<tech:author>`), meaning they belong to the `http://example.com/tech` namespace. The prefix `tech` is used to differentiate these elements from others that might use the same tag names in different namespaces.
+In this case, the `bookstore` root element declares a **non-default namespace** using the `xmlns:tech="http://example.com/tech"` attribute. The elements within `<bookstore>` (such as `<book>`, `<title>`, and `<author>`) are qualified with the `tech` prefix (e.g. `<tech:book>`, `<tech:title>`, and `<tech:author>`), meaning they belong to the `http://example.com/tech` namespace. The prefix `tech` is used to differentiate these elements from others that might use the same tag names in different namespaces.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -820,10 +820,10 @@ it is going to be:
 The `xs` prefix is **custom** and can be changed, but the XML Schema definition must use `http://www.w3.org/2001/XMLSchema`.
 
 1. **`<xs:schema>`**: The root element of an .xsd file that defines a new XML schema.
-2. **`<xs:element>`**: Defines an XML element, e.g., `bookstore`, `book`, and `magazine`.
-3. **`<xs:complexType>`**: Defines an element that contains child elements (e.g., `book`, `magazine`).
+2. **`<xs:element>`**: Defines an XML element, e.g. `bookstore`, `book`, and `magazine`.
+3. **`<xs:complexType>`**: Defines an element that contains child elements (e.g. `book`, `magazine`).
 4. **`<xs:sequence>`**: Ensures elements appear in a specific order inside a complex type.
-5. **`<xs:attribute>`**: Defines an attribute for an element (e.g., `currency` for `price`).
+5. **`<xs:attribute>`**: Defines an attribute for an element (e.g. `currency` for `price`).
 
 ### Examples
 
@@ -998,7 +998,7 @@ We define the default namespace at the schema level using `targetNamespace`. We 
 
 3. **`elementFormDefault="qualified"`:**
    - This attribute ensures that **all elements in the schema** are **qualified** by the namespace.
-   - When `elementFormDefault="qualified"` is set, the XML elements must be explicitly associated with a namespace (i.e., they must be prefixed with the namespace or declared in the default namespace). If this attribute were set to "unqualified," elements would not need to be associated with a namespace, meaning they could appear without a namespace in the XML document.
+   - When `elementFormDefault="qualified"` is set, the XML elements must be explicitly associated with a namespace (i.e. they must be prefixed with the namespace or declared in the default namespace). If this attribute were set to "unqualified," elements would not need to be associated with a namespace, meaning they could appear without a namespace in the XML document.
 
 4. **`xmlns="http://example.com/tech"` in XML:**
    - This declares the **default namespace** in the XML document, so all child elements automatically inherit this namespace. 
@@ -1031,7 +1031,7 @@ We define the default namespace at the schema level using `targetNamespace`. We 
    - The **`xmlns` attribute without a prefix** (`xmlns="http://example.com/tech"`) defines the **default namespace** for the elements in the XML document.
      - This ensures that all elements within the XML document (like `<bookstore>`, `<book>`, etc.) are automatically placed under the `http://example.com/tech` namespace, without needing an explicit prefix on every element.
    - The **`xmlns:xs` attribute with a prefix** (`xmlns:xs="http://www.w3.org/2001/XMLSchema"`) defines the **namespace for the XML Schema (XSD)** standard.
-     - The `xs` prefix is used to distinguish XML Schema elements (e.g., `<xs:element>`, `<xs:complexType>`) from regular XML elements that belong to the `http://example.com/tech` namespace.
+     - The `xs` prefix is used to distinguish XML Schema elements (e.g. `<xs:element>`, `<xs:complexType>`) from regular XML elements that belong to the `http://example.com/tech` namespace.
 
 **3. Tags belonging to one namespace**
 
@@ -1301,7 +1301,7 @@ Most web services do not include schemas within XML messages but rather establis
 
 ### 8.1 Introduction to XML Parsers
 - **Definition and Role of Parsers**: An XML parser is a software component that reads and interprets XML documents, allowing programs to access and manipulate the data within them. Parsers convert XML data into a structure that can be easily processed, such as a tree, list, or stream.
-- **Why XML Parsers Are Needed**: XML parsers are essential because XML is a markup language designed for data storage and transport. To process XML files programmatically (e.g., extract data or validate structure), an XML parser is required.
+- **Why XML Parsers Are Needed**: XML parsers are essential because XML is a markup language designed for data storage and transport. To process XML files programmatically (e.g. extract data or validate structure), an XML parser is required.
 
 ### 8.2 Types of XML Parsers
 - **DOM (Document Object Model) Parser**: 

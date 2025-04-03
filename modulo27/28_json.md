@@ -77,7 +77,7 @@ In this example, the configuration file specifies:
 
 - The **host** and **port** for the server, which define where the server should listen for incoming requests.
 - The **database** credentials and connection details, such as **username**, **password**, **host**, and **port**, which are needed to establish a connection to a database server.
-- The **logging** configuration, including the **log level** (e.g., debug, info, error) and the name of the log file where application logs should be stored.
+- The **logging** configuration, including the **log level** (e.g. debug, info, error) and the name of the log file where application logs should be stored.
 
 This makes JSON an ideal choice for storing configuration settings, as it is simple to modify and read by both humans and machines. Many modern frameworks and applications use JSON files to handle configuration settings, making it easier to update these settings without requiring a code change or a recompilation of the program.
 
@@ -356,7 +356,7 @@ A string in JSON is a sequence of characters enclosed in double quotes (`"`). St
 
 #### Syntax:
 - A string must be enclosed in double quotes.
-- It can contain special characters, such as escape sequences (e.g., `\n` for a new line, `\"` for a double quote inside a string, etc.).
+- It can contain special characters, such as escape sequences (e.g. `\n` for a new line, `\"` for a double quote inside a string, etc.).
 
 #### Example:
 
@@ -378,7 +378,7 @@ In this example:
 JSON supports both integer and floating-point numbers. These numbers do not require quotes around them and can represent a wide range of values, including negative numbers and decimal values.
 
 #### Syntax:
-- Numbers can be integers or floating-point numbers (i.e., numbers with decimals).
+- Numbers can be integers or floating-point numbers (i.e. numbers with decimals).
 - There is no distinction between integer and floating-point types, both are treated as "number" in JSON.
 
 #### Example:
@@ -757,7 +757,7 @@ If you send invalid JSON in an API request, the server might respond with an err
 
 ### Tools for JSON Basic Validation
 
-#### Online Tools (e.g., JSONLint)
+#### Online Tools (e.g. JSONLint)
 
 [JSONLint](https://jsonlint.com/) is a popular online tool that allows you to quickly validate and format JSON data. It highlights errors in your JSON structure and helps you fix them.
 
@@ -772,7 +772,7 @@ You can paste your JSON data into JSONLint, and it will either indicate that the
 }
 ```
 
-If your JSON has an error (e.g., missing a comma), JSONLint will highlight it and tell you where the problem is.
+If your JSON has an error (e.g. missing a comma), JSONLint will highlight it and tell you where the problem is.
 
 ---
 
@@ -988,7 +988,7 @@ A JSON Schema typically consists of the following key components:
 
 - `$schema` (optional): Specifies the version of JSON Schema being used.
 - `$id` (optional): A unique identifier for the schema.
-- `type`: Defines the expected type of the JSON data (e.g., object, array, string, number).
+- `type`: Defines the expected type of the JSON data (e.g. object, array, string, number).
 - `properties`: Defines the structure and constraints of an object’s properties.
 - `required`: Lists the required properties that must be present.
 - `additionalProperties`: Specifies whether extra properties are allowed.
@@ -1226,7 +1226,7 @@ When working with JSON, it's crucial to format it in a way that is both machine-
    ```
 
 3. **Consistent Key Naming**:
-   - Consistent naming conventions for keys (field names) contribute to clarity. Common naming conventions include `camelCase` (e.g., `firstName`) or `snake_case` (e.g., `first_name`).
+   - Consistent naming conventions for keys (field names) contribute to clarity. Common naming conventions include `camelCase` (e.g. `firstName`) or `snake_case` (e.g. `first_name`).
    - Use meaningful and descriptive names for keys to make the data more understandable.
 
    Example:
@@ -1243,7 +1243,7 @@ When working with JSON, it's crucial to format it in a way that is both machine-
    - If an object has many nested fields, it can become difficult to read.
 
 5. **Using JSON Formatting Tools**:
-   - Many online tools and IDE features (e.g., **JSONLint**, **Prettier**) can automatically format and beautify JSON data.
+   - Many online tools and IDE features (e.g. **JSONLint**, **Prettier**) can automatically format and beautify JSON data.
    - These tools can ensure that the JSON is properly indented and structured according to best practices.
 
 ### Example of Readable vs. Unreadable JSON
@@ -1291,13 +1291,13 @@ You should consider versioning your JSON data when:
    - This ensures that clients relying on the old structure continue to work as expected, while new clients can take advantage of the latest changes.
 
 2. **Supporting Multiple Clients**:
-   - When you have multiple versions of an API serving different types of clients (e.g., mobile app, web app), versioning helps ensure each client uses the version of the API they are compatible with.
+   - When you have multiple versions of an API serving different types of clients (e.g. mobile app, web app), versioning helps ensure each client uses the version of the API they are compatible with.
    
 3. **Improving Flexibility**:
    - When you want to add new features or improve the data model without forcing all clients to adopt the new version immediately.
 
 4. **Incremental Changes**:
-   - In situations where you need to make incremental changes (e.g., adding new optional fields), versioning helps avoid breaking existing implementations.
+   - In situations where you need to make incremental changes (e.g. adding new optional fields), versioning helps avoid breaking existing implementations.
 
 ### How to Version Your JSON Data in APIs
 
@@ -1381,9 +1381,9 @@ Response:
 This versioning approach allows existing clients using **v1** to continue functioning without any disruption, while new clients can take advantage of the new features and structure introduced in **v2**.
 
 ### Summary of Versioning Considerations:
-1. **Incremental Changes**: Make version changes only when necessary (e.g., changing the data structure or adding/removing fields). Avoid breaking changes if possible.
+1. **Incremental Changes**: Make version changes only when necessary (e.g. changing the data structure or adding/removing fields). Avoid breaking changes if possible.
 2. **Backward Compatibility**: Always aim to ensure backward compatibility, allowing older versions to continue functioning properly.
-3. **Clear Version Indicators**: Include clear version numbers in the API endpoint path (e.g., `/v1/`, `/v2/`), so users can easily identify which version they are working with.
+3. **Clear Version Indicators**: Include clear version numbers in the API endpoint path (e.g. `/v1/`, `/v2/`), so users can easily identify which version they are working with.
 4. **Deprecation Strategy**: If you plan to retire an older version, provide a clear deprecation notice and timeline for users to migrate to newer versions.
 
 By following these versioning practices, you can ensure that your API remains reliable for current users while also allowing you to innovate and improve your data structure and functionality over time.
@@ -1632,7 +1632,7 @@ For example, version `1.2.3` would indicate:
 ## 8. JSON Parsers
 
 ### Introduction to JSON Parsers
-A **JSON parser** is a tool or library that reads JSON data and converts it into a data structure that can be manipulated by a program. Parsing is crucial for working with JSON data in programming, as it allows you to load the data into a usable format (e.g., a dictionary, object, etc.).
+A **JSON parser** is a tool or library that reads JSON data and converts it into a data structure that can be manipulated by a program. Parsing is crucial for working with JSON data in programming, as it allows you to load the data into a usable format (e.g. a dictionary, object, etc.).
 
 ### How JSON Parsers Work
 JSON parsers typically perform two main tasks:
@@ -1679,10 +1679,10 @@ While JSON and XML are both commonly used data interchange formats, they are par
 
 3. **Data Model**:
    - XML parsers work with a document object model (DOM) that holds the entire XML structure in memory and allows random access to elements via tree navigation. This is not needed in JSON as JSON parsers can quickly map the JSON string to native language objects or arrays.
-   - **JSON parsers** typically return a flat data structure (e.g., a dictionary or an object), which makes it simpler for developers to manipulate without the need for complex node navigation as required with XML's tree structure.
+   - **JSON parsers** typically return a flat data structure (e.g. a dictionary or an object), which makes it simpler for developers to manipulate without the need for complex node navigation as required with XML's tree structure.
 
 4. **Error Handling**:
-   - Both JSON and XML parsers provide error handling capabilities, but XML parsers might be more verbose due to the complexity of the XML structure (e.g., nested tags, attributes).
+   - Both JSON and XML parsers provide error handling capabilities, but XML parsers might be more verbose due to the complexity of the XML structure (e.g. nested tags, attributes).
    - **JSON parsers** tend to throw errors more directly, often pointing out issues like missing commas or misplaced brackets, making debugging easier and faster.
 
 5. **Performance**:
@@ -1694,8 +1694,8 @@ While JSON and XML are both commonly used data interchange formats, they are par
    - **JSON parsers** do not need to manage namespaces since JSON does not have this concept, which simplifies parsing and data mapping.
 
 ### Common Pitfalls with JSON Parsers
-- **Invalid JSON Syntax**: If your JSON data is not valid (e.g., missing a closing brace or comma), the parser will throw an error.
-- **Character Encoding**: Ensure that the JSON data is encoded in a supported character encoding (e.g., UTF-8).
+- **Invalid JSON Syntax**: If your JSON data is not valid (e.g. missing a closing brace or comma), the parser will throw an error.
+- **Character Encoding**: Ensure that the JSON data is encoded in a supported character encoding (e.g. UTF-8).
 - **Large JSON Files**: For very large JSON files, consider using streaming parsers or chunking the data to avoid memory issues.
 
 ### Conclusion

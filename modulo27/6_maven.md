@@ -83,7 +83,7 @@ For the latest version of Maven, it’s recommended to download it directly from
    wget https://dlcdn.apache.org/maven/maven-3/X.X.X/binaries/apache-maven-X.X.X-bin.tar.gz
    ```
 
-   Replace `X.X.X` with the latest version number (e.g., `3.9.0`).
+   Replace `X.X.X` with the latest version number (e.g. `3.9.0`).
 
 2. **Extract the Archive:**
 

@@ -95,7 +95,7 @@ The provided SOAP message is a **response** message:
         - **UserID**: Confirms the ID of the user that was requested.
         - **UserName**: Provides the name of the user.
         - **Email**: Contains the email address of the user.
-        - **Status**: Indicates the current status of the user (e.g., Active).
+        - **Status**: Indicates the current status of the user (e.g. Active).
     - This information is typically returned after processing a request, making it clear that this message serves to fulfill the request.
 
 4. **Consistency with Request**:
@@ -212,7 +212,7 @@ A .wsdl (Web Services Description Language) document is similar to an .xsd (XML 
     </portType>
 
     <!-- Binding -->
-    <!-- Defines how SOAP messages are bound to transport protocols (e.g., HTTP). -->
+    <!-- Defines how SOAP messages are bound to transport protocols (e.g. HTTP). -->
     <binding name="UserBinding" type="tns:UserPortType">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
         <operation name="GetUser">

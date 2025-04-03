@@ -6,14 +6,14 @@ This guide explains where Java Development Kit (JDK) binaries and libraries are 
 
 ## Prerequisites
 Ensure you have the following:
-- A Debian-based Linux distribution (e.g., Ubuntu).
+- A Debian-based Linux distribution (e.g. Ubuntu).
 - Superuser access for system-level commands.
 - A basic understanding of Linux file system structure and the `dpkg` package manager.
 
 ---
 
 ## Installation of JDK Using dpkg
-If you haven’t already installed the JDK package using `dpkg`, you can do so by downloading a `.deb` file from the official JDK provider (e.g., Oracle or OpenJDK) and running:
+If you haven’t already installed the JDK package using `dpkg`, you can do so by downloading a `.deb` file from the official JDK provider (e.g. Oracle or OpenJDK) and running:
 
 ```bash
 sudo dpkg -i <jdk-package-name>.deb
@@ -108,7 +108,7 @@ The `JAVA_HOME` environment variable is often required for Java applications. To
 echo ${JAVA_HOME}
 ```
 
-If not set, you can define it in your shell configuration file (e.g., `.bashrc` or `.zshrc`):
+If not set, you can define it in your shell configuration file (e.g. `.bashrc` or `.zshrc`):
 
 ```bash
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64

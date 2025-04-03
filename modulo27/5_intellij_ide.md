@@ -62,7 +62,7 @@ Alternatively, you can use the Terminal to download IntelliJ IDEA directly:
    ./idea.sh
    ```
 3. Follow the on-screen instructions to complete the initial setup:
-   - Choose your theme (e.g., Light or Dark).
+   - Choose your theme (e.g. Light or Dark).
    - Skip or configure plugins as needed.
 
 ---

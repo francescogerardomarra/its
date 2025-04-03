@@ -34,7 +34,7 @@ This guide walks you through the process of installing a virtual machine (VM) on
 ## Step 2: Install VirtualBox
 
 ### 2.1 Run the Installer
-- Locate the VirtualBox installer you downloaded (e.g., `VirtualBox-x.x.x-xxxx-Win.exe`).
+- Locate the VirtualBox installer you downloaded (e.g. `VirtualBox-x.x.x-xxxx-Win.exe`).
 - Double-click the installer to launch it.
 
 ### 2.2 Follow Installation Steps

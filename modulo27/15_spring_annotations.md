@@ -152,7 +152,7 @@ The `@SpringBootApplication` annotation is a composite of the following three co
    
 2. **`@EnableAutoConfiguration`**: This is the most significant aspect of Spring Boot. When applied, it enables Spring Boot’s auto-configuration mechanism. Auto-configuration tries to automatically configure Spring beans based on the classpath and other factors, such as application properties. This eliminates the need for most manual configuration and allows Spring Boot to “just work” with minimal setup.
 
-3. **`@ComponentScan`**: This annotation tells Spring to scan the current package and its sub-packages for Spring components (e.g., `@Component`, `@Service`, `@Controller`, etc.). This enables automatic detection of beans to be managed by the Spring container without needing to specify them explicitly.
+3. **`@ComponentScan`**: This annotation tells Spring to scan the current package and its sub-packages for Spring components (e.g. `@Component`, `@Service`, `@Controller`, etc.). This enables automatic detection of beans to be managed by the Spring container without needing to specify them explicitly.
 
 By combining these annotations into one, `@SpringBootApplication` offers a clean, concise way to configure and bootstrap a Spring Boot application.
 

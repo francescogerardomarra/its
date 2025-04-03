@@ -248,7 +248,7 @@ To run the examples in this document, follow these steps:
 
 ### Steps to Add Example Classes
 1. Open the Maven project created in IntelliJ following the initial setup instructions.
-2. Create a package (e.g., `com.example.annotations`) under `src/main/java`.
+2. Create a package (e.g. `com.example.annotations`) under `src/main/java`.
 3. Add the example classes to this package.
    - For Example 1 (Getters and Setters):
      - Create two Java files: `Person.java` and `Employee.java`.

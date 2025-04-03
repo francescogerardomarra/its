@@ -14,11 +14,11 @@ Resources can be accessed, created, updated, or deleted using standard HTTP meth
 ### **2. HTTP Methods**
 REST APIs utilize standard HTTP methods to perform operations on resources. These methods include:
 
-- **GET**: Retrieves data from the server (e.g., fetch user information).
-- **POST**: Creates a new resource (e.g., add a new user).
-- **PUT**: Updates an existing resource (e.g., modify user details).
-- **DELETE**: Removes a resource (e.g., delete a user account).
-- **PATCH**: Partially updates a resource (e.g., change a single attribute of a user).
+- **GET**: Retrieves data from the server (e.g. fetch user information).
+- **POST**: Creates a new resource (e.g. add a new user).
+- **PUT**: Updates an existing resource (e.g. modify user details).
+- **DELETE**: Removes a resource (e.g. delete a user account).
+- **PATCH**: Partially updates a resource (e.g. change a single attribute of a user).
 
 Using these methods, REST provides a clear and consistent way to manipulate resources.
 
@@ -34,7 +34,7 @@ Each request is independent, and authentication is often handled using tokens su
 ### **4. Client-Server Architecture**
 REST follows a client-server model, ensuring a clear separation of concerns:
 
-- The **client** (e.g., web browsers, mobile applications) makes requests.
+- The **client** (e.g. web browsers, mobile applications) makes requests.
 - The **server** processes these requests and returns responses.
 
 This separation allows for independent evolution of both client and server applications, promoting scalability and maintainability.
@@ -53,7 +53,7 @@ A uniform interface standardizes how resources are accessed and manipulated, mak
 
 - Consistent URL patterns.
 - Use of HTTP methods for specific actions.
-- Self-descriptive messages (e.g., status codes, headers, and metadata).
+- Self-descriptive messages (e.g. status codes, headers, and metadata).
 
 ### **7. Cacheability**
 RESTful responses can be cacheable to improve performance and efficiency. Caching reduces server load and response time by temporarily storing frequently accessed data. HTTP provides caching mechanisms such as:

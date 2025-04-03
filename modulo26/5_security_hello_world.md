@@ -449,7 +449,7 @@ import java.util.Date;
  * <p>
  * Flow:
  * 1. The JWT token is generated with various claims (subject, role, permissions) and signed with a secret key.
- * 2. The generated token can be returned to the user (e.g., after a successful login).
+ * 2. The generated token can be returned to the user (e.g. after a successful login).
  * 3. When the token is sent back to the server, it can be validated to ensure the user is authenticated and authorized.
  * 4. Claims from the token can be extracted and used to make authorization decisions.
  */
@@ -549,7 +549,7 @@ public class AdminTokenProvider {
             // Token is valid if not expired and signature is correct.
             return true;
         } catch (JwtException e) {
-            // Return false if the token is invalid (e.g., incorrect signature, expired).
+            // Return false if the token is invalid (e.g. incorrect signature, expired).
             return false;
         }
     }
@@ -642,7 +642,7 @@ This is the core method of the filter and is executed for every HTTP request.
     - This allows Spring Security to recognize that the user is authenticated and apply any necessary security rules or authorization checks.
     - **Authentication and Authorization**:
         - If the `SecurityContext` is not populated with the `UsernamePasswordAuthenticationToken`, Spring Security cannot authorize access to secure resources.
-        - Without a valid authentication object in the `SecurityContext`, the user will be treated as unauthenticated, and any attempt to access protected endpoints will likely result in access being denied (e.g., returning a **401 Unauthorized** response).
+        - Without a valid authentication object in the `SecurityContext`, the user will be treated as unauthenticated, and any attempt to access protected endpoints will likely result in access being denied (e.g. returning a **401 Unauthorized** response).
 
 - **Proceed with the Filter Chain**:
     - After setting the authentication object, the filter proceeds with the filter chain, passing the request along to the next filter or handler.
@@ -858,7 +858,7 @@ This method handles POST requests made to `/shop/login`, performing the followin
 
 - **Token Generation**:
     4. The `login()` method then uses the `AdminTokenProvider` to generate a **JWT token**.
-    5. The generated JWT token is sent back to the client with the **"Bearer"** prefix as a response. The client can then use this token to authenticate future requests by including it in the `Authorization` header (e.g., `Authorization: Bearer <JWT-TOKEN>`).
+    5. The generated JWT token is sent back to the client with the **"Bearer"** prefix as a response. The client can then use this token to authenticate future requests by including it in the `Authorization` header (e.g. `Authorization: Bearer <JWT-TOKEN>`).
 
 ### 7. **`AdminTokenProvider` Class**:
 
@@ -882,7 +882,7 @@ While the `LoginController` is not directly tied to the security configuration c
 
 - **JWT Token for Further Authentication**:
     - Once authenticated, the `login()` method in the controller generates a JWT token using the `AdminTokenProvider`.
-    - This JWT token is used in future requests to authenticate the user against protected endpoints (e.g., `/shop/items`, `/shop/users`), where the **JWT Authentication filter** in `SecurityConfig` comes into play.
+    - This JWT token is used in future requests to authenticate the user against protected endpoints (e.g. `/shop/items`, `/shop/users`), where the **JWT Authentication filter** in `SecurityConfig` comes into play.
 
 ### 9. **Conclusion**:
 

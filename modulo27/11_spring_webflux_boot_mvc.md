@@ -17,7 +17,7 @@ Spring WebFlux is a reactive, non-blocking web framework introduced in Spring 5.
 - **Compatible Servers:** Supports Netty, Tomcat, Jetty, and more.
 
 ### When to Use It
-- Applications requiring high scalability and handling large volumes of concurrent connections (e.g., chat applications, streaming data).
+- Applications requiring high scalability and handling large volumes of concurrent connections (e.g. chat applications, streaming data).
 - Systems with asynchronous workflows or event-driven architectures.
 - APIs requiring non-blocking I/O for performance optimization.
 

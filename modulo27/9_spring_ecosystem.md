@@ -57,7 +57,7 @@ The Spring ecosystem provides a wide range of products designed to address vario
 
 **Description:**
 - Spring Data simplifies database access and data management by providing repository abstractions.
-- It supports both relational (e.g., JPA, JDBC) and non-relational databases (e.g., MongoDB, Cassandra).
+- It supports both relational (e.g. JPA, JDBC) and non-relational databases (e.g. MongoDB, Cassandra).
 
 **Key Features:**
 - Repository-based data access patterns.
@@ -77,7 +77,7 @@ The Spring ecosystem provides a wide range of products designed to address vario
 **Key Features:**
 - Support for OAuth2 and JWT.
 - Customizable authentication and authorization mechanisms.
-- Protection against common security vulnerabilities (e.g., CSRF, XSS).
+- Protection against common security vulnerabilities (e.g. CSRF, XSS).
 
 **Use Case:**
 - Securing web applications and APIs.
@@ -106,7 +106,7 @@ The Spring ecosystem provides a wide range of products designed to address vario
 - It offers features like service discovery, load balancing, and configuration management.
 
 **Key Features:**
-- Integration with service registries (e.g., Eureka, Consul).
+- Integration with service registries (e.g. Eureka, Consul).
 - Circuit breakers (Hystrix, Resilience4j).
 - Distributed tracing and monitoring.
 

@@ -241,7 +241,7 @@ To validate JSON against a **JSON Schema**, we need an additional library: **Eve
 JSON Schema defines the structure and constraints of JSON data, ensuring:
 - Correct data types
 - Required fields are present
-- Additional constraints (e.g., regex patterns, value ranges) are enforced
+- Additional constraints (e.g. regex patterns, value ranges) are enforced
 
 ### **Key Differences from Basic Validation**
 - **Jackson** can parse JSON but does not enforce structure constraints.
@@ -670,7 +670,7 @@ To enable Java Bean Validation, we need to add the Hibernate Validator dependenc
 	    <groupId>org.everit.json</groupId>
 	    <artifactId>org.everit.json.schema</artifactId>
 	    <version>1.0.0</version>
-	    <!-- Everit JSON Schema Validator validates JSON data against a predefined JSON schema (e.g., person_schema.json) -->
+	    <!-- Everit JSON Schema Validator validates JSON data against a predefined JSON schema (e.g. person_schema.json) -->
 	</dependency>
 
 	<!-- Hibernate Validator: An implementation of the Bean Validation API (JSR 303/JSR 380) used to perform Java Bean validation -->
@@ -684,7 +684,7 @@ To enable Java Bean Validation, we need to add the Hibernate Validator dependenc
 	<dependency>
 	    <groupId>org.glassfish</groupId>
 	    <artifactId>jakarta.el</artifactId>
-	    <version>4.0.2</version>  <!-- EL is used for handling expressions in constraints (e.g., for custom validation logic) -->
+	    <version>4.0.2</version>  <!-- EL is used for handling expressions in constraints (e.g. for custom validation logic) -->
 	</dependency>
 
 	<!-- Jakarta Validation API: Defines the API for Java Bean validation annotations like @NotNull, @Size, etc. -->
@@ -954,7 +954,7 @@ Jackson provides various annotations that control how JSON data is serialized an
 ### **Five Key Jackson Annotations**
 1. **@JsonProperty** - Specifies the JSON property name for a field.
 2. **@JsonIgnore** - Excludes a field from serialization and deserialization.
-3. **@JsonInclude** - Controls the inclusion of fields based on criteria (e.g., non-null values).
+3. **@JsonInclude** - Controls the inclusion of fields based on criteria (e.g. non-null values).
 4. **@JsonCreator** - Marks a constructor or factory method for deserialization.
 5. **@JsonSetter** - Defines a custom setter for deserialization.
 

@@ -6,7 +6,7 @@ The HTTP protocol (Hypertext Transfer Protocol) is a communication protocol used
 The HTTP protocol is an application-level protocol that defines rules and formats for communication between clients and servers on a computer network. It is commonly used to retrieve resources such as web pages, images, and multimedia files from web servers.
 
 ### Operation
-HTTP operates based on a simple client-server architecture. A web client, such as a browser, sends an HTTP request to a specified web server, indicating the type of action requested (e.g., requesting a web page or submitting form data). The web server processes the request and sends an HTTP response to the client, containing the requested resources or information about the status of the requested operation.
+HTTP operates based on a simple client-server architecture. A web client, such as a browser, sends an HTTP request to a specified web server, indicating the type of action requested (e.g. requesting a web page or submitting form data). The web server processes the request and sends an HTTP response to the client, containing the requested resources or information about the status of the requested operation.
 
 ### Usage
 The HTTP protocol is widely used for transferring web pages and other content over the Internet. It is the foundation of the World Wide Web and allows users to access and view content on websites through web browsers. HTTP is also used in many other applications and web services for transferring structured and unstructured data over the Internet.
@@ -405,7 +405,7 @@ SOAP is a protocol based on XML that allows applications to exchange information
 
 In SOAP, HTTP methods are typically used in the following manner:
 
-- **POST**: SOAP requests are always sent using the HTTP POST method, even when retrieving data. This is a key difference from REST, where the HTTP method (e.g., GET) indicates the type of action to be performed.
+- **POST**: SOAP requests are always sent using the HTTP POST method, even when retrieving data. This is a key difference from REST, where the HTTP method (e.g. GET) indicates the type of action to be performed.
 - **GET**: SOAP doesn't use the HTTP GET method directly for retrieving data. Instead, the POST method is used for all SOAP requests, including those that only need to retrieve information. This means the HTTP request body, which typically would be empty for a GET request, still carries an XML payload with the SOAP envelope structure.
 - **PUT and DELETE**: Like GET, these HTTP methods are not commonly used in the same way in SOAP. SOAP often uses the POST method to perform updates or deletions, though custom methods can be defined for specific operations.
 
@@ -464,10 +464,10 @@ REST is an architectural style that leverages the simplicity of HTTP methods to 
 
 In REST, the HTTP method reflects the action that the client wants to perform. Here's a breakdown of the common methods:
 
-- **GET**: For retrieving resources (e.g., fetching a list of all persons).
-- **POST**: For creating new resources (e.g., creating a new person).
-- **PUT**: For updating existing resources (e.g., updating an existing person's details).
-- **DELETE**: For deleting resources (e.g., deleting a person).
+- **GET**: For retrieving resources (e.g. fetching a list of all persons).
+- **POST**: For creating new resources (e.g. creating a new person).
+- **PUT**: For updating existing resources (e.g. updating an existing person's details).
+- **DELETE**: For deleting resources (e.g. deleting a person).
 
 #### Example: Retrieve All Persons
 In REST, retrieving all persons is straightforward, and it uses the HTTP GET method to fetch the information without any content body.

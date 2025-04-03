@@ -55,7 +55,7 @@ This guide walks you through creating a Spring Boot application with Maven in In
 
 1. Open IntelliJ IDEA and create a new Maven project.
 2. Select **JDK 11** as your project SDK.
-3. Choose a **GroupId** (e.g., `com.example`) and **ArtifactId** (e.g., `actuator-demo`).
+3. Choose a **GroupId** (e.g. `com.example`) and **ArtifactId** (e.g. `actuator-demo`).
 4. Create the project with an empty `pom.xml` file.
 
 ## Step 2: Add Dependencies to `pom.xml`

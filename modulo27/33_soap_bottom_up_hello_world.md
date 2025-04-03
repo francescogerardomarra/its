@@ -1,5 +1,5 @@
 ## Bottom-up SOAP WebService in Springboot
-This project demonstrates the implementation of a **SOAP Web Service** using **Spring Boot**, following the **bottom-up** approach. In this approach, the SOAP web service is built starting from Java code (i.e., Java classes define the web service operations and data structures), rather than starting from a predefined WSDL file (top-down approach).
+This project demonstrates the implementation of a **SOAP Web Service** using **Spring Boot**, following the **bottom-up** approach. In this approach, the SOAP web service is built starting from Java code (i.e. Java classes define the web service operations and data structures), rather than starting from a predefined WSDL file (top-down approach).
 
 ### Technologies Used
 The project utilizes the following technologies:
@@ -28,7 +28,7 @@ Unlike RESTful services that use a **Controller layer**, SOAP-based services in 
 
 The SOAP service is structured with the following main components:
 
-- **Model Classes**: Represent database entities (e.g., `Person`).
+- **Model Classes**: Represent database entities (e.g. `Person`).
 - **Repository Layer**: Interfaces with the database using Spring Data JPA.
 - **Service Layer**: Contains business logic for managing persons.
 - **SOAP Endpoint**: Exposes SOAP web service methods.
@@ -100,7 +100,7 @@ springbootsoaphelloworld
    <!-- Version of the project, typically used for version control. "SNAPSHOT" indicates an in-progress version. -->
    <version>0.0.1-SNAPSHOT</version>
 
-   <!-- Packaging type of the project, which specifies the artifact format (e.g., jar, war). Here it is a JAR file. -->
+   <!-- Packaging type of the project, which specifies the artifact format (e.g. jar, war). Here it is a JAR file. -->
    <packaging>jar</packaging>
 
    <properties>
@@ -181,7 +181,7 @@ springbootsoaphelloworld
          <scope>runtime</scope> <!-- This dependency is required only during runtime -->
       </dependency>
 
-      <!-- Lombok: A library that reduces boilerplate code (e.g., getter/setter methods, constructors). -->
+      <!-- Lombok: A library that reduces boilerplate code (e.g. getter/setter methods, constructors). -->
       <dependency>
          <groupId>org.projectlombok</groupId>
          <artifactId>lombok</artifactId>
@@ -440,7 +440,7 @@ import java.util.stream.Collectors;
  * The @PayloadRoot annotation is used to define the root element of the incoming SOAP request.
  * This is how the method maps to a specific XML structure in the SOAP message.
  *
- * The Person class is an entity model used for database mapping (e.g., with JPA), and is not
+ * The Person class is an entity model used for database mapping (e.g. with JPA), and is not
  * directly related to the SOAP request/response mapping. The entity represents the data that is
  * saved to the database, while the SOAP request and response classes are responsible for XML
  * serialization and deserialization.
@@ -479,7 +479,7 @@ public class PersonEndpoint {
     * @RequestPayload: This annotation is used to bind the incoming SOAP request body to the method parameter (in this case, 'request').
     * Underneath, Spring Web Services automatically deserializes the XML payload from the SOAP message and maps it
     * into the 'InsertPersonRequest' Java object. This deserialization happens transparently, so the 'request' parameter is
-    * populated with the corresponding values from the XML body (e.g., name, surname, city, and age).
+    * populated with the corresponding values from the XML body (e.g. name, surname, city, and age).
     *
     * @ResponsePayload: This annotation indicates that the method will return a SOAP response body. The response object
     * will be serialized into XML format, and Spring Web Services handles this serialization automatically.
@@ -648,7 +648,7 @@ These classes are designed to map between SOAP XML messages and Java objects for
 
 2. **`InsertPersonResponse` (SOAP Response Mapper):**
     - **Purpose**: Converts the server’s response into SOAP XML format.
-    - **Role**: Holds a simple message (e.g., "Person added successfully") to be returned as a response.
+    - **Role**: Holds a simple message (e.g. "Person added successfully") to be returned as a response.
     - **Annotations**: Similar annotations (`@XmlRootElement`, `@XmlElement`) are used to serialize the response message.
 
 These mappers simplify the exchange of data between the web service and client by automatically handling the XML-to-object and object-to-XML transformations.
@@ -720,7 +720,7 @@ import lombok.Setter; // Lombok annotation to generate setter methods automatica
  * This response is formatted as an XML message, and this class is responsible for converting (serializing)
  * the Java object into the corresponding XML structure for the SOAP response.
  *
- * This class represents the "InsertPersonResponse" in the SOAP response message, which includes a message (e.g., 
+ * This class represents the "InsertPersonResponse" in the SOAP response message, which includes a message (e.g. 
  * "Person added successfully!").
  */
 @XmlRootElement(name = "InsertPersonResponse", namespace = "http://example.com/soap") // This annotation marks the class as the root element in the XML document; it also ensures the correct namespace for the SOAP response message.
@@ -731,7 +731,7 @@ public class InsertPersonResponse {
 
     // Field to store the message, annotated with @XmlElement to specify it's a part of the XML structure
     @XmlElement(required = true) // The "message" field is mandatory in the XML document
-    private String message; // A string message to be sent as a part of the response (e.g., "Person added successfully!")
+    private String message; // A string message to be sent as a part of the response (e.g. "Person added successfully!")
 }
 ````
 
@@ -740,7 +740,7 @@ These classes handle the mapping of SOAP request and response messages related t
 
 **`GetAllPersonsRequest` (SOAP Request Mapper):**
 - **Purpose**: This class is used for handling the SOAP request when the client requests to retrieve all persons.
-- **Role**: It typically doesn't require any specific input from the client, as the request is simply asking for all available persons. This means the class may be empty or contain optional parameters in the future if needed (e.g., pagination or filters).
+- **Role**: It typically doesn't require any specific input from the client, as the request is simply asking for all available persons. This means the class may be empty or contain optional parameters in the future if needed (e.g. pagination or filters).
 - **Annotations**:
     - `@XmlRootElement` marks the class as the root element in the SOAP XML request message, ensuring the correct format and namespace for the SOAP request.
     - Since the request doesn't have any fields, this class can be simple or even empty.
@@ -776,7 +776,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 // - 'namespace' specifies the XML namespace to ensure the SOAP message is correctly identified and parsed.
 public class GetAllPersonsRequest {
     // This class is kept simple, potentially empty, as it represents a request to fetch all persons
-    // Additional details (e.g., filters, sorting parameters) could be added if the request needs them.
+    // Additional details (e.g. filters, sorting parameters) could be added if the request needs them.
 }
 
 ````
@@ -851,7 +851,7 @@ The flow will be as follows:
 2. **MessageDispatcherServlet**:
 - The `MessageDispatcherServlet` is responsible for receiving the incoming SOAP message and forwarding it to the correct **SOAP endpoint**.
 - It listens for requests at the `/ws/*` URL pattern. When a request with this pattern is received, the servlet matches the request to the appropriate handler method based on the XML structure and namespace.
-- It then forwards the unmarshalled request to the endpoint (e.g., `PersonEndpoint`).
+- It then forwards the unmarshalled request to the endpoint (e.g. `PersonEndpoint`).
 
 3. **Unmarshalling**:
 - Spring Web Services automatically **unmarshals** the SOAP XML into the corresponding Java object (`InsertPersonRequest` in this case).
@@ -866,11 +866,11 @@ The flow will be as follows:
 - This ensures that the correct method in the `PersonEndpoint` class is invoked, based on the specific SOAP operation being requested.
 
 5. **Automatic Routing**:
-- Once the SOAP request is unmarshalled (i.e., the XML is converted into a `InsertPersonRequest` object), Spring Web Services matches the **namespace URI** and **local part** of the SOAP message to the `@PayloadRoot` annotation on the endpoint method.
+- Once the SOAP request is unmarshalled (i.e. the XML is converted into a `InsertPersonRequest` object), Spring Web Services matches the **namespace URI** and **local part** of the SOAP message to the `@PayloadRoot` annotation on the endpoint method.
 - If there is a match, Spring automatically routes the request to the corresponding method.
 - For example, the method `addPerson` will be invoked when the SOAP message has a `InsertPersonRequest` root element under the correct namespace.
 - Inside the method, the unmarshalled `InsertPersonRequest` object will be available, allowing the endpoint to process the data (such as saving a person to the database).
-- The method then generates a **SOAP response** (e.g., `InsertPersonResponse`), which is serialized back into XML and returned to the client.
+- The method then generates a **SOAP response** (e.g. `InsertPersonResponse`), which is serialized back into XML and returned to the client.
 
 This automatic routing by namespace URI and XML structure allows Spring Web Services to handle SOAP requests in a streamlined manner without requiring manual routing or complex configuration.
 

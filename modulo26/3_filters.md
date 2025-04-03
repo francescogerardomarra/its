@@ -52,16 +52,16 @@ Here's how this flow works in the context of filters:
     - After the request passes through all filters, it reaches the controller, where the request is processed. The controller generates content for the **response** object, such as setting the HTTP status, adding headers, and generating the response body.
 
 4. **Post-Processing by Filters**:
-    - Once the controller has generated the response, the response object travels back through the filter chain. Filters can now inspect or modify the **response** before it is sent to the client. This is typically where you can perform logging or modify the content of the response (e.g., adding custom headers or logging response times).
+    - Once the controller has generated the response, the response object travels back through the filter chain. Filters can now inspect or modify the **response** before it is sent to the client. This is typically where you can perform logging or modify the content of the response (e.g. adding custom headers or logging response times).
 
 #### Use Cases
 - **Authentication**: A filter can intercept incoming requests to verify the presence of a JWT token in the request headers, validate the token, and allow or deny access to the resources based on the token's validity.
-- **Logging**: A filter can log details about incoming requests (e.g., request method, URL, headers, body) for auditing, debugging, or monitoring purposes.
+- **Logging**: A filter can log details about incoming requests (e.g. request method, URL, headers, body) for auditing, debugging, or monitoring purposes.
 
 #### Filter Chain
 A **filter chain** is a sequence of filters that process a request and/or response in the order they are defined. Each filter in the chain can:
 
-1. Perform its own task (e.g., authentication, logging, etc.).
+1. Perform its own task (e.g. authentication, logging, etc.).
 2. Decide whether to pass control to the next filter in the chain.
 3. Optionally modify the request or response.
 
@@ -108,7 +108,7 @@ If a filter is correctly **defined, registered and chained**, its three methods 
         - **`HttpServletResponse`**: Similarly, casting the generic `ServletResponse` to an `HttpServletResponse` allows you to interact with HTTP-specific features like status codes, headers, and the response body.
 
 3. **`destroy()`**:
-    - This method is called when the filter is destroyed, typically when the servlet container shuts down or when the filter is no longer needed. You can use this method for cleanup tasks, such as releasing resources (e.g., closing database connections or cleaning up thread pools). The container automatically calls this method before destroying the filter instance.
+    - This method is called when the filter is destroyed, typically when the servlet container shuts down or when the filter is no longer needed. You can use this method for cleanup tasks, such as releasing resources (e.g. closing database connections or cleaning up thread pools). The container automatically calls this method before destroying the filter instance.
 
 As mentioned earlier, when a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle. Here’s how this flow works in the context of filters:
 
@@ -126,7 +126,7 @@ These abstract classes simply offer default implementations of some of the metho
 Available Abstract Classes for Filter Implementation:
 
 1. **`OncePerRequestFilter`**:
-    - This class ensures that the filter is executed only once per request, even if the request undergoes multiple forwarding or dispatching during its lifecycle. In traditional servlet-based applications, requests can be forwarded from one resource to another (e.g., from one servlet to another or from a controller to a view). This means that a single HTTP request may pass through multiple resources, and without proper handling, a filter might execute multiple times during these forwards.
+    - This class ensures that the filter is executed only once per request, even if the request undergoes multiple forwarding or dispatching during its lifecycle. In traditional servlet-based applications, requests can be forwarded from one resource to another (e.g. from one servlet to another or from a controller to a view). This means that a single HTTP request may pass through multiple resources, and without proper handling, a filter might execute multiple times during these forwards.
     - **Forwarding and Its Impact**: When forwarding occurs, the same HTTP request is internally routed to a different resource without the client being aware. However, this can cause filters to be executed repeatedly if the forwarding process isn't managed carefully. For example, if a filter is responsible for tasks like logging, authentication, or setting headers, it could execute multiple times across different forwards, resulting in duplicate log entries, unnecessary re-authentication, or redundant changes to the response.
     - **How `OncePerRequestFilter` Avoids Multiple Executions**: The `OncePerRequestFilter` class is specifically designed to prevent filters from running multiple times during the same request, even when forwarding or dispatching occurs. It achieves this by ensuring that the filter's actions are only performed once during the entire request lifecycle. The filter tracks whether it has already been executed for the current request and skips further executions if it has.
     - This is especially important when filters are involved in critical tasks like session validation, logging, or resource cleanup. Without this safeguard, a filter could cause unintended side effects if executed multiple times, potentially leading to errors or performance issues.
@@ -182,7 +182,7 @@ public class FilterConfig {
         // are given higher priority and are executed before those with higher order values.
         // This setting ensures that this filter runs early in the processing sequence, 
         // allowing it to handle requests or responses before any other filters with a higher 
-        // order (i.e., values greater than 1) are applied.
+        // order (i.e. values greater than 1) are applied.
         registrationBean.setOrder(1);
         return registrationBean;
     }
@@ -201,7 +201,7 @@ public class CustomFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        // Custom logic for request processing (e.g., JWT validation)
+        // Custom logic for request processing (e.g. JWT validation)
         System.out.println("Authenticating request...");
 
         // Pass the request/response along the filter chain
@@ -459,7 +459,7 @@ Imagine a technical support system where a customer contacts support with an iss
 ## When to Use Chain of Responsibility
 - When multiple handlers could process a request, and the handler isn't determined until runtime.
 - When decoupling the sender and receiver of a request is required.
-- When implementing request processing pipelines (e.g., middleware in web frameworks).
+- When implementing request processing pipelines (e.g. middleware in web frameworks).
 
 ## Pseudocode
 ```plaintext

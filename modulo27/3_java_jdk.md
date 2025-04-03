@@ -77,7 +77,7 @@ Oracle provides the official JDK with advanced features. This section explains h
 ### Step 1: Download Oracle JDK
 
 1. Visit the [Oracle Java Downloads](https://www.oracle.com/java/technologies/javase-downloads.html).
-2. Select the latest JDK version (e.g., JDK 20) and choose the Linux `.deb` package.
+2. Select the latest JDK version (e.g. JDK 20) and choose the Linux `.deb` package.
 3. Download the file directly or use `wget` in the terminal. Replace `<download-link>` with the link from the Oracle site:
    ```bash
    wget <download-link>

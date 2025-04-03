@@ -314,24 +314,24 @@ Due to the configuration:
 .httpBasic();                            // Enable HTTP Basic Authentication
 ```
 
-- **Step 1**: Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g., `/public/**`).
+- **Step 1**: Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g. `/public/**`).
 - **Step 2**: When a client sends a request with **Basic Authentication credentials**, it includes the credentials in the HTTP `Authorization` header. The header looks like this:
 
   `Authorization: Basic dXNlcjpwYXNzd29yZA==`
 
-  Here, `dXNlcjpwYXNzd29yZA==` is the **Base64-encoded** value of `username:password` (e.g., `user:password`).
+  Here, `dXNlcjpwYXNzd29yZA==` is the **Base64-encoded** value of `username:password` (e.g. `user:password`).
 
 - **Step 3**: Spring Security extracts the **Base64-encoded credentials** from the `Authorization` header.
 
-- **Step 4**: Spring Security decodes the **Base64** value to retrieve the username and password (e.g., `user:password`).
+- **Step 4**: Spring Security decodes the **Base64** value to retrieve the username and password (e.g. `user:password`).
 
 - **Step 5**: The **`userDetailsService`** bean (implemented with `InMemoryUserDetailsManager`) is called to retrieve the user details associated with the username.
-    - The `InMemoryUserDetailsManager` contains the hardcoded user credentials (e.g., `"user"` and `"admin"`) along with their corresponding **hashed passwords**.
+    - The `InMemoryUserDetailsManager` contains the hardcoded user credentials (e.g. `"user"` and `"admin"`) along with their corresponding **hashed passwords**.
 
 - **Step 6**: Spring Security uses the **configured `PasswordEncoder`** (in this case, `BCryptPasswordEncoder`) to hash the provided password and compare it with the stored, hashed version.
     - The password from the `Authorization` header is compared against the hashed password stored in memory.
 
-- **Step 7**: If the **password matches** (i.e., the provided password's hash matches the stored hash), the authentication **succeeds**.
+- **Step 7**: If the **password matches** (i.e. the provided password's hash matches the stored hash), the authentication **succeeds**.
     - The user is granted access to the protected resource they requested.
 
 - **Step 8**: If the **password does not match** or no matching user is found, authentication **fails**, and the user is denied access.
@@ -399,7 +399,7 @@ The `JdbcUserDetailsManager` is used to retrieve and manage user credentials sto
 
   The `users` table stores the basic user information, including the username, password (encrypted), and the status of the user (enabled or disabled).
 
-  The `authorities` table is used to store user roles or permissions. It links the username to specific roles (e.g., `ADMIN`, `USER`, `GUEST`), which are then used by Spring Security to grant or restrict access to certain resources.
+  The `authorities` table is used to store user roles or permissions. It links the username to specific roles (e.g. `ADMIN`, `USER`, `GUEST`), which are then used by Spring Security to grant or restrict access to certain resources.
 
   Example schema for these tables:
 
@@ -462,17 +462,17 @@ Due to the configuration:
 .httpBasic();                            // Enable HTTP Basic Authentication
 ```
 
-- **Step 1**: Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g., `/public/**`).
+- **Step 1**: Spring Security enforces authentication for all incoming requests, except those explicitly permitted (e.g. `/public/**`).
 
 - **Step 2**: When a client sends a request with **Basic Authentication credentials**, it includes the credentials in the HTTP `Authorization` header. The header looks like this:
 
   `Authorization: Basic dXNlcjpwYXNzd29yZA==`
 
-  Here, `dXNlcjpwYXNzd29yZA==` is the **Base64-encoded** value of `username:password` (e.g., `user:password`).
+  Here, `dXNlcjpwYXNzd29yZA==` is the **Base64-encoded** value of `username:password` (e.g. `user:password`).
 
 - **Step 3**: Spring Security extracts the **Base64-encoded credentials** from the `Authorization` header.
 
-- **Step 4**: Spring Security decodes the **Base64** value to retrieve the username and password (e.g., `user:password`).
+- **Step 4**: Spring Security decodes the **Base64** value to retrieve the username and password (e.g. `user:password`).
 
 - **Step 5**: Spring Security delegates the authentication process to the **`JdbcUserDetailsManager`** bean, which is configured to retrieve user details from the relational database.
 
@@ -481,13 +481,13 @@ Due to the configuration:
 
 - **Step 7**: Spring Security uses the **configured `PasswordEncoder`** (in this case, `BCryptPasswordEncoder`) to compare the provided password (after hashing it) with the stored, hashed password in the database.
 
-- **Step 8**: If the **password matches** (i.e., the hashed version of the provided password matches the stored hash), the authentication **succeeds**.
+- **Step 8**: If the **password matches** (i.e. the hashed version of the provided password matches the stored hash), the authentication **succeeds**.
     - The user is granted access to the requested protected resource.
 
 - **Step 9**: If the **password does not match** or no matching user is found, authentication **fails**.
     - In this case, Spring Security typically returns a **401 Unauthorized** HTTP status code, indicating that the credentials were invalid or the user does not exist.
 
-- **Step 10**: If authentication is successful, Spring Security proceeds to handle the request, applying any security policies such as role-based access control (RBAC) or any other configured rules (e.g., permission checks) before granting access to the requested resource.
+- **Step 10**: If authentication is successful, Spring Security proceeds to handle the request, applying any security policies such as role-based access control (RBAC) or any other configured rules (e.g. permission checks) before granting access to the requested resource.
 
 ---
 
@@ -576,7 +576,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 - If the user lacks the appropriate role, the request is denied.
 
 #### Successful Access
-- If authentication and role checks pass, the request proceeds to the corresponding handler (e.g., a controller method).
+- If authentication and role checks pass, the request proceeds to the corresponding handler (e.g. a controller method).
 
 #### Unsuccessful Access
 - If authentication or role checks fail, an HTTP 401 (Unauthorized) or 403 (Forbidden) response is returned.
@@ -595,7 +595,7 @@ When Spring Security creates an authentication-related session, it typically add
 
 For example, a server-side session might result in the following:
 
-- **Session ID**: A unique identifier for the session (e.g., `JSESSIONID=12345abcde`).
+- **Session ID**: A unique identifier for the session (e.g. `JSESSIONID=12345abcde`).
   - This is stored as a cookie on the client side (browser), which is sent with subsequent requests to maintain the session.
 - **Other session data**: Information about the authenticated user, such as their roles, permissions, or user-specific data might be stored in the session on the server side, but this data is not automatically sent in the response. It’s only accessed from the server's session store when needed.
 
@@ -631,7 +631,7 @@ The server uses the session ID in the cookie to:
 ### SessionCreationPolicies
 You can configure Spring Security with the `HttpSecurity` object to specify how session management should be handled.
 
-**Creating a session typically means that a `JSESSIONID` is introduced** (stored in the user's browser as a cookie) to maintain the session state across requests. This introduces session management overhead and can lead to security concerns. With stateless authentication, there's no need for the server to store session state, and the token (e.g., JWT) itself is sufficient for each request.
+**Creating a session typically means that a `JSESSIONID` is introduced** (stored in the user's browser as a cookie) to maintain the session state across requests. This introduces session management overhead and can lead to security concerns. With stateless authentication, there's no need for the server to store session state, and the token (e.g. JWT) itself is sufficient for each request.
 
 Let’s look at how different session policies affect what happens with sessions.
 
@@ -716,12 +716,12 @@ protected void configure(HttpSecurity http) throws Exception {
 ```
 
 #### Summary
-| Policy                                        | What happens on the server                                                         | What happens in the response                        | What happens in subsequent requests                                           |
-|-----------------------------------------------|------------------------------------------------------------------------------------|-----------------------------------------------------|-------------------------------------------------------------------------------|
-| `SessionCreationPolicy.ALWAYS`                | A session is always created, even if one already exists.                           | `JSESSIONID` cookie is set with a session ID.       | The client sends the `JSESSIONID` cookie with each request.                   |
-| `SessionCreationPolicy.IF_REQUIRED` (default) | A session is created only when deemed necessary.                                   | `JSESSIONID` cookie is set if a session is created. | The client sends the `JSESSIONID` cookie with each request.                   |
-| `SessionCreationPolicy.NEVER`                 | No session is created. However, pre-existing session data **might** still be used. | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., Basic Auth). |
-| `SessionCreationPolicy.STATELESS`             | No session is created, and no state is maintained.                                 | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., JWT).        |
+| Policy                                        | What happens on the server                                                         | What happens in the response                        | What happens in subsequent requests                                          |
+|-----------------------------------------------|------------------------------------------------------------------------------------|-----------------------------------------------------|------------------------------------------------------------------------------|
+| `SessionCreationPolicy.ALWAYS`                | A session is always created, even if one already exists.                           | `JSESSIONID` cookie is set with a session ID.       | The client sends the `JSESSIONID` cookie with each request.                  |
+| `SessionCreationPolicy.IF_REQUIRED` (default) | A session is created only when deemed necessary.                                   | `JSESSIONID` cookie is set if a session is created. | The client sends the `JSESSIONID` cookie with each request.                  |
+| `SessionCreationPolicy.NEVER`                 | No session is created. However, pre-existing session data **might** still be used. | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g. Basic Auth). |
+| `SessionCreationPolicy.STATELESS`             | No session is created, and no state is maintained.                                 | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g. JWT).        |
 
 ### Timeout
 Session timeout determines how long a session remains active before expiring due to **inactivity**. This refers to the amount of time a session can remain **idle** (without user activity or requests) before it is **invalidated**.
@@ -754,8 +754,8 @@ protected void configure(HttpSecurity http) throws Exception {
     - This setting defines when Spring Security should create a session.
 
     - **`SessionCreationPolicy.IF_REQUIRED`** (default behavior): A session is created **only if needed**.
-        - If your application is **stateful** (e.g., maintains user session information), a session will be created when the user first authenticates.
-        - If your application is **stateless** (e.g., REST APIs), no session will be created unless explicitly required.
+        - If your application is **stateful** (e.g. maintains user session information), a session will be created when the user first authenticates.
+        - If your application is **stateless** (e.g. REST APIs), no session will be created unless explicitly required.
 
     - This approach provides flexibility, ensuring that a session is created only when necessary, based on your application's needs.
 
@@ -763,7 +763,7 @@ protected void configure(HttpSecurity http) throws Exception {
 
     - This setting specifies the **inactivity timeout** for the session.
 
-    - **Inactivity Timeout**: The session will be considered expired if the user does not perform any action (e.g., make a request) within the defined period (30 minutes in this case).
+    - **Inactivity Timeout**: The session will be considered expired if the user does not perform any action (e.g. make a request) within the defined period (30 minutes in this case).
         - If the user is idle for 30 minutes without interacting with the application, the session will automatically expire.
 
     - **Behavior**: After the inactivity timeout period, the session will be invalidated, and the user will be redirected to the `/session-expired` URL.
@@ -772,7 +772,7 @@ protected void configure(HttpSecurity http) throws Exception {
 
     - This setting specifies the URL to redirect the user if their session is considered **invalid**.
 
-    - **Invalid Session**: A session is invalid if it is explicitly invalidated or if there is an issue (e.g., session data corruption or missing session cookies).
+    - **Invalid Session**: A session is invalid if it is explicitly invalidated or if there is an issue (e.g. session data corruption or missing session cookies).
 
     - **Behavior**: If a user tries to access a resource with an invalid session, they will be redirected to `/session-expired`.
         - This page informs the user that their session is no longer valid and may prompt them to log in again.
@@ -798,7 +798,7 @@ protected void configure(HttpSecurity http) throws Exception {
 
     - **Expired Session**: A session expires when it has been inactive for a certain period, defined by the session timeout setting.
 
-    - **Behavior**: If the session expires due to inactivity (e.g., the user hasn't made any request for a specified period), they will be redirected to `/session-expired`.
+    - **Behavior**: If the session expires due to inactivity (e.g. the user hasn't made any request for a specified period), they will be redirected to `/session-expired`.
         - This page typically informs the user that their session has timed out and prompts them to log in again.
 
 - **Note**: We have added `/session-expired` to the list of **public URLs** in the `authorizeRequests()` section:
@@ -836,7 +836,7 @@ For example, after a user logs out, they will be redirected to the login page wi
                 .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
                 .invalidateHttpSession(true)  // Invalidate the session when logging out
                 .clearAuthentication(true)  // Clear authentication data on logout
-                .deleteCookies("JSESSIONID")  // Delete session cookies (e.g., JSESSIONID)
+                .deleteCookies("JSESSIONID")  // Delete session cookies (e.g. JSESSIONID)
                 .permitAll();  // Allow all users to access the logout URL
     }
 ```
@@ -1032,7 +1032,7 @@ Having said that, in this case, using `addFilterBefore()` you add the **custom f
                 .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
                 .invalidateHttpSession(true)  // Invalidate the session when logging out
                 .clearAuthentication(true)  // Clear authentication data on logout
-                .deleteCookies("JSESSIONID")  // Delete session cookies (e.g., JSESSIONID)
+                .deleteCookies("JSESSIONID")  // Delete session cookies (e.g. JSESSIONID)
                 .permitAll();  // Allow all users to access the logout URL
     }
 ````
@@ -1053,7 +1053,7 @@ Having said that, in this case, using `addFilterBefore()` you add the **custom f
 
 - **Session Management Configuration**
     - `.sessionManagement()` configures session behavior:
-        - `.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)` means the session is created only when needed (i.e., when the user is authenticated).
+        - `.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)` means the session is created only when needed (i.e. when the user is authenticated).
         - `.sessionTimeout(Duration.ofMinutes(30))` sets the session timeout to 30 minutes of inactivity.
         - `.invalidSessionUrl("/session-expired")` redirects to the `/session-expired` URL if the session is invalidated.
         - `.maximumSessions(1)` limits the user to only one concurrent session.
@@ -1077,7 +1077,7 @@ Cross-Site Request Forgery (CSRF) is an attack where an attacker tricks an authe
 
 **CSRF** is primarily a concern for **stateful, session-based** applications, where the server maintains session data and identifies users based on session IDs stored in **cookies**. In these applications, browsers automatically send cookies with each request to the same domain, which can be exploited by attackers. For instance, an attacker could trick a user into making a malicious request, and the browser would automatically send the session cookie with that request, making it appear legitimate to the server.
 
-However, **CSRF** is *not* generally a concern for **stateless applications**, such as those using **JWT** (JSON Web Tokens) for authentication. In these applications, the token is typically passed explicitly in the HTTP headers (e.g., in the `Authorization: Bearer <token>` header), *not* as cookies. Since tokens are not automatically included in requests by the browser, attackers cannot trigger requests that would automatically include the token. As a result, stateless **JWT-based** applications are less vulnerable to CSRF.
+However, **CSRF** is *not* generally a concern for **stateless applications**, such as those using **JWT** (JSON Web Tokens) for authentication. In these applications, the token is typically passed explicitly in the HTTP headers (e.g. in the `Authorization: Bearer <token>` header), *not* as cookies. Since tokens are not automatically included in requests by the browser, attackers cannot trigger requests that would automatically include the token. As a result, stateless **JWT-based** applications are less vulnerable to CSRF.
 
 That said, **CSRF** can still be a problem in stateless applications under certain conditions. If the **JWT** is stored in **cookies** (instead of being passed in headers), it could be vulnerable to **CSRF**, as cookies would be sent automatically with cross-site requests. Additionally, if tokens are stored insecurely in places like *localStorage* or *sessionStorage*, they could be exposed through **XSS** (Cross-Site Scripting) attacks, potentially allowing attackers to use the token in malicious requests, which could resemble **CSRF** attacks.
 
@@ -1086,13 +1086,13 @@ In summary, while **CSRF** is mostly a concern for **session-based applications*
 #### 1. Unfolding
 1. User Login and Session Cookies:
    - The user logs into a web application and is authenticated.
-   - The server issues a session cookie (e.g., `JSESSIONID`), which identifies the user's session.
+   - The server issues a session cookie (e.g. `JSESSIONID`), which identifies the user's session.
    - The browser automatically includes this session cookie with every request to the server.
 
 2. Attacker's Malicious Website:
    - The attacker creates a malicious website that tricks the user into visiting it while logged into the vulnerable site.
    - The attacker injects JavaScript into the malicious website that automatically sends a state-changing request to the vulnerable web application.
-   - The malicious site sends a state-changing request (e.g., POST, PUT, DELETE) to the vulnerable web application. The browser includes the session cookie with the request, making it seem legitimate.
+   - The malicious site sends a state-changing request (e.g. POST, PUT, DELETE) to the vulnerable web application. The browser includes the session cookie with the request, making it seem legitimate.
 
 3. Outcome:
    - The attacker successfully performs actions that the user didn’t intend by exploiting the user’s session.
@@ -1118,7 +1118,7 @@ The server validates these tokens to ensure that the request originates from the
 
 The primary goal of Anti-CSRF tokens is to protect against **Cross-Site Request Forgery (CSRF)** attacks.
 
-Anti-CSRF tokens are **not stored in cookies** to prevent attackers from exploiting the token via **cross-site scripting (XSS)** attacks. Cookies are automatically sent with every request, which could lead to potential token theft or manipulation. By requiring the client to programmatically include the token in the request body or custom headers (e.g., `X-CSRF-Token` or `X-XSRF-Token`), the server ensures that the request is intentional and legitimate.
+Anti-CSRF tokens are **not stored in cookies** to prevent attackers from exploiting the token via **cross-site scripting (XSS)** attacks. Cookies are automatically sent with every request, which could lead to potential token theft or manipulation. By requiring the client to programmatically include the token in the request body or custom headers (e.g. `X-CSRF-Token` or `X-XSRF-Token`), the server ensures that the request is intentional and legitimate.
 
 Anti-CSRF tokens provide an **additional layer of protection** by ensuring that requests made to the server must contain a valid token that matches what the server expects.
 
@@ -1131,7 +1131,7 @@ Thus, Anti-CSRF tokens work alongside `SameSite` cookie settings, ensuring that 
 
 1. **Token Generation**:
    - Upon session creation, the server generates a unique Anti-CSRF token and associates it with the user session (stored server-side).
-   - The server sends the token to the client, typically as part of the initial HTTP response in a custom response header (e.g., `X-CSRF-Token` or `X-XSRF-Token`).
+   - The server sends the token to the client, typically as part of the initial HTTP response in a custom response header (e.g. `X-CSRF-Token` or `X-XSRF-Token`).
 
 2. **Response example with anti-CSRF token**:
    - **Content-Type: application/json**: Specifies that the response body contains JSON data, ensuring proper handling and parsing.
@@ -1218,8 +1218,8 @@ X-CSRF-Token: abc123xyz456  // The CSRF token sent in the request header
 
 5. **Token Validation**:
     - When the server receives the request, it checks that the Anti-CSRF token in the `X-CSRF-Token` header matches the token associated with the current session.
-    - If the token in the request doesn't match the server-side token, the server rejects the request as potentially originating from a malicious source (e.g., a CSRF attack).
-    - If the tokens match, the server considers the request legitimate and processes it accordingly, allowing the requested action to proceed (e.g., updating a resource, submitting a form).
+    - If the token in the request doesn't match the server-side token, the server rejects the request as potentially originating from a malicious source (e.g. a CSRF attack).
+    - If the tokens match, the server considers the request legitimate and processes it accordingly, allowing the requested action to proceed (e.g. updating a resource, submitting a form).
 
 ### Anti-CSRF in Spring Security
 In a stateful application, such as one using Spring Security with session management, authentication-related data is tied to an active session. This session is crucial for tracking user state across multiple requests. However, this introduces the risk of Cross-Site Request Forgery (CSRF) attacks, where a malicious actor can trick an authenticated user into performing unintended actions.
@@ -1252,7 +1252,7 @@ protected void configure(HttpSecurity http) throws Exception {
             .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
             .invalidateHttpSession(true)  // Invalidate the session when logging out
             .clearAuthentication(true)  // Clear authentication data on logout
-            .deleteCookies("JSESSIONID")  // Delete session cookies (e.g., JSESSIONID)
+            .deleteCookies("JSESSIONID")  // Delete session cookies (e.g. JSESSIONID)
             .permitAll();  // Allow all users to access the logout URL
 }
 ```
@@ -1272,7 +1272,7 @@ This automatic handling is done seamlessly by Spring Security, and you don’t h
 </form>
 ```
 
-For **REST APIs with JSON responses**, Spring Security automatically handles the CSRF token by including it in the HTTP response headers. When a state-changing request (e.g., POST, PUT, DELETE) is made, Spring Security will include the CSRF token in the `X-CSRF-TOKEN` HTTP header in the response.
+For **REST APIs with JSON responses**, Spring Security automatically handles the CSRF token by including it in the HTTP response headers. When a state-changing request (e.g. POST, PUT, DELETE) is made, Spring Security will include the CSRF token in the `X-CSRF-TOKEN` HTTP header in the response.
 
 The client is expected to send this token back with any state-changing requests in the `X-CSRF-TOKEN` header. Spring Security will then validate this token to ensure the request is legitimate and originates from the authenticated user.
 
@@ -1299,7 +1299,7 @@ Here’s how you can enable CSRF protection:
             .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
             .invalidateHttpSession(true)  // Invalidate the session when logging out
             .clearAuthentication(true)  // Clear authentication data on logout
-            .deleteCookies("JSESSIONID")  // Delete session cookies (e.g., JSESSIONID)
+            .deleteCookies("JSESSIONID")  // Delete session cookies (e.g. JSESSIONID)
             .permitAll()  // Allow all users to access the logout URL
         .and()
         .csrf()  // Explicitly enable CSRF protection
@@ -1311,7 +1311,7 @@ Here’s how you can enable CSRF protection:
 - **Important:** Storing the CSRF token in cookies exposes you to XSS (Cross-Site Scripting) risks, as malicious scripts can potentially steal tokens from the cookie. As a result, this customization is generally not recommended unless you have additional security measures in place, such as Content Security Policy (CSP) and XSS protection. It's safer to stick to the default behavior of storing the CSRF token in the session.
 
 #### Disable
-In cases where you're working with a stateless application (e.g., using JWT or token-based authentication), you might want to disable CSRF protection since sessions are not used and thus no anti-CSRF token is needed.
+In cases where you're working with a stateless application (e.g. using JWT or token-based authentication), you might want to disable CSRF protection since sessions are not used and thus no anti-CSRF token is needed.
 
 In stateless applications, such as those using **JWT** or other **token-based authentication** methods, you may want to disable **CSRF protection**. This is because, in a stateless application, no session is maintained for tracking user state, and CSRF tokens are not required.
 
@@ -1319,12 +1319,12 @@ When you configure **SessionCreationPolicy** to `STATELESS`, Spring Security wil
 
 Disabling CSRF protection is appropriate in scenarios such as:
 - The application is stateless, meaning it does not rely on sessions.
-- Authentication is handled via tokens (e.g., JWT) passed in headers or other parts of the request.
+- Authentication is handled via tokens (e.g. JWT) passed in headers or other parts of the request.
 - CSRF protection is irrelevant because there is no session to secure.
 
 To disable CSRF protection, simply use the `csrf().disable()` method in your Spring Security configuration. By doing so, Spring Security will skip CSRF checks for all incoming requests, which is essential for applications that do not use sessions for tracking user state.
 
-This approach ensures that requests can be authenticated based on tokens, without the need for session-based protections. However, ensure that your token management (e.g., validating JWT tokens on every request) is secure, as CSRF protection will not be in place.
+This approach ensures that requests can be authenticated based on tokens, without the need for session-based protections. However, ensure that your token management (e.g. validating JWT tokens on every request) is secure, as CSRF protection will not be in place.
 
 ```java
 @Override
@@ -1353,7 +1353,7 @@ protected void configure(HttpSecurity http) throws Exception {
 #### Final considerations
 - **Session Expiration:** When the session expires (due to inactivity, for example), the anti-CSRF token tied to that session is also invalidated. If the user tries to make a state-changing request after their session expires, the request will be rejected with a `403 Forbidden` response, as the CSRF token is no longer valid.
 - **Logout:** When the user logs out, the session is invalidated. This also invalidates the anti-CSRF token. If the user attempts to submit a request after logging out, it will be rejected because the session and the associated anti-CSRF token no longer exist.
-- **Avoid Storing CSRF Tokens in Cookies:** The anti-CSRF token should never be stored in cookies. If malicious JavaScript (e.g., via XSS) can access the cookie, the attacker may steal the token and bypass CSRF protection.
+- **Avoid Storing CSRF Tokens in Cookies:** The anti-CSRF token should never be stored in cookies. If malicious JavaScript (e.g. via XSS) can access the cookie, the attacker may steal the token and bypass CSRF protection.
 - **Using HTTP Headers for CSRF Tokens:** It's safer to include the anti-CSRF token in HTTP headers (`X-CSRF-TOKEN`) for AJAX requests or in form fields for traditional form submissions. This ensures the token is not exposed to JavaScript, reducing the risk of XSS.
 - You should disable CSRF protection in cases where:
   - The application is stateless (using JWT or OAuth2 tokens).
@@ -1362,7 +1362,72 @@ protected void configure(HttpSecurity http) throws Exception {
 
 ---
 
-## Authentication-related vs Non-Authentication session data
-To do
+## Authentication-related vs Non-Authentication Session Data
+
+In Spring Security, the session is crucial for managing the user’s authentication state across multiple requests. This is important because HTTP is inherently stateless, meaning each request is independent and doesn’t carry context from previous ones. Without sessions, users would need to authenticate on every request. However, it's important to distinguish between authentication-related session data and non-authentication session data, as they may need different handling.
+
+### Authentication-related session data
+In Spring Security, a session is primarily used to manage user authentication. When a user logs in, Spring Security creates a server-side session that holds important details related to authentication, such as:
+
+- Authentication status (whether the user is logged in or not)
+- Roles and permissions assigned to the user
+- User-specific data, like the user ID, necessary to maintain their authenticated session
+
+This session is associated with a unique identifier, typically stored in a cookie called `JSESSIONID`. This identifier is sent with each request, ensuring that the user’s authentication state is preserved across interactions.
+
+**Important note:** The `JSESSIONID` is used specifically to manage authentication in a session. When a user makes multiple requests, the session ID is sent with each request to maintain the user’s authentication state.
+
+### Non-authentication session data
+Non-authentication session data refers to other types of data that may be stored within the session, unrelated to the user’s authentication status. For example, consider a shopping cart:
+
+Once a user logs in, the session can store information like the items in their shopping cart, user preferences, or any other data necessary for the application's functionality.
+
+Although Spring Security handles the authentication-related session data, non-authentication data can also be stored in the same session. This means that the same session, identified by a `JSESSIONID`, can hold both authentication-related data (e.g. user roles) and non-authentication-related data (e.g. shopping cart items).
+
+Here’s how you can add non-authentication data, like a shopping cart, to a session in a Spring Boot application:
+
+```java
+import javax.servlet.http.HttpSession;
+
+@Controller
+public class ShoppingCartController {
+
+    @PostMapping("/add-to-cart")
+    public String addToCart(HttpSession session, @RequestParam String item) {
+        // Get the shopping cart from the session, or create a new one if it doesn't exist
+        List<String> cart = (List<String>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new ArrayList<>();
+        }
+        
+        // Add the new item to the cart
+        cart.add(item);
+        
+        // Store the updated cart back in the session
+        session.setAttribute("cart", cart);
+        
+        return "cart";
+    }
+}
+```
+
+In this example, we’re storing a shopping cart in the session using the `HttpSession` object. The `cart` attribute is added to the session, which is a non-authentication-related piece of data. This cart can persist across requests using the same `JSESSIONID` used for authentication.
+
+### Session-less authentication vs. Session-based authentication
+Although Spring Security typically uses session-based authentication, you can also implement stateless authentication mechanisms, such as JSON Web Tokens (JWTs). With JWT-based authentication, the user's authentication state is stored within the token, and no server-side session is needed.
+
+However, even with stateless authentication, you may still use sessions to store non-authentication data, like a shopping cart or user preferences. This means your application can be stateless for authentication while remaining stateful for other data.
+
+### CSRF Protection and Session-based authentication
+For session-based authentication, it’s critical to implement anti-CSRF.
+
+CSRF protection helps secure stateful sessions by preventing unauthorized requests made on behalf of an authenticated user.
+
+In contrast, when using stateless authentication (e.g. JWT), anti-CSRF protection is generally unnecessary because the authentication state is stored within the token itself, not in a session.
+
+**CSRF protection is only relevant when you’re dealing with session-based authentication mechanisms, as it prevents attackers from exploiting session cookies (`JSESSIONID`) or other session identifiers.**
+
+---
+
 
 

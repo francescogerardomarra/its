@@ -23,7 +23,7 @@ The protocol (or scheme) is the first part of the URL and specifies the method u
 Example: `https://`
 
 ### 1.2 Subdomain (Optional)
-A subdomain is a prefix to the domain name, typically used to organize different sections or services of a website. In many cases, `www` is used as a subdomain, but it can be anything (e.g., `blog`, `shop`, etc.). Not all URLs have a subdomain.
+A subdomain is a prefix to the domain name, typically used to organize different sections or services of a website. In many cases, `www` is used as a subdomain, but it can be anything (e.g. `blog`, `shop`, etc.). Not all URLs have a subdomain.
 
 Example: `www` in `www.example.com` is a subdomain.
 
@@ -254,7 +254,7 @@ Accept: application/json
 ```
 
 
-By omitting the file extension and using the `Accept` header to specify the desired format, the API remains flexible. The client can request different formats (e.g., `application/xml`, `text/html`) without modifying the URL, allowing the server to respond based on the requested media type.
+By omitting the file extension and using the `Accept` header to specify the desired format, the API remains flexible. The client can request different formats (e.g. `application/xml`, `text/html`) without modifying the URL, allowing the server to respond based on the requested media type.
 
 This approach ensures that the URL is clean and focused on the resource itself, rather than the representation format.
 
@@ -318,8 +318,8 @@ GET /users?role=admin&status=active
 | Use Case        | Retrieve specific item | Retrieve filtered list |
 
 #### General Guidelines:
-- **Use path variables for required, unique identifiers** (e.g., `/users/{userId}`).
-- **Use query parameters for optional filtering and sorting** (e.g., `/users?status=active`).
+- **Use path variables for required, unique identifiers** (e.g. `/users/{userId}`).
+- **Use query parameters for optional filtering and sorting** (e.g. `/users?status=active`).
 - **Avoid mixing them unnecessarily** to maintain clarity and usability.
 
 By following these guidelines, you can design RESTful APIs that are intuitive, maintainable, and user-friendly.

@@ -8,7 +8,7 @@ Choosing the right operating system (OS) is a critical decision for software dev
 Linux distributions are open source, making them highly customizable and transparent. Many developers favor Linux because it aligns with the ethos of open-source software, which includes Java itself. This alignment ensures a seamless and efficient integration of tools and libraries.
 
 ### 2. Superior Package Management and Development Tools
-Linux systems provide robust package management systems (e.g., `apt` on Ubuntu) and easy access to development tools like OpenJDK, Maven, Gradle, and Git. Installing, updating, and managing dependencies is generally more straightforward compared to Windows.
+Linux systems provide robust package management systems (e.g. `apt` on Ubuntu) and easy access to development tools like OpenJDK, Maven, Gradle, and Git. Installing, updating, and managing dependencies is generally more straightforward compared to Windows.
 
 ### 3. Command Line and Scripting Power
 Linux's command-line interface (CLI) is far more versatile and integrated than Windows’ Command Prompt or even PowerShell. This is especially useful in:

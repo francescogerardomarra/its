@@ -26,8 +26,8 @@ Spring Boot is a framework designed to simplify the development of Java-based ap
 
 | Spring Boot Version | Java Compatibility   |
 |---------------------|----------------------|
-| 2.x (e.g., 2.7.x)   | Java 8, 11, and above |
-| 3.x (e.g., 3.0.x)   | Java 17 and above    |
+| 2.x (i.e. 2.7.x)   | Java 8, 11, and above |
+| 3.x (i.e. 3.0.x)   | Java 17 and above    |
 
 To ensure compatibility across environments, we will use Spring Boot 2.7.x in this example, as it supports Java 11, which is the minimum version required for our project.
 
@@ -38,7 +38,7 @@ To ensure compatibility across environments, we will use Spring Boot 2.7.x in th
 ### Prerequisites
 Ensure the following are installed on your system:
 
-- Java Development Kit (e.g., OpenJDK 11 or higher)
+- Java Development Kit (e.g. OpenJDK 11 or higher)
 - Maven
 - IntelliJ IDEA
 
@@ -179,7 +179,7 @@ Hello, World!
 ```
 
 #### Testing Using a Browser
-1. Open any web browser (e.g., Chrome, Firefox, or Edge).
+1. Open any web browser (e.g. Chrome, Firefox, or Edge).
 2. Type the following URL into the address bar and press **Enter**:
    ```
    http://localhost:8080/api/hello

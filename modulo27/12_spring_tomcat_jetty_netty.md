@@ -13,7 +13,7 @@ This document explores the differences between the server models used by Spring 
 ### Characteristics
 - **Blocking I/O:**
   - Each request is assigned a dedicated thread.
-  - Threads remain blocked while waiting for responses (e.g., from a database or external API).
+  - Threads remain blocked while waiting for responses (e.g. from a database or external API).
 - **Thread Management:**
   - A fixed number of threads in the thread pool handle incoming requests.
   - If all threads are busy, subsequent requests are queued.
@@ -45,9 +45,9 @@ This document explores the differences between the server models used by Spring 
 
 ## Blocking vs Non-Blocking Models
 
-### Blocking (e.g., Tomcat, Jetty)
+### Blocking (e.g. Tomcat, Jetty)
 - A request is assigned a thread that performs all the required operations sequentially.
-- If the thread needs to wait (e.g., for database queries), it remains idle, consuming system resources.
+- If the thread needs to wait (e.g. for database queries), it remains idle, consuming system resources.
 
 #### Example
 1. A user sends a request to fetch data.
@@ -72,7 +72,7 @@ This document explores the differences between the server models used by Spring 
 
 ---
 
-### Non-Blocking (e.g., Netty)
+### Non-Blocking (e.g. Netty)
 - Tasks are executed asynchronously. Instead of waiting, threads register callbacks or events to handle responses.
 - The same thread can process multiple tasks concurrently.
 

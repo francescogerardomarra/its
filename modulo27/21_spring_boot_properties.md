@@ -104,7 +104,7 @@ This changes the default server port from 8080 to 9090.
 
 ## Using Profiles
 
-Profiles allow different configurations for different environments (e.g., `dev`, `prod`).
+Profiles allow different configurations for different environments (e.g. `dev`, `prod`).
 
 ### Example: Profile-Specific YAML Files
 

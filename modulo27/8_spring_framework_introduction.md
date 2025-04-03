@@ -31,7 +31,7 @@ Spring seamlessly integrates with other frameworks and technologies, including:
 Spring Boot is a sub-project of the Spring Framework that simplifies the development of Spring applications by:
 - Providing pre-configured templates.
 - Eliminating the need for extensive configuration.
-- Embedding a web server (e.g., Tomcat or Jetty) for easy deployment.
+- Embedding a web server (e.g. Tomcat or Jetty) for easy deployment.
 
 ---
 
@@ -42,7 +42,7 @@ The Spring Framework is predominantly designed for Java due to the following rea
    Spring leverages core Java features like annotations, generics, and reflection extensively for its core functionalities, such as Dependency Injection and AOP.
 
 2. **Java Ecosystem:**
-   Spring thrives in the Java ecosystem, integrating seamlessly with Java-based tools, libraries, and application servers (e.g., Tomcat, JBoss).
+   Spring thrives in the Java ecosystem, integrating seamlessly with Java-based tools, libraries, and application servers (e.g. Tomcat, JBoss).
 
 3. **JVM Support:**
    While Spring is primarily for Java, it is not strictly limited to it. Since Spring applications run on the JVM (Java Virtual Machine), other JVM-compatible languages like Kotlin and Groovy can also use Spring.

@@ -6,7 +6,7 @@ Web services are standardized ways of communicating between different software a
 
 ### Key Characteristics:
 1. **Platform-independent**: Operate across different systems and programming languages.
-2. **Standards-based**: Use open protocols (e.g., HTTP, XML, JSON).
+2. **Standards-based**: Use open protocols (e.g. HTTP, XML, JSON).
 3. **Interoperability**: Facilitate communication and integration of systems.
 4. **Self-contained and modular**: Encapsulate specific functionalities that can be reused.
 
@@ -19,7 +19,7 @@ HTTP (HyperText Transfer Protocol) serves as the foundation for most web service
 - **Universality**: HTTP is supported by all modern systems and platforms.
 - **Statelessness**: Simplifies the interaction model by treating each request as independent.
 - **Scalability**: Supports high-load systems through caching and resource identification using URIs.
-- **Ease of Use**: Standard HTTP methods (e.g., GET, POST, PUT, DELETE) align naturally with RESTful design principles.
+- **Ease of Use**: Standard HTTP methods (e.g. GET, POST, PUT, DELETE) align naturally with RESTful design principles.
 
 ---
 
@@ -30,7 +30,7 @@ RPC, or Remote Procedure Call, is a protocol or design paradigm that enables a p
 ### Characteristics of RPC
 - **Function Invocation**: Clients invoke remote functions by specifying the method name and parameters.
 - **Tight Coupling**: Typically requires clients and servers to agree on the method signatures and serialization format.
-- **Serialization Requirement**: Data exchanged during RPC calls must be serialized into a format understood by both ends (e.g., JSON, XML, Protobuf).
+- **Serialization Requirement**: Data exchanged during RPC calls must be serialized into a format understood by both ends (e.g. JSON, XML, Protobuf).
 
 ### RPC-Based Web Services
 Examples of RPC-based web services include:
@@ -41,7 +41,7 @@ Examples of RPC-based web services include:
 ### Non-RPC Web Services
 Non-RPC web services, like REST and SOAP, focus on resource representation or message exchange rather than invoking methods remotely. These services:
 - Emphasize stateless communication.
-- Use standardized protocols (e.g., HTTP) and serialization formats (e.g., JSON, XML).
+- Use standardized protocols (e.g. HTTP) and serialization formats (e.g. JSON, XML).
 - Are typically more loosely coupled than RPC-based systems.
 
 ### Example: RPC vs Non-RPC
@@ -103,7 +103,7 @@ This approach is tightly coupled due to several key factors intrinsic to how gRP
 
 1. **Shared `.proto` Definition**:
    - The first step in gRPC communication is the creation of a **.proto file** that serves as a **contract** between the client and the server. The `.proto` file defines the **service methods**, **request/response message structures**, and the **data types** used for communication. This file is critical in determining how the client and server communicate.
-   - Both the client and server must **agree** on the methods, request parameters, and response structures defined in this `.proto` file. If either side changes something (e.g., adding a new field, renaming a method), it **breaks compatibility** unless both sides update and re-generate their code accordingly. This creates a tight dependency between the two systems since they rely on the same schema to function correctly.
+   - Both the client and server must **agree** on the methods, request parameters, and response structures defined in this `.proto` file. If either side changes something (e.g. adding a new field, renaming a method), it **breaks compatibility** unless both sides update and re-generate their code accordingly. This creates a tight dependency between the two systems since they rely on the same schema to function correctly.
 
 2. **Generated Client/Server Code**:
    - After the `.proto` file is defined, gRPC uses tools to **automatically generate client and server code**. For instance, the **client code** uses a generated **stub** (`UserServiceGrpc.UserServiceBlockingStub`) to call the methods defined in the `.proto` file, and the **server** uses the same generated classes (`GetUserRequest`, `GetUserResponse`) to implement those methods.
@@ -115,11 +115,11 @@ This approach is tightly coupled due to several key factors intrinsic to how gRP
 
 4. **Protocol and Serialization Dependency**:
    - gRPC enforces strict dependencies on its transport protocol and data format. Specifically, it uses **HTTP/2** for communication and **Protocol Buffers (protobuf)** for serializing the data. 
-   - Both the client and server are tightly coupled to these choices. They must both support HTTP/2 for communication, and they must both serialize and deserialize data using **Protocol Buffers**. This choice of protocol and serialization format adds another layer of dependency and reduces flexibility. Unlike other systems, such as **JSON-RPC** or **XML-RPC**, which can work with different transport protocols or serialization formats (e.g., JSON or XML), gRPC's strict reliance on HTTP/2 and protobuf makes switching to a different communication method difficult without updating both sides.
+   - Both the client and server are tightly coupled to these choices. They must both support HTTP/2 for communication, and they must both serialize and deserialize data using **Protocol Buffers**. This choice of protocol and serialization format adds another layer of dependency and reduces flexibility. Unlike other systems, such as **JSON-RPC** or **XML-RPC**, which can work with different transport protocols or serialization formats (e.g. JSON or XML), gRPC's strict reliance on HTTP/2 and protobuf makes switching to a different communication method difficult without updating both sides.
 
 5. **Service-Specific Communication**:
    - The example code specifically interacts with the `UserServiceGrpc` service. The method signature (`stub.getUser(request)`) and the request/response data structures (`GetUserRequest`, `GetUserResponse`) are tightly defined by the `.proto` file. This means the client can only interact with services that implement this exact interface.
-   - If the server changes the service's API (e.g., by adding new methods or altering the parameters), the client must be updated accordingly. This creates a direct dependency between the client and the server's specific service definition, and any change requires synchronized updates.
+   - If the server changes the service's API (e.g. by adding new methods or altering the parameters), the client must be updated accordingly. This creates a direct dependency between the client and the server's specific service definition, and any change requires synchronized updates.
 
 6. **Inflexibility in Communication**:
    - gRPC is optimized for high-performance communication with **binary serialization** (using Protocol Buffers), which is great for performance but also introduces inflexibility. The client and server must both agree on the **exact data format** (protobuf) and the **network protocol** (HTTP/2). 
@@ -198,13 +198,13 @@ public class NonRpcExample {
 
 - **Protocol Independence**: The Non-RPC invocation uses the standard HTTP protocol, making it compatible with any system that can send HTTP requests and parse JSON, regardless of the underlying technology stack.
 
-- **No Client Stubs**: Unlike RPC, there’s no need for generated client stubs or service definition files (e.g., `.proto` files in gRPC). This eliminates the dependency on specific frameworks and simplifies client-side setup.
+- **No Client Stubs**: Unlike RPC, there’s no need for generated client stubs or service definition files (e.g. `.proto` files in gRPC). This eliminates the dependency on specific frameworks and simplifies client-side setup.
 
 - **Loosely Coupled Contracts**: Communication is based on standard RESTful API conventions, such as the `/users/{userId}` endpoint and a JSON-formatted response. This allows the server and client to evolve independently, as long as they adhere to the broader HTTP/REST contract.
 
 - **Ease of Integration**: The Non-RPC approach is highly interoperable. Any client written in Java, Python, JavaScript, or other languages can easily interact with the service using HTTP libraries and JSON parsers.
 
-- **Flexibility in Upgrades**: Non-RPC systems can manage changes to APIs by introducing versioned endpoints (e.g., `/v2/users/{userId}`) or modifying payload structures without breaking older clients. This adaptability makes it easier to evolve the service over time.
+- **Flexibility in Upgrades**: Non-RPC systems can manage changes to APIs by introducing versioned endpoints (e.g. `/v2/users/{userId}`) or modifying payload structures without breaking older clients. This adaptability makes it easier to evolve the service over time.
 
 #### Key Trade-offs
 While Non-RPC offers flexibility and loose coupling, it also comes with trade-offs:
@@ -244,7 +244,7 @@ Web services can be broadly categorized based on their approach and data seriali
 ### Non-RPC Web Services
 
 1. **SOAP (Simple Object Access Protocol)**
-   - **Definition**: A protocol that uses XML for message formatting and relies on other application layer protocols (e.g., HTTP, SMTP) for message negotiation and transmission.
+   - **Definition**: A protocol that uses XML for message formatting and relies on other application layer protocols (e.g. HTTP, SMTP) for message negotiation and transmission.
    - **Key Features**:
      - Highly standardized with built-in error handling and security features.
      - Uses WSDL (Web Services Description Language) for service definition.

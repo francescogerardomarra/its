@@ -41,7 +41,7 @@ APT (Advanced Package Tool) is the traditional package manager for Debian-based 
 Package managers handle software dependencies differently, affecting installation success, system efficiency, and compatibility. This article explains how **Snap** and **APT** manage dependencies and what happens when a required dependency is missing.
 
 ## **APT (Advanced Package Tool)**
-APT is the package manager for Debian-based systems (e.g., Ubuntu). It manages dependencies by resolving them from official repositories.
+APT is the package manager for Debian-based systems (e.g. Ubuntu). It manages dependencies by resolving them from official repositories.
 
 ### **How APT Handles Dependencies**
 1. When installing a package, APT checks its dependency list.

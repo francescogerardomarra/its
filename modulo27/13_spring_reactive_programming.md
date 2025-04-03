@@ -18,7 +18,7 @@ Reactive programming is implemented using libraries like **Project Reactor** and
 
 ## Why Standard Spring Boot Is Not Reactive
 
-Spring Boot with traditional Spring MVC uses a blocking I/O model based on the Servlet API. Each HTTP request is assigned a dedicated thread, which blocks while waiting for I/O operations to complete (e.g., database queries).
+Spring Boot with traditional Spring MVC uses a blocking I/O model based on the Servlet API. Each HTTP request is assigned a dedicated thread, which blocks while waiting for I/O operations to complete (e.g. database queries).
 
 ### Example: Blocking Code in Standard Spring Boot
 ```java
@@ -70,7 +70,7 @@ public class UserController {
 ```
 
 ### Explanation of the Code
-- **Mono:** Represents a single asynchronous result (e.g., the user object).
+- **Mono:** Represents a single asynchronous result (e.g. the user object).
 - **Non-Blocking Operation:** The `getUserById` method returns immediately without blocking the thread.
 - **Scalability:** A small number of threads can handle thousands of requests concurrently.
 
@@ -110,7 +110,7 @@ public Mono<String> fetchData() {
 ## When to Use Reactive Programming
 - Applications with high-concurrency requirements.
 - Real-time systems, such as chat applications and streaming platforms.
-- Scenarios involving multiple I/O-bound tasks (e.g., APIs interacting with multiple databases).
+- Scenarios involving multiple I/O-bound tasks (e.g. APIs interacting with multiple databases).
 
 ---
 

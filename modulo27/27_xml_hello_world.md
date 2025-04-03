@@ -542,7 +542,7 @@ In the example below, `person_invalid.xml` will fail validation because the `ema
 
 ### Validation Breakdown
 
-- **Class-level validation** occurs when fields in the XML file do not match the Java class structure. If the XML contains fields not represented in the Java class (e.g., missing `email`), it can result in deserialization errors at the mapping level.
+- **Class-level validation** occurs when fields in the XML file do not match the Java class structure. If the XML contains fields not represented in the Java class (e.g. missing `email`), it can result in deserialization errors at the mapping level.
 - **XSD validation** is enforced using the XML Schema Definition (`person.xsd`) which specifies constraints such as the minimum occurrences (`minOccurs`) of elements. In the case of `person_invalid.xml`, the absence of the `email` field leads to a validation failure because the XSD requires it to be present with `minOccurs="1"`.
 
 ### Example of XSD Validation Failure

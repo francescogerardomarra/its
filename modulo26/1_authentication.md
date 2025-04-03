@@ -182,9 +182,9 @@ For example:
   - For example, the ASCII string "hello" (5 characters) becomes a 24-bit value, which results in a 32-bit Base64 string with 4 characters. The `=` padding adds one more character, making it 8 characters in total.
 
 **Main Applications:**
-- **Data Encoding**: Used to encode binary data (like files or images) for safe transmission over text-based protocols (e.g., email, HTTP).
+- **Data Encoding**: Used to encode binary data (like files or images) for safe transmission over text-based protocols (e.g. email, HTTP).
 - **Authentication**: Base64 is used to encode credentials (like username and password) in HTTP Basic Authentication, often in the form of an `Authorization` header. Standard Base64 is compatible with HTTP headers, making it a good choice for transmitting authentication information.
-- **Data Storage**: Base64 is used in various data storage scenarios, where binary data needs to be encoded into a text format (e.g., embedding binary data into JSON or XML).
+- **Data Storage**: Base64 is used in various data storage scenarios, where binary data needs to be encoded into a text format (e.g. embedding binary data into JSON or XML).
 - **Token Encoding**: While **JWTs** (JSON Web Tokens) are typically encoded in **Base64 URL-safe**, other token formats may use standard Base64 encoding for secure transmission across text-based protocols.
 
 ### **Base64 for URLs**
@@ -275,9 +275,9 @@ For example:
 - **Token Encoding**: Base64 URL-safe encoding is commonly used for encoding tokens like **JWTs** (JSON Web Tokens) for web authentication and session management, ensuring compatibility with URL transmission. However, **sending JWTs in URLs** is generally **not recommended** due to security risks:
 
   - **Data Visibility during HTTPS Transmission**:
-    - **Cleartext Data**: The **domain name** (e.g., `example.com`) and **IP address** are visible during the DNS lookup but encrypted after the SSL/TLS connection is established. All data (including URLs, headers, and body) is encrypted during transmission.
+    - **Cleartext Data**: The **domain name** (e.g. `example.com`) and **IP address** are visible during the DNS lookup but encrypted after the SSL/TLS connection is established. All data (including URLs, headers, and body) is encrypted during transmission.
 
-    - **Encrypted Communication**: Routers only see **encrypted packets** during HTTPS transmission, preventing them from accessing the contents (e.g., JWTs). However, sending JWTs in URLs should be avoided due to risks like exposure in browser history, server logs, and referrer headers. It's safer to send JWTs in **HTTP headers**.
+    - **Encrypted Communication**: Routers only see **encrypted packets** during HTTPS transmission, preventing them from accessing the contents (e.g. JWTs). However, sending JWTs in URLs should be avoided due to risks like exposure in browser history, server logs, and referrer headers. It's safer to send JWTs in **HTTP headers**.
 
   These issues are relevant even though JWTs will not be exposed on the network during HTTPS transmission. The primary concern is **exposure in browser history, logs, and referrers**, making it safer to use **HTTP headers** (`Authorization: Bearer <JWT>`) instead of including JWTs in URLs.
 
@@ -287,7 +287,7 @@ For example:
 
 ## Classification by Type of Factor
 
-Authentication can be classified based on the **type of factor** used. This classification is **not based on the number of factors** (e.g., single-factor or multi-factor authentication), but rather on the type of credential involved.
+Authentication can be classified based on the **type of factor** used. This classification is **not based on the number of factors** (e.g. single-factor or multi-factor authentication), but rather on the type of credential involved.
 
 ### **Something You Know**
 Authentication methods relying on information that only the user should know:
@@ -325,7 +325,7 @@ Authentication methods requiring a **physical item** the user possesses to authe
 Authentication methods using **unique physical or behavioral traits** to verify identity:
 
 - **Fingerprint Recognition**: Common in mobile devices and secure systems.
-- **Facial Recognition**: Uses unique facial features (e.g., distance between eyes, nose shape) to verify identity.
+- **Facial Recognition**: Uses unique facial features (e.g. distance between eyes, nose shape) to verify identity.
   - Techniques include **2D image processing** and **3D mapping**.
 - **Retina Scanning**: Maps the unique pattern of blood vessels in the retina.
 - **Behavioral Biometrics**: Analyzes user behavior such as:
@@ -340,7 +340,7 @@ Authentication methods using **unique physical or behavioral traits** to verify 
 Authentication systems can be classified based on the **number of factors** used, providing different levels of security:
 
 ### **Single-Factor Authentication (SFA)**
-- The simplest form of authentication, requiring only **one credential** (e.g., a password or PIN).
+- The simplest form of authentication, requiring only **one credential** (e.g. a password or PIN).
 - Vulnerable to brute-force attacks, phishing, and credential theft.
 
 ### **Two-Factor Authentication (2FA)**
@@ -362,7 +362,7 @@ Authentication systems can be classified based on the **number of factors** used
 
 Authentication protocols are essential mechanisms for verifying identities within a networked environment.
 
-These protocols combine various authentication concepts—such as the **type of factor** (e.g., something you know, have, or are) and the **number of factors** (e.g., single, two, or multi-factor authentication) to provide tailored solutions based on security needs, user experience, and interoperability requirements. By leveraging these concepts, protocols ensure that only authorized entities can access protected resources, balancing security and usability.
+These protocols combine various authentication concepts—such as the **type of factor** (e.g. something you know, have, or are) and the **number of factors** (e.g. single, two, or multi-factor authentication) to provide tailored solutions based on security needs, user experience, and interoperability requirements. By leveraging these concepts, protocols ensure that only authorized entities can access protected resources, balancing security and usability.
 
 ## HTTP Basic Authentication
 
@@ -370,7 +370,7 @@ These protocols combine various authentication concepts—such as the **type of 
 - Sends the **username** and **password** encoded in **Base64** (not encrypted) in the `Authorization` header.
   - **Base64** encoding is used to safely encode the username and password into a format that can be transmitted over HTTP.
   - **Base64** ensures the credentials are transmitted as a valid ASCII string. While Base64 encoding may include characters like `+`, `/`, and `=`, these are compatible with HTTP headers and do not cause issues in this context.
-  - In URLs or other applications, these special characters could cause problems because of their specific meanings (e.g., `+` represents space, `/` is a path separator, and `=` is used for padding or query parameters).
+  - In URLs or other applications, these special characters could cause problems because of their specific meanings (e.g. `+` represents space, `/` is a path separator, and `=` is used for padding or query parameters).
   - **Base64** encoding is suitable for Basic Authentication because HTTP headers can safely handle special characters like `+`, `/`, and `=`, without interfering with the header structure.
   - However, Base64 encoding is **not encryption**, rather it is simply a way to encode data to be transmitted over text-based protocols. It makes the data suitable for HTTP transmission but does not protect the data from being intercepted or decoded.
   - Since Base64 encoding is reversible, anyone who intercepts the Base64-encoded credentials can easily decode them, making Basic Authentication **insecure** unless used with HTTPS.
@@ -383,18 +383,18 @@ These protocols combine various authentication concepts—such as the **type of 
   - When HTTPS is used, even though the headers are visible to both the client and server, they are **protected by the encrypted tunnel**, making it much harder for attackers to eavesdrop or manipulate the data.
   - In **HTTPS**, what is exposed during routing:
     - **Visible to routers**:
-      - **Domain name** (e.g., `example.com`) and **IP address** during DNS lookup.
+      - **Domain name** (e.g. `example.com`) and **IP address** during DNS lookup.
     - **Not visible to routers**:
       - **HTTP headers**, including the `Authorization` header containing the Base64-encoded credentials, **are encrypted** within the HTTPS tunnel.
       - **Body content** and other sensitive data are also encrypted.
-      - **URLs** (e.g., query parameters) are encrypted as part of the full HTTPS transmission.
+      - **URLs** (e.g. query parameters) are encrypted as part of the full HTTPS transmission.
 
 - **Risks of Base64 Encoding**:
   - **Base64 is not secure** as it only encodes the data, meaning anyone with access to the encoded string can decode it back to plain text.
   - Even when HTTPS is used to protect the transmission, **Base64-encoded credentials are still vulnerable** to exposure in insecure situations, such as:
     - **Man-in-the-middle attacks** if HTTPS is not used.
     - **Exposure in server logs** if the `Authorization` header is logged or stored insecurely.
-    - **Browser history**: If the credentials are stored in URLs (e.g., as query parameters), they can be exposed through browser history or the referer header.
+    - **Browser history**: If the credentials are stored in URLs (e.g. as query parameters), they can be exposed through browser history or the referer header.
     - **Referrer headers**: Credentials could be inadvertently passed along to other sites if redirected in a way that includes the `Authorization` header.
 
 - **Example request**:
@@ -428,12 +428,12 @@ These protocols combine various authentication concepts—such as the **type of 
   - **Hashing**: Instead of sending the password in plain text, the credentials are hashed using an algorithm (typically MD5) in combination with the nonce, HTTP method, and requested URI. This means that the password is never sent over the network in plaintext, reducing the risk of it being intercepted.
 
 - **Example Process**:
-  1. Client sends a request for a protected resource (e.g., `/protected-resource`).
+  1. Client sends a request for a protected resource (e.g. `/protected-resource`).
   2. Server responds with a `401 Unauthorized` status and a `WWW-Authenticate` header containing a `nonce`, like so:
      ```
      WWW-Authenticate: Digest realm="Example", qop="auth", nonce="dcd98b7102dd2f0e8b2e3a7f4b3d7f2f2d8c3ad5f3b8c1b4", opaque="5ccc069c403ebaf9f0171e9517f40e41"
      ```
-  3. The client hashes the credentials (e.g., `username:password`), the HTTP method (e.g., `GET`), and the URI (e.g., `/protected-resource`) along with the nonce provided by the server. The client then sends an `Authorization` header with the hashed result:
+  3. The client hashes the credentials (e.g. `username:password`), the HTTP method (e.g. `GET`), and the URI (e.g. `/protected-resource`) along with the nonce provided by the server. The client then sends an `Authorization` header with the hashed result:
      ```
      Authorization: Digest username="user", realm="Example", nonce="dcd98b7102dd2f0e8b2e3a7f4b3d7f2f2d8c3ad5f3b8c1b4", uri="/protected-resource", response="5ccc069c403ebaf9f0171e9517f40e41", opaque="5ccc069c403ebaf9f0171e9517f40e41"
      ```
@@ -502,23 +502,23 @@ In this section, we explore **token-based authentication**, a widely used method
 
 Before diving into authentication tokens, it's important to clarify what **session data required for authentication** refers to. This session data typically includes the information needed to authenticate a user and manage their access across multiple requests, such as:
 
-- **User identity** (e.g., user ID, username).
-- **User roles and permissions** (e.g., `admin`, `user`).
-- **Authentication claims** (e.g., email, user-specific attributes).
-- **Expiration time** (e.g., time when the authentication token or session becomes invalid).
+- **User identity** (e.g. user ID, username).
+- **User roles and permissions** (e.g. `admin`, `user`).
+- **Authentication claims** (e.g. email, user-specific attributes).
+- **Expiration time** (e.g. time when the authentication token or session becomes invalid).
 
 Now, let's introduce two types of authentication tokens:
 
-- **JWTs (JSON Web Tokens)**: JWTs are **self-contained** tokens that carry **authentication-related session data** directly within the token itself. Since they are **stateless**, JWTs do not require the server to store session data. The token includes everything needed for authentication, such as user identity, roles, permissions, and expiration time. JWTs are typically stored on the user's device (e.g., in `localStorage` or `sessionStorage`), making them a form of **"Something You Have"**.
+- **JWTs (JSON Web Tokens)**: JWTs are **self-contained** tokens that carry **authentication-related session data** directly within the token itself. Since they are **stateless**, JWTs do not require the server to store session data. The token includes everything needed for authentication, such as user identity, roles, permissions, and expiration time. JWTs are typically stored on the user's device (e.g. in `localStorage` or `sessionStorage`), making them a form of **"Something You Have"**.
 
 - **Session Cookies**: Session cookies store a **session ID** on the user's device, which is automatically sent with each HTTP request. The session ID serves as a reference to the **authentication-related session data** stored on the server, such as the user’s identity, roles, and permissions. The server uses this session ID to fetch the corresponding session data, meaning session management is centralized on the server. Like JWTs, session cookies are also a form of **"Something You Have"**, but unlike JWTs, they rely on the server to manage and store authentication session data.
 
 ## JSON Web Tokens (JWT)
 
 - **JWTs** are self-contained tokens used for authentication and authorization. They consist of three parts:
-  - **Header**: Typically contains the type of the token (JWT) and the signing algorithm (e.g., HMAC, RSA, or ECC). This section tells the recipient how to verify the authenticity of the token.
+  - **Header**: Typically contains the type of the token (JWT) and the signing algorithm (e.g. HMAC, RSA, or ECC). This section tells the recipient how to verify the authenticity of the token.
   - **Payload**: Contains the claims, which are the statements about an entity (typically, the user) and additional data. Claims can include information like the user’s ID, roles, or permissions, and are not encrypted, so they can be decoded by anyone with access to the token.
-  - **Signature**: Created by signing the encoded Header and Payload with a secret key using the specified algorithm (e.g., HMAC, RSA, or ECC). The signature ensures that the token has not been tampered with.
+  - **Signature**: Created by signing the encoded Header and Payload with a secret key using the specified algorithm (e.g. HMAC, RSA, or ECC). The signature ensures that the token has not been tampered with.
 
   - Example JWT:
     ```text
@@ -590,7 +590,7 @@ Now, let's introduce two types of authentication tokens:
     ```
 
 - **JWT Theft Risk**:
-  - If a JWT is stolen (e.g., intercepted by an attacker), it can be used to impersonate the legitimate user. Since JWTs are used to maintain sessions, their theft allows unauthorized access to resources until the token expires or is revoked.
+  - If a JWT is stolen (e.g. intercepted by an attacker), it can be used to impersonate the legitimate user. Since JWTs are used to maintain sessions, their theft allows unauthorized access to resources until the token expires or is revoked.
 
 - **JWT vs Protocol**:
   - **JWT** is a **data format** that defines how authentication information should be structured, signed, and verified. It does not specify how data should be transmitted or how servers should respond to requests.
@@ -641,7 +641,7 @@ When the user revisits the website or makes another request, the browser automat
 3. **Secure Flag**: The cookie is only sent over HTTPS connections if marked as `Secure`.
 4. **SameSite Policy**: The `SameSite` attribute of a cookie helps to control when the cookie is sent with cross-site requests. Cross-site requests are requests that are made from one domain (website) to another domain. This is common in scenarios where a webpage from one website makes a request to another website, for example, when loading resources like images, scripts, or making API calls.
 
-- **Cross-site request example**: Imagine you're logged into a banking website (`bank.com`) and visit a blog (`blog.com`). While on the blog site, an embedded advertisement or an iframe might make a request to the bank's website to load certain resources or even submit forms. This is a cross-site request because the request originates from a domain (e.g., `blog.com`) that is different from the one the user is authenticated on (e.g., `bank.com`).
+- **Cross-site request example**: Imagine you're logged into a banking website (`bank.com`) and visit a blog (`blog.com`). While on the blog site, an embedded advertisement or an iframe might make a request to the bank's website to load certain resources or even submit forms. This is a cross-site request because the request originates from a domain (e.g. `blog.com`) that is different from the one the user is authenticated on (e.g. `bank.com`).
 
 The `SameSite` cookie attribute allows website owners to specify the conditions under which cookies should be sent along with these types of cross-site requests. It has three main values:
 
@@ -706,7 +706,7 @@ This session cookie:
 
 ##### CSRF Attack Flow:
 
-1. **User Authentication**: The user logs into a legitimate website (e.g., a bank), and their session cookie is stored in the browser. This cookie is used to authenticate their requests to the website.
+1. **User Authentication**: The user logs into a legitimate website (e.g. a bank), and their session cookie is stored in the browser. This cookie is used to authenticate their requests to the website.
 
 2. **Malicious Website Creation**: The attacker creates a malicious website or a page. On this page, the attacker embeds a form or script that sends a request to the target website (the one the user is logged into). For example, the attacker may create a form that submits a request to transfer money or change account settings.
 
@@ -720,13 +720,13 @@ This session cookie:
      document.getElementById('maliciousForm').submit();
    </script>
    ```
-3. **Victim Visits Malicious Website**: The victim, who is already logged into the target website (e.g., a bank), unknowingly visits the attacker's malicious website. While on this site, the victim's browser automatically triggers the malicious script or form that was embedded by the attacker.
+3. **Victim Visits Malicious Website**: The victim, who is already logged into the target website (e.g. a bank), unknowingly visits the attacker's malicious website. While on this site, the victim's browser automatically triggers the malicious script or form that was embedded by the attacker.
 
 4. **Automatic Request with Session Cookie**: The victim’s browser, which is already authenticated with the target website, **might automatically include the session cookie in the HTTP request under certain conditions**:
 
 - **If `SameSite=Strict`**: The session cookie will **not** be sent with cross-site requests. This means the victim’s browser will **not** include the session cookie with the request to the malicious website. Therefore, the CSRF attack **will not succeed** because the target website will not receive the session cookie.
 
-- **If `SameSite=Lax` (default)**: The session cookie **will** be sent with top-level navigations (e.g., clicking on a link) but **not** with other cross-site requests like form submissions or AJAX calls. If the victim visits the malicious site via a top-level navigation (e.g., by clicking a link from the malicious site), the session cookie will be sent, and the CSRF attack **could succeed**.
+- **If `SameSite=Lax` (default)**: The session cookie **will** be sent with top-level navigations (e.g. clicking on a link) but **not** with other cross-site requests like form submissions or AJAX calls. If the victim visits the malicious site via a top-level navigation (e.g. by clicking a link from the malicious site), the session cookie will be sent, and the CSRF attack **could succeed**.
 
 - **If `SameSite=None`**: The session cookie **will** be sent with all requests, including cross-site requests. If the victim visits the malicious website, the browser will include the session cookie in the forged request, allowing the CSRF attack **to succeed**. However, `SameSite=None` must be used in conjunction with the `Secure` flag, which requires the cookie to be sent only over HTTPS connections.
 
@@ -739,11 +739,11 @@ This session cookie:
 - **Secure**: Ensures the cookie is only transmitted over HTTPS, preventing interception during transmission.
 - **SameSite**: Helps mitigate CSRF by controlling how cookies are sent with cross-origin requests.
   - **SameSite=Strict**: Ensures cookies are only sent with same-origin requests, providing the strongest protection against CSRF.
-  - **SameSite=Lax**: Allows cookies to be sent with top-level navigation (e.g., clicking a link to your site), but prevents them from being sent with cross-site subrequests.
+  - **SameSite=Lax**: Allows cookies to be sent with top-level navigation (e.g. clicking a link to your site), but prevents them from being sent with cross-site subrequests.
   - **SameSite=None**: Allows cross-site requests, but it must be combined with the **Secure** flag.
 - **Non-persistent nature of session cookies**: Since session cookies are tied to the browser session, they are deleted when the browser is closed. This limits the risk of session hijacking over extended periods, as the session cookie does not persist between sessions.
 - **Session expiry**: Without the **Expires** or **Max-Age** attributes, the session cookie is a **session cookie** and will expire when the user closes their browser. This ensures session information is not stored beyond the session duration.
-- **Session hijacking**: If session cookies are improperly configured (e.g., not using **Secure**, **HttpOnly**, and **SameSite**), they are vulnerable to attacks like XSS and CSRF.
+- **Session hijacking**: If session cookies are improperly configured (e.g. not using **Secure**, **HttpOnly**, and **SameSite**), they are vulnerable to attacks like XSS and CSRF.
 
 ##### Cookies and HTTPS
 - **Headers are not encrypted**: HTTP headers, including cookies, are sent as part of the HTTP request and response. However, these headers are **transmitted securely** if **HTTPS** is being used, because HTTPS (SSL/TLS) encrypts the entire communication channel between the client and the server.
@@ -753,14 +753,14 @@ This session cookie:
 
 Authentication-related session data includes information that helps maintain a user's authenticated state across multiple requests. Typically, this encompasses:
 
-- **Authentication details** (e.g., user ID, roles, permissions)
-- **Session state** (e.g., expiration time, login status)
+- **Authentication details** (e.g. user ID, roles, permissions)
+- **Session state** (e.g. expiration time, login status)
 
 Here’s a breakdown of the differences between **JWTs** and **session cookies**:
 
 - **Session Cookies** are generally more secure than **JWTs** because they store only a **session ID** on the client side. This session ID references data securely stored on the server, minimizing the risk of exposing sensitive information. In contrast, **JWTs** often contain full authentication-related data (like user ID and roles) in the token itself, which can be more vulnerable if intercepted.
 
-- **Session Cookies** are automatically included with each HTTP request by the browser, simplifying user experience. **JWTs**, however, must be manually added to HTTP headers (e.g., `Authorization: Bearer <token>`), which introduces additional handling on the client side.
+- **Session Cookies** are automatically included with each HTTP request by the browser, simplifying user experience. **JWTs**, however, must be manually added to HTTP headers (e.g. `Authorization: Bearer <token>`), which introduces additional handling on the client side.
 
 - **Session Cookies** depend on **server-side session storage**. The cookie holds a session ID, and the server looks up the session data based on this ID. The server handles session management, and the client simply holds a reference.
 
@@ -771,7 +771,7 @@ Here’s a breakdown of the differences between **JWTs** and **session cookies**
 | Feature                             | JWT                                                                                 | Session Cookies                                                       |
 |-------------------------------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
 | **Security**                        | Stores full authentication data on the client side; more vulnerable if intercepted. | Stores only a session ID; actual data remains securely on the server. |
-| **Automatic Inclusion in Requests** | Must be manually included in headers (e.g., `Authorization: Bearer <token>`).       | Automatically included with every browser request.                    |
+| **Automatic Inclusion in Requests** | Must be manually included in headers (e.g. `Authorization: Bearer <token>`).        | Automatically included with every browser request.                    |
 | **Session Storage**                 | Stateless; no server-side storage of authentication data.                           | Stateful; session data stored and managed on the server.              |
 | **Session Management**              | Handled via token validation; no need for server-side session tracking.             | Managed centrally on the server using the session ID.                 |
 | **Use Case**                        | Best for APIs and distributed systems requiring stateless authentication.           | Suited for traditional web apps with centralized session management.  |
@@ -839,12 +839,12 @@ fetch('https://api.example.com/endpoint', {
 
 #### Java client
 
-When developing a custom Java client, securely storing authentication tokens (including session cookies and JWTs) is critical. Unlike web browsers, Java clients do not inherently provide built-in storage mechanisms like **local storage** or **session storage**, but they can use alternative storage strategies depending on the type of client (e.g., desktop applications, mobile clients, or server-side clients). The storage options need to be secure, as improper handling can lead to vulnerabilities.
+When developing a custom Java client, securely storing authentication tokens (including session cookies and JWTs) is critical. Unlike web browsers, Java clients do not inherently provide built-in storage mechanisms like **local storage** or **session storage**, but they can use alternative storage strategies depending on the type of client (e.g. desktop applications, mobile clients, or server-side clients). The storage options need to be secure, as improper handling can lead to vulnerabilities.
 
 ##### **Local File System Storage**
 - **Persistent**: Tokens can be stored securely in files on the local file system, allowing them to persist across client sessions.
 - **Security Considerations**: If not properly encrypted, tokens stored on the file system could be vulnerable to unauthorized access. To mitigate risks, ensure that tokens are encrypted before being stored, and apply strong access controls to the file system.
 
 ##### **In-Memory Storage**
-- **Temporary**: Tokens can be stored in memory for the duration of the session, using Java’s internal data structures (e.g., variables, `HashMap`, or `ConcurrentHashMap`).
+- **Temporary**: Tokens can be stored in memory for the duration of the session, using Java’s internal data structures (e.g. variables, `HashMap`, or `ConcurrentHashMap`).
 - **Security Considerations**: While in-memory storage is generally faster and easier to manage, it is still vulnerable if an attacker gains access to the application’s runtime environment. It's essential to clear sensitive data from memory once it is no longer needed, to minimize the exposure of tokens.

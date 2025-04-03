@@ -293,7 +293,7 @@ This schema ensures structured and efficient order management.
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.el</artifactId>
             <version>4.0.2
-            </version>  <!-- EL is used for handling expressions in constraints (e.g., for custom validation logic) -->
+            </version>  <!-- EL is used for handling expressions in constraints (e.g. for custom validation logic) -->
         </dependency>
 
         <!-- Jakarta Validation API: Defines the API for Java Bean validation annotations like @NotNull, @Size, etc. -->
@@ -373,7 +373,7 @@ When designing an application, it is essential to enforce data integrity and bus
 
 ### Entity Level Constraints
 
-Entity-level constraints are defined within the Java code using annotations that are understood by the ORM (e.g., Hibernate). These constraints are typically used to ensure that the data adheres to the business rules before it is persisted in the database. Common entity-level annotations include:
+Entity-level constraints are defined within the Java code using annotations that are understood by the ORM (e.g. Hibernate). These constraints are typically used to ensure that the data adheres to the business rules before it is persisted in the database. Common entity-level annotations include:
 
 - `@NotNull`: Ensures that the field cannot be null.
 - `@Size`: Restricts the length of a string field.
@@ -396,11 +396,11 @@ Entity-level constraints are defined within the Java code using annotations that
 
 ### Database Level Constraints
 
-Database-level constraints are enforced directly in the database schema and are used to ensure that data adheres to specific rules, even when data is inserted or modified outside of the application (e.g., via SQL scripts or other services interacting with the database). Common database constraints include:
+Database-level constraints are enforced directly in the database schema and are used to ensure that data adheres to specific rules, even when data is inserted or modified outside of the application (e.g. via SQL scripts or other services interacting with the database). Common database constraints include:
 
 - `NOT NULL`: Ensures a column cannot contain null values.
 - `UNIQUE`: Ensures all values in a column are unique across the table.
-- `CHECK`: Enforces a custom condition for data in a column (e.g., a price cannot be less than 0).
+- `CHECK`: Enforces a custom condition for data in a column (e.g. a price cannot be less than 0).
 - `FOREIGN KEY`: Ensures that the data in a column matches data in another table, enforcing referential integrity.
 - `DEFAULT`: Automatically sets a value for a column if no value is provided.
 
@@ -422,9 +422,9 @@ Although both entity-level and database-level constraints are crucial for mainta
 
 1. **Redundancy for Reliability:** While database constraints are the final safeguard, entity-level constraints prevent invalid data from ever reaching the database. This early validation helps prevent database errors and allows your application to catch problems before they cause issues at the storage level. For example, without entity-level validation, an application could attempt to insert a null value into a field marked `NOT NULL` in the database, causing a database error at runtime.
 
-2. **Decoupling Business Logic from Data Storage:** Entity-level constraints define **application-specific rules** (e.g., a user’s email must be in a specific format) that are independent of the database. These constraints ensure that the business rules are enforced regardless of the database system, making the application more portable and flexible. Database constraints, on the other hand, ensure the **integrity of the stored data**, maintaining consistency and relationships between tables even if the data comes from other sources.
+2. **Decoupling Business Logic from Data Storage:** Entity-level constraints define **application-specific rules** (e.g. a user’s email must be in a specific format) that are independent of the database. These constraints ensure that the business rules are enforced regardless of the database system, making the application more portable and flexible. Database constraints, on the other hand, ensure the **integrity of the stored data**, maintaining consistency and relationships between tables even if the data comes from other sources.
 
-3. **Better User Experience with Immediate Feedback:** Entity-level constraints allow for early detection of issues like invalid input or missing fields, which can be handled more gracefully in the application (e.g., showing a user-friendly error message). Database-level errors, by contrast, typically occur later in the process and may require more complex debugging.
+3. **Better User Experience with Immediate Feedback:** Entity-level constraints allow for early detection of issues like invalid input or missing fields, which can be handled more gracefully in the application (e.g. showing a user-friendly error message). Database-level errors, by contrast, typically occur later in the process and may require more complex debugging.
 
 4. **Ensuring Data Integrity Across Multiple Sources:** In systems where multiple applications or services interact with the same database, database constraints ensure **consistent rules** across the entire system. For example, if one service bypasses the application logic and directly manipulates the database, the database constraints will ensure that data integrity is not compromised. This redundancy is especially useful in environments with distributed systems or microservices.
 
@@ -916,7 +916,7 @@ import java.util.Optional;
  * - `findBy` indicates a query to retrieve data.
  * - `By` separates the property name(s) that are part of the query.
  * - For example, `findByUsername(String username)` generates a query that searches for a `User` entity where the `username` field matches the provided value.
- * - The method names can also use logical operators like `And`, `Or`, `Between`, etc., to build more complex queries (e.g., `findByUsernameAndEmail`).
+ * - The method names can also use logical operators like `And`, `Or`, `Between`, etc., to build more complex queries (e.g. `findByUsernameAndEmail`).
  * </p>
  */
 @Repository
@@ -979,7 +979,7 @@ import java.util.List;
  * <ul>
  *     <li>`findBy` - This prefix indicates that the method will retrieve data.</li>
  *     <li>The next part of the method name specifies the field or property that the query will filter by.</li>
- *     <li>If you have a relationship between entities (e.g., `Order` and `User`), you can traverse the relationships by including the related entity's property in the method name.</li>
+ *     <li>If you have a relationship between entities (e.g. `Order` and `User`), you can traverse the relationships by including the related entity's property in the method name.</li>
  *     <li>For example, `User` refers to the `User` entity, and `UserId` refers to the `userId` property in the `User` entity, which is mapped as a foreign key in the `Order` entity via the `user` field.</li>
  * </ul>
  *
@@ -1318,14 +1318,14 @@ When designing request and response bodies for a RESTful API, the first step is 
 
 #### Operations Dictate the Structure
 Each API operation determines the fields required in requests and the data returned in responses:
-- A **POST** request to create a resource typically includes all necessary fields for creating a new record (e.g., `name`, `price`, `quantity` for an item).
-- A **GET** request generally requires only an identifier (e.g., `itemId`) to fetch specific resource details.
+- A **POST** request to create a resource typically includes all necessary fields for creating a new record (e.g. `name`, `price`, `quantity` for an item).
+- A **GET** request generally requires only an identifier (e.g. `itemId`) to fetch specific resource details.
 - A **PUT** or **PATCH** request updates a resource, requiring relevant fields and an identifier.
 - A **DELETE** request usually requires an identifier to remove the resource.
 
 #### Key Considerations
-- **Request Bodies:** What data should the client send? Are validations needed (e.g., required fields, length constraints, data format)? Which fields should be read-only or auto-generated?
-- **Response Bodies:** What data should be returned after an operation? Should related entities be included (e.g., `OrderItem` in an `Order`)? Should sensitive data be excluded (e.g., passwords)?
+- **Request Bodies:** What data should the client send? Are validations needed (e.g. required fields, length constraints, data format)? Which fields should be read-only or auto-generated?
+- **Response Bodies:** What data should be returned after an operation? Should related entities be included (e.g. `OrderItem` in an `Order`)? Should sensitive data be excluded (e.g. passwords)?
 
 ### Supported Operations in Our API
 
@@ -2023,10 +2023,10 @@ In a Spring-based REST API, `ResponseEntity` is commonly used to return response
   - When a resource is retrieved successfully, `200 OK` is returned along with the resource’s details.
 
 - **Resource Not Found (`404 Not Found`)**:
-  - If the requested resource is not found (e.g., when querying by `id`, `email`, or `username`), a `404 Not Found` response is returned without a body.
+  - If the requested resource is not found (e.g. when querying by `id`, `email`, or `username`), a `404 Not Found` response is returned without a body.
 
 - **Bad Request (`400 Bad Request`)**:
-  - If the client sends an invalid request (e.g., missing required fields), a `400 Bad Request` status code is returned, often with error details in the response body.
+  - If the client sends an invalid request (e.g. missing required fields), a `400 Bad Request` status code is returned, often with error details in the response body.
 
 ## UserController
 
@@ -2331,7 +2331,7 @@ The `OrderController` class handles HTTP requests related to order operations wi
 
 ### Path Variables vs Query Parameters
 
-In this controller, we use **query parameters** in the `GET` methods for retrieving orders by `orderId` or `userId` because there are two distinct retrieval operations. Query parameters are helpful here for specifying different search criteria, making it easy to extend the API with additional filters (e.g., order status or date ranges).
+In this controller, we use **query parameters** in the `GET` methods for retrieving orders by `orderId` or `userId` because there are two distinct retrieval operations. Query parameters are helpful here for specifying different search criteria, making it easy to extend the API with additional filters (e.g. order status or date ranges).
 
 In contrast, when we had only one `GET` mapping to retrieve an item by its unique ID, we used a **path variable** because there was no need for multiple retrieval methods. Path variables are ideal when accessing a single resource by its unique identifier. For example, we used a path variable in the `ItemController` for retrieving an item by its `itemId`, which makes it simpler and more intuitive for this case.
 
@@ -3903,7 +3903,7 @@ In a flawed design, the system uses **entities**—the database models—as the 
 - An `Order` entity contains a list of `OrderItem` entities.
 - Each `OrderItem` entity might have a reference back to the `Order` entity.
 
-When these entities are serialized, the **circular reference** (i.e., `Order -> OrderItem -> Order`) causes an infinite loop, leading to:
+When these entities are serialized, the **circular reference** (i.e. `Order -> OrderItem -> Order`) causes an infinite loop, leading to:
 
 - **Stack Overflow Errors**: The serialization keeps going back and forth between the entities, eventually exceeding the call stack limits.
 - **Unnecessary Data Exposure**: Internal details of the entity relationships are exposed, which might not be needed by the client.
@@ -3961,13 +3961,13 @@ Although the current response status handling uses `ResponseEntity.ok()` for suc
 - Review the response status codes and add more specific status codes based on different error conditions.
 
 ## 4. **Validation and Constraints**
-While Java Bean validation is being used in request DTOs (e.g., `@NotBlank`, `@Size`, `@Email`), the validation is not comprehensive enough. For instance:
+While Java Bean validation is being used in request DTOs (e.g. `@NotBlank`, `@Size`, `@Email`), the validation is not comprehensive enough. For instance:
 - There is no validation on the `quantity` field in the `AddItemToOrderRequest` class to ensure it's greater than zero.
 - Some request parameters (like `userId` in order creation) may benefit from more specific constraints or checks.
 
 **To Do:**
 - Enhance validation annotations on request DTOs to cover all required fields and logical constraints.
-- Ensure that custom validation logic is implemented for complex cases (e.g., item availability).
+- Ensure that custom validation logic is implemented for complex cases (e.g. item availability).
 
 ## 5. **Error Responses**
 Currently, error responses are minimal and only return a basic message. For better user experience and debugging, detailed error responses should be returned, including:
@@ -3976,13 +3976,13 @@ Currently, error responses are minimal and only return a basic message. For bett
 - Suggested actions to resolve the error.
 
 **To Do:**
-- Standardize error responses with a consistent format (e.g., `ErrorCode`, `ErrorMessage`).
+- Standardize error responses with a consistent format (e.g. `ErrorCode`, `ErrorMessage`).
 - Provide more detailed error messages where necessary.
 
 ## 6. **Unit and Integration Testing**
 There are no unit or integration tests present in the current codebase. For this system to be ready for production, comprehensive testing is required to ensure the correctness of the application, including:
 - Unit tests for services and controllers.
-- Integration tests to validate the complete flow of operations (e.g., creating an order, adding/removing items, etc.).
+- Integration tests to validate the complete flow of operations (e.g. creating an order, adding/removing items, etc.).
 - Mocking database calls to test scenarios without interacting with the actual database.
 
 **To Do:**
@@ -3999,7 +3999,7 @@ The application lacks detailed logging, which makes it harder to trace issues du
 ## 8. **Security Considerations**
 The application does not currently include any security measures, such as authentication and authorization, which are critical for a production environment. There should be mechanisms to:
 - Authenticate users via JWT tokens or sessions.
-- Authorize users to ensure they only have access to their own data (e.g., preventing users from accessing other users' orders).
+- Authorize users to ensure they only have access to their own data (e.g. preventing users from accessing other users' orders).
 - Prevent SQL injection, cross-site scripting (XSS), and other common security vulnerabilities.
 
 **To Do:**

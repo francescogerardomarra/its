@@ -951,9 +951,9 @@ Each part serves a specific purpose:
 #### Example JWE Header
 ```json
 {
-  "alg": "RSA-OAEP",      // Key encryption algorithm
-  "enc": "A256GCM",       // Content encryption algorithm
-  "kid": "5678"           // Key identifier
+  "alg": "RSA-OAEP",
+  "enc": "A256GCM",
+  "kid": "5678"
 }
 ```
 

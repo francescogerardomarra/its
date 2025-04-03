@@ -11,23 +11,16 @@ Main concepts involved:
 
 ## pom.xml
 
-To set up Spring Security in a Spring Boot project, add the following dependencies to your `pom.xml`:
+To set up Spring Security in an already existing Spring Boot project, add the following dependency to your `pom.xml`:
 
 ```xml
-<dependencies>
-    <!-- Spring Boot Starter Web (for RESTful services) -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
     <!-- Spring Boot Starter Security (for security configurations) -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-security</artifactId>
         <version>3.4.4</version>
     </dependency>
-</dependencies>
+
 ```
 
 ---
@@ -64,8 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
             .authorizeRequests()                     // Step 1: Configure authorization
-            .antMatchers("/public/**").permitAll()   // Step 2: Allow access to public URLs
-            .anyRequest().authenticated()           // Step 3: Require authentication for all other requests
+                .antMatchers("/public/**").permitAll()   // Step 2: Allow access to public URLs
+                .anyRequest().authenticated()           // Step 3: Require authentication for all other requests
             .and()
             .httpBasic();                            // Step 4: Enable HTTP Basic Authentication
   }
@@ -84,7 +77,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 ```
 
 ### WebSecurityConfigurerAdapter
-
 `WebSecurityConfigurerAdapter` is a base class in Spring Security that provides default implementations for several methods related to configuring web security. When you extend this class, you can override its methods to customize the security configuration for your application.
 
 That it, it is a convenience class that makes it easy to set up security configurations in Spring. By extending this class, you gain access to several methods that can be overridden to configure HTTP security, authentication mechanisms, and more.
@@ -212,8 +204,8 @@ Thi is how the security filter chain is configured in this example:
 ```java
 http
         .authorizeRequests()                     // Step 1: Start configuring authorization
-        .antMatchers("/public/**").permitAll()   // Step 2: Allow unrestricted access to /public/**
-        .anyRequest().authenticated()           // Step 3: Require authentication for all other requests
+            .antMatchers("/public/**").permitAll()   // Step 2: Allow unrestricted access to /public/**
+            .anyRequest().authenticated()           // Step 3: Require authentication for all other requests
         .and()
         .httpBasic();                            // Step 4: Enable HTTP Basic Authentication
 ```
@@ -287,8 +279,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
             .authorizeRequests()
-            .antMatchers("/public/**").permitAll()   // Allow public access to specific URLs
-            .anyRequest().authenticated()           // Require authentication for all other requests
+                .antMatchers("/public/**").permitAll()   // Allow public access to specific URLs
+                .anyRequest().authenticated()           // Require authentication for all other requests
             .and()
             .httpBasic();                            // Enable HTTP Basic Authentication
   }
@@ -375,8 +367,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
             .authorizeRequests()
-            .antMatchers("/public/**").permitAll()
-            .anyRequest().authenticated()
+                .antMatchers("/public/**").permitAll()
+                .anyRequest().authenticated()
             .and()
             .httpBasic();
   }
@@ -520,18 +512,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  // Configure HTTP security
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http
+    // Configure HTTP security
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
             .authorizeRequests()
-            .antMatchers("/public/**").permitAll()         // Allow access to "/public/**" without authentication
-            .antMatchers("/admin/**").hasRole("ADMIN")     // Only "ADMIN" role can access "/admin/**"
-            .antMatchers("/user/**").hasRole("USER")       // Only "USER" role can access "/user/**"
-            .anyRequest().authenticated()                  // All other requests need authentication
+                .antMatchers("/public/**").permitAll()         // Allow access to "/public/**" without authentication
+                .antMatchers("/admin/**").hasRole("ADMIN")     // Only "ADMIN" role can access "/admin/**"
+                .antMatchers("/user/**").hasRole("USER")       // Only "USER" role can access "/user/**"
+                .anyRequest().authenticated()                  // All other requests need authentication
             .and()
             .httpBasic();                                     // Use HTTP Basic Authentication
-  }
+    }
 
   // PasswordEncoder bean for password encoding
   @Bean
@@ -611,7 +603,7 @@ Here’s an example of a response with a session ID in a cookie:
 
 ```http
 HTTP/1.1 200 OK
-Set-Cookie: JSESSIONID=12345abcde; Path=/; HttpOnly
+Set-Cookie: JSESSIONID=12345abcde; Path=/; HttpOnly; Secure; SameSite=Strict
 Content-Type: text/html; charset=UTF-8
 ```
 
@@ -637,7 +629,6 @@ The server uses the session ID in the cookie to:
 - Use that data to authorize the user’s access to the requested resource.
 
 ### SessionCreationPolicies
-
 You can configure Spring Security with the `HttpSecurity` object to specify how session management should be handled.
 
 **Creating a session typically means that a `JSESSIONID` is introduced** (stored in the user's browser as a cookie) to maintain the session state across requests. This introduces session management overhead and can lead to security concerns. With stateless authentication, there's no need for the server to store session state, and the token (e.g., JWT) itself is sufficient for each request.
@@ -663,7 +654,6 @@ protected void configure(HttpSecurity http) throws Exception {
 ```
 
 #### `SessionCreationPolicy.ALWAYS`
-
 With `SessionCreationPolicy.ALWAYS`, a session is created for every request even if one already exists.
 
 ```java
@@ -682,7 +672,6 @@ protected void configure(HttpSecurity http) throws Exception {
 ```
 
 #### `SessionCreationPolicy.NEVER`
-
 With `SessionCreationPolicy.NEVER`, a session will never be created by Spring Security.
 
 Even though no new sessions will be created, existing session data could still persist and be used.
@@ -705,7 +694,6 @@ protected void configure(HttpSecurity http) throws Exception {
 ```
 
 #### `SessionCreationPolicy.STATELESS`
-
 With `SessionCreationPolicy.STATELESS`, no session is created, and the application remains fully stateless.
 
 Even if there was session data (such as a session ID) from a previous request, it will be ignored. Each request is treated independently, and all necessary information (like authentication) must be provided with the request itself, typically through tokens.
@@ -728,7 +716,6 @@ protected void configure(HttpSecurity http) throws Exception {
 ```
 
 #### Summary
-
 | Policy                                        | What happens on the server                                                         | What happens in the response                        | What happens in subsequent requests                                           |
 |-----------------------------------------------|------------------------------------------------------------------------------------|-----------------------------------------------------|-------------------------------------------------------------------------------|
 | `SessionCreationPolicy.ALWAYS`                | A session is always created, even if one already exists.                           | `JSESSIONID` cookie is set with a session ID.       | The client sends the `JSESSIONID` cookie with each request.                   |
@@ -737,26 +724,29 @@ protected void configure(HttpSecurity http) throws Exception {
 | `SessionCreationPolicy.STATELESS`             | No session is created, and no state is maintained.                                 | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g., JWT).        |
 
 ### Timeout
-Session timeout determines how long a session remains active before expiring due to inactivity. In Spring Security, this can be configured using the `sessionManagement()` method in the `HttpSecurity` configuration.
+Session timeout determines how long a session remains active before expiring due to **inactivity**. This refers to the amount of time a session can remain **idle** (without user activity or requests) before it is **invalidated**.
 
-When using `SessionCreationPolicy.IF_REQUIRED`, a session is created only if necessary. If a session is created, it remains active until it times out due to inactivity. You can define the session timeout both in Spring Security and at the servlet container level.
+For example, if an application has an **inactivity timeout** of **30 minutes**, and the user doesn’t make any requests within that time, the session will **expire** and the user will be logged out.
+
+Recall that, in Spring Security, when using `SessionCreationPolicy.IF_REQUIRED` a session is created only if necessary. Then we can configure various behaviour of a session timeout as follows: 
 
 ```java
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-                .antMatchers("/public/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-            .httpBasic()
-                .and()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only if required
-                .invalidSessionUrl("/session-expired") // Redirect if session is invalid
-                .maximumSessions(1) // Optional: Limit concurrent sessions per user
-                .expiredUrl("/session-expired"); // Redirect if session expires
-    }
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .authorizeRequests()
+            .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to /session-expired
+            .anyRequest().authenticated() // All other requests require authentication
+        .and()
+        .httpBasic()
+        .and()
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only if required
+            .sessionTimeout(Duration.ofMinutes(30)) // Set session timeout (inactivity timeout) to 30 minutes
+            .invalidSessionUrl("/session-expired") // Redirect if session is invalid due to inactivity
+            .maximumSessions(1) // Optional: Limit concurrent sessions per user
+            .expiredUrl("/session-expired"); // Redirect if session expires
+}
 ```
 
 - **`sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)`**
@@ -768,6 +758,15 @@ When using `SessionCreationPolicy.IF_REQUIRED`, a session is created only if nec
         - If your application is **stateless** (e.g., REST APIs), no session will be created unless explicitly required.
 
     - This approach provides flexibility, ensuring that a session is created only when necessary, based on your application's needs.
+
+- **`sessionTimeout(Duration.ofMinutes(30))`**
+
+    - This setting specifies the **inactivity timeout** for the session.
+
+    - **Inactivity Timeout**: The session will be considered expired if the user does not perform any action (e.g., make a request) within the defined period (30 minutes in this case).
+        - If the user is idle for 30 minutes without interacting with the application, the session will automatically expire.
+
+    - **Behavior**: After the inactivity timeout period, the session will be invalidated, and the user will be redirected to the `/session-expired` URL.
 
 - **`invalidSessionUrl("/session-expired")`**
 
@@ -796,52 +795,36 @@ When using `SessionCreationPolicy.IF_REQUIRED`, a session is created only if nec
     - **Behavior**: If the session expires due to inactivity (e.g., the user hasn't made any request for a specified period), they will be redirected to `/session-expired`.
         - This page typically informs the user that their session has timed out and prompts them to log in again.
 
-In addition to configuring session management in Spring Security, you must also configure session timeout at the servlet container level (e.g., Tomcat, Jetty). This ensures the session automatically expires after a defined period of inactivity.
-
-Using `application.properties`:
-
-```properties
-server.servlet.session.timeout=30m  # Set session timeout to 30 minutes
-```
-
-Using `application.yml`:
-
-```yaml
-server:
-  servlet:
-    session:
-      timeout: 30m  # Set session timeout to 30 minutes
-```
-
-How Session Expiration Works:
-
-- **Inactivity-Based Timeout**: The session expires if no activity occurs within the specified duration.
-- **Redirection on Expiry**: Users are redirected to a predefined URL (e.g., `/session-expired`).
-- **Manual Session Invalidation**: Sessions can also be manually invalidated by calling `session.invalidate()` in a Spring MVC controller.
+- **Note**: We have added `/session-expired` to the list of **public URLs** in the `authorizeRequests()` section:
+    ```java
+    .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to /session-expired
+    ```
+    - This ensures that the **`/session-expired`** URL is publicly accessible, meaning users can visit this page even if they are not authenticated.
 
 ### Logout
-Spring Security offers an efficient way to manage user logout behavior. You can customize the logout process by defining the logout URL, handling session invalidation, and setting up redirection after the user logs out.
+Logout functionality allows users to safely end their session and ensures that session data is properly cleared upon logout.
 
-To enable logout functionality in Spring Security, you can use the `logout()` method within your `HttpSecurity` configuration. This allows you to specify key elements such as the logout URL, the URL to redirect users after they log out, and whether the session should be invalidated during the process.
+In this configuration, we handle user logout behavior, session invalidation, and cookie deletion to ensure that the session is completely cleared when the user logs out.
 
-Here’s an example of how to configure logout:
+For example, after a user logs out, they will be redirected to the login page with a `logout` parameter, and their session will be invalidated.
 
 ```java
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-                .antMatchers("/public/**").permitAll()  // Allow public URLs to be accessed without authentication
-                .anyRequest().authenticated()  // Require authentication for other requests
-                .and()
-            .httpBasic()  // Enable basic HTTP authentication
-                .and()
+                .antMatchers("/public/**", "/session-expired", "/login").permitAll()  // Allow unauthenticated access to /public/**, /session-expired, and /login
+                .anyRequest().authenticated()  // All other requests require authentication
+            .and()
+            .httpBasic()
+            .and()
             .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // Only create a session when required
-                .invalidSessionUrl("/session-expired")  // Redirect users if their session becomes invalid
-                .maximumSessions(1)  // Limit to one concurrent session per user (optional)
-                .expiredUrl("/session-expired")  // Redirect when the session expires
-                .and()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // Create session only if required
+                .sessionTimeout(Duration.ofMinutes(30))  // Set session timeout (inactivity timeout) to 30 minutes
+                .invalidSessionUrl("/session-expired")  // Redirect if session is invalid due to inactivity
+                .maximumSessions(1)  // Optional: Limit concurrent sessions per user
+                .expiredUrl("/session-expired")  // Redirect if session expires
+            .and()
             .logout()
                 .logoutUrl("/logout")  // URL that triggers the logout process
                 .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
@@ -852,19 +835,37 @@ Here’s an example of how to configure logout:
     }
 ```
 
-- `logoutUrl("/logout")`: Specifies the URL endpoint that triggers the logout process. When a user accesses this URL, the session will be invalidated, and the logout process will begin.
-- `logoutSuccessUrl("/login?logout")`: After a successful logout, users will be redirected to this URL (for example, a login page). The query parameter `logout` can be used to display a message confirming the successful logout.
-- `invalidateHttpSession(true)`: This ensures that the session is invalidated during the logout process, removing all session-related data (such as user details).
-- `clearAuthentication(true)`: Clears any authentication data, ensuring that no residual authentication information remains in the session after logout.
-- `deleteCookies("JSESSIONID")`: Deletes the `JSESSIONID` cookie, making sure no session remnants remain on the client side, ensuring that the session is completely destroyed.
+### Logout Configuration
 
-In addition to manually triggering logout through the `/logout` URL, you can also configure Spring Security to log users out automatically after a period of inactivity. This is achieved by setting a session timeout. Once the session expires, users are logged out automatically.
+- **`logoutUrl("/logout")`:**
+    - Defines the URL to trigger the logout process.
+    - Users can log out by accessing `/logout`, and their session will be invalidated.
 
-You can configure automatic logout by combining session timeout with the `invalidSessionUrl()` configuration, which redirects users to a specified URL when their session is invalid.
+- **`logoutSuccessUrl("/login?logout")`:**
+    - After successfully logging out, users will be redirected to the login page with a `logout` parameter in the URL (`/login?logout`).
+    - This parameter can be used to display a logout success message to the user.
 
-For example, in the above configuration, we define:
+- **`invalidateHttpSession(true)`:**
+    - Ensures that the session is invalidated when the user logs out.
+    - This ensures that all session attributes are removed.
 
-- `invalidSessionUrl("/session-expired")`: This will redirect users to `/session-expired` if their session becomes invalid, which may happen due to inactivity or other reasons.
+- **`clearAuthentication(true)`:**
+    - Clears authentication data, effectively logging the user out of the system.
+    - This makes sure that the user’s security context is fully cleared.
+
+- **`deleteCookies("JSESSIONID")`:**
+    - Deletes the session cookie (`JSESSIONID`) when the user logs out.
+    - This helps prevent session hijacking, ensuring that the session identifier is no longer accessible after logout.
+
+- **`permitAll()`:**
+    - Ensures that the logout URL (`/logout`) is accessible to everyone, including unauthenticated users.
+    - This allows any user to log out, even if they aren't currently logged in.
+
+- **`antMatchers("/public/**", "/session-expired", "/login", "/logout").permitAll()  // Allow unauthenticated access to /public/**, /session-expired, /login, and /logout`:**
+  - **`/public/**`**, **`/session-expired`**, **`/login`**, and **`/logout`** are publicly accessible.
+  - **`/logout`**: Allows users to log out, clearing session data and redirecting them to the login page.
+  - **`/login?logout`**: Redirects to the login page after successful logout, with a `logout` parameter to indicate the logout success.
+  - **`/session-expired`**: A page that informs users when their session has expired or is invalidated.
 
 ---
 

@@ -786,6 +786,12 @@ protected void configure(HttpSecurity http) throws Exception {
 
     - **Behavior**: This is useful when you want to enforce **single-session login**, meaning users cannot have multiple sessions across different devices or browsers.
 
+    - **JSESSIONID Management**: The **JSESSIONID** is a session identifier that tracks a user's active session in a web application. With **`maximumSessions(1)`** in place, the user can only have one valid **JSESSIONID** at any given time.
+        - If the user logs in from a new device or browser, the previously issued **JSESSIONID** will be invalidated, and a new **JSESSIONID** will be generated for the new session.
+        - This ensures that a user's identity is tied to a single active session at any time, making it easier to manage session security.
+
+    - **Security Considerations**: This approach helps mitigate risks like session hijacking or unauthorized access across multiple devices, as only one session can be active per user. It ensures that users do not maintain multiple concurrent sessions, which can be particularly important for high-security environments.
+
 - **`expiredUrl("/session-expired")`**
 
     - This setting defines the URL to redirect the user when their session **expires** due to inactivity.
@@ -835,8 +841,6 @@ For example, after a user logs out, they will be redirected to the login page wi
     }
 ```
 
-### Logout Configuration
-
 - **`logoutUrl("/logout")`:**
     - Defines the URL to trigger the logout process.
     - Users can log out by accessing `/logout`, and their session will be invalidated.
@@ -866,6 +870,203 @@ For example, after a user logs out, they will be redirected to the login page wi
   - **`/logout`**: Allows users to log out, clearing session data and redirecting them to the login page.
   - **`/login?logout`**: Redirects to the login page after successful logout, with a `logout` parameter to indicate the logout success.
   - **`/session-expired`**: A page that informs users when their session has expired or is invalidated.
+
+### Duration
+
+#### Overview
+In most web applications, the duration of the `JSESSIONID` cookie is not directly communicated to the client, and it is typically managed internally by the server. The `JSESSIONID` cookie itself doesn't usually carry information about its expiration time, and users are generally unaware of the specifics of how long their session will last.
+
+Session cookies, like `JSESSIONID`, typically do not carry a `max-age` or `expiry` attribute. Instead, they last as long as the session is active (i.e. until the browser is closed, unless the session is explicitly invalidated by the server). This behavior is because session cookies are **non-persistent cookies**. They are stored in the session storage of the browser, meaning they only exist during the browser session. When the session ends (i.e. the browser is closed), the cookie is automatically deleted. The browser handles this automatically without needing an explicit expiration time.
+
+When the server sends a `JSESSIONID` cookie without setting a `max-age` or `expiry` time, it becomes a session cookie:
+
+````http
+Set-Cookie: JSESSIONID=abc123; Path=/; HttpOnly; Secure; SameSite=Strict
+````
+
+In this example:
+
+- The `JSESSIONID` cookie does not include an `expires` or `max-age` attribute, making it a session cookie that will be deleted when the browser is closed.
+- The `Secure` flag ensures that the cookie is only sent over HTTPS connections.
+- The `SameSite=Strict` attribute ensures that the cookie is sent only in first-party contexts, providing extra security by preventing cross-site request forgery (CSRF) attacks.
+
+In contrast, **persistent cookies** are cookies that have a specified expiration date or maximum age, meaning they remain stored in the user's browser until that time, even if the browser is closed and reopened. These cookies are used when you want to retain user-specific data across sessions, such as login credentials or preferences.
+
+For example, setting a persistent cookie involves explicitly defining an expiration date or time, which is done using the `max-age` or `expires` attributes in the `Set-Cookie` header:
+
+````http
+Set-Cookie: username=john_doe; Max-Age=2592000; Path=/; HttpOnly; Secure; SameSite=Strict
+````
+
+In this example:
+
+- The `Max-Age` attribute is set to 2592000 seconds (30 days), making this a persistent cookie.
+- The cookie will remain in the user's browser for 30 days, even if the user closes and reopens the browser.
+- The `Secure` flag ensures it is only sent over HTTPS.
+- The `SameSite=Strict` attribute provides additional security by restricting the cookie to first-party contexts only.
+
+#### SessionExpirationFilter
+We know that if you set a session timeout in **Spring Security**, the server will automatically invalidate the session after the specified time of inactivity.
+
+To implement a **maximum session length** (not just an inactivity timeout), **Spring Security** doesn’t provide a built-in way to enforce an absolute "maximum session length" (like an expiration after a certain duration regardless of activity). But, you can implement this behavior by managing the session expiration using a **custom filter**.
+
+To achieve a maximum session length, you can create a custom filter that tracks when the session was created and manually invalidates the session after a certain period, independent of inactivity. We will see an approach to add a custom session expiration filter.
+
+**Definition and chaining**
+
+This is an example of a custom filter **definition** and **chaining** for this purpose:
+
+```java
+public class SessionExpirationFilter extends OncePerRequestFilter {
+
+    private static final long MAX_SESSION_DURATION = Duration.ofHours(1).toMillis(); // 1 hour max session length
+    
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        
+        if (session != null) {
+            Long creationTime = (Long) session.getAttribute("sessionCreationTime");
+            if (creationTime == null) {
+                creationTime = System.currentTimeMillis();
+                session.setAttribute("sessionCreationTime", creationTime);
+            }
+            
+            if (System.currentTimeMillis() - creationTime > MAX_SESSION_DURATION) {
+                session.invalidate();  // Invalidate session after max duration
+                response.sendRedirect("/session-expired");  // Redirect to session expired page
+                return;  // Stop further filter chain processing
+            }
+        }
+        
+        filterChain.doFilter(request, response);  // Continue filter chain
+    }
+}
+```
+
+- **Class Declaration:**
+    - `SessionExpirationFilter` extends `OncePerRequestFilter`, meaning the filter runs once per HTTP request.
+
+- **Constant Definition:**
+    - `MAX_SESSION_DURATION` is set to 1 hour in milliseconds (`Duration.ofHours(1).toMillis()`), defining the maximum session duration.
+
+- **Method `doFilterInternal`:**
+    - This method is the core of the filter, called during every HTTP request.
+
+    - **Get the Session:**
+      ```java
+      HttpSession session = request.getSession(false);
+      ```
+        - `request.getSession(false)` tries to get the current session without creating a new one.
+        - If there's no session, it returns `null`.
+
+    - **Check if Session Exists:**
+      ```java
+      if (session != null) {
+      ```
+        - If the session is not `null`, the code continues to handle the session expiration logic.
+
+    - **Check or Set Session Creation Time:**
+      ```java
+      Long creationTime = (Long) session.getAttribute("sessionCreationTime");
+      if (creationTime == null) {
+          creationTime = System.currentTimeMillis();
+          session.setAttribute("sessionCreationTime", creationTime);
+      }
+      ```
+        - It checks if the session has an attribute `sessionCreationTime`. If it doesn't exist, it sets the creation time to the current system time (`System.currentTimeMillis()`).
+        - This attribute is used to track how long the session has been active.
+
+    - **Check for Session Expiration:**
+      ```java
+      if (System.currentTimeMillis() - creationTime > MAX_SESSION_DURATION) {
+      ```
+        - It checks if the current time minus the session creation time exceeds the maximum allowed session duration (`MAX_SESSION_DURATION`).
+        - If the session has exceeded the duration, it invalidates the session and redirects the user.
+
+    - **Invalidate the Session and Redirect:**
+      ```java
+      session.invalidate();  // Invalidate session after max duration
+      response.sendRedirect("/session-expired");  // Redirect to session expired page
+      return;  // Stop further filter chain processing
+      ```
+        - If the session has expired, it invalidates the session and sends a redirect response to `/session-expired`.
+        - The `return` statement ensures that the filter chain does not continue processing further filters or requests after the session is invalidated.
+
+    - **Continue the Filter Chain:**
+      ```java
+      filterChain.doFilter(request, response);
+      ```
+        - If the session is still valid, the filter chain proceeds to the next filter or the target resource.
+
+**Registration**
+
+Then you need to perform the **registration** of this custom filter in your `SecurityConfig` `@Configuration` class.
+
+When you want to implement **custom logic in session management** (such as session expiration), it’s crucial to control **when** the custom logic is executed relative to **authentication**.
+
+We need to know that `UsernamePasswordAuthenticationFilter` is a Spring Security filter responsible for handling the process of authenticating a user based on their username and password. It plays a crucial role in HTTP-based authentication, particularly when the user logs in with their credentials, such as through form-based or basic authentication. Although you don't explicitly define this filter in your configuration, Spring Security automatically registers it in the security filter chain by default when using basic or form-based authentication. This filter ensures that user credentials are processed correctly during the authentication process, allowing Spring Security to authenticate the user successfully.
+
+Having said that, in this case, using `addFilterBefore()` you add the **custom filter** before the **`UsernamePasswordAuthenticationFilter`** in the filter chain to ensure that session expiration is checked **before authentication** takes place. By doing this, your custom filter will be executed **first**. It will check whether the session has expired, and if it has, it will invalidate the session and redirect the user before any authentication attempts are made:
+
+````java
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .addFilterBefore(new SessionExpirationFilter(), UsernamePasswordAuthenticationFilter.class)  // Add SessionExpirationFilter before authentication filter
+            .authorizeRequests()
+                .antMatchers("/public/**", "/session-expired", "/login").permitAll()  // Allow unauthenticated access to /public/**, /session-expired, and /login
+                .anyRequest().authenticated()  // All other requests require authentication
+            .and()
+            .httpBasic()
+            .and()
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // Create session only if required
+                .sessionTimeout(Duration.ofMinutes(30))  // Set session timeout (inactivity timeout) to 30 minutes
+                .invalidSessionUrl("/session-expired")  // Redirect if session is invalid due to inactivity
+                .maximumSessions(1)  // Optional: Limit concurrent sessions per user
+                .expiredUrl("/session-expired")  // Redirect if session expires
+            .and()
+            .logout()
+                .logoutUrl("/logout")  // URL that triggers the logout process
+                .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
+                .invalidateHttpSession(true)  // Invalidate the session when logging out
+                .clearAuthentication(true)  // Clear authentication data on logout
+                .deleteCookies("JSESSIONID")  // Delete session cookies (e.g., JSESSIONID)
+                .permitAll();  // Allow all users to access the logout URL
+    }
+````
+
+- **Adding the `SessionExpirationFilter` Before the `UsernamePasswordAuthenticationFilter`**
+    - The custom `SessionExpirationFilter` is added before the default `UsernamePasswordAuthenticationFilter` in the filter chain.
+    - This ensures that the session expiration is checked before the user is authenticated.
+    - If the session is expired, the filter will invalidate the session and redirect the user to the `/session-expired` page.
+
+- **Authorization Rules**
+    - `.authorizeRequests()` starts the section for defining access control rules for specific URLs.
+    - `.antMatchers("/public/**", "/session-expired", "/login").permitAll()` allows **unauthenticated** access to `/public/**`, `/session-expired`, and `/login` URLs.
+    - `.anyRequest().authenticated()` requires authentication for **any other request** that is not explicitly allowed.
+
+- **HTTP Basic Authentication**
+    - `.httpBasic()` enables **basic HTTP authentication** for the application.
+    - This allows users to authenticate by sending a username and password directly in the request header.
+
+- **Session Management Configuration**
+    - `.sessionManagement()` configures session behavior:
+        - `.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)` means the session is created only when needed (i.e., when the user is authenticated).
+        - `.sessionTimeout(Duration.ofMinutes(30))` sets the session timeout to 30 minutes of inactivity.
+        - `.invalidSessionUrl("/session-expired")` redirects to the `/session-expired` URL if the session is invalidated.
+        - `.maximumSessions(1)` limits the user to only one concurrent session.
+        - `.expiredUrl("/session-expired")` redirects to `/session-expired` if the session expires.
+
+- **Logout Configuration**
+    - `.logout()` configures the logout process:
+        - `.logoutUrl("/logout")` specifies the URL that triggers the logout.
+        - `.logoutSuccessUrl("/login?logout")` redirects the user to the login page with a logout query parameter after successful logout.
+        - `.invalidateHttpSession(true)` invalidates the HTTP session on logout.
+        - `.clearAuthentication(true)` clears authentication data on logout.
+        - `.deleteCookies("JSESSIONID")` deletes the `JSESSIONID` cookie, which is used to identify the session.
+        - `.permitAll()` ensures that the logout URL is accessible by everyone, even unauthenticated users.
 
 ---
 

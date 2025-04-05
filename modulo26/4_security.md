@@ -1006,7 +1006,7 @@ Host: example.com
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 43
 
-username=user&password=password
+username=user&amp;password=password
 ````
 
 ````http

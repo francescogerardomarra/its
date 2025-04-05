@@ -1131,15 +1131,14 @@ Content-Length: 20
 ***
 
 #### `SessionCreationPolicy.NEVER`
-When using `SessionCreationPolicy.NEVER`, Spring Security will **never** create a new session itself. However, if a session already exists (for example, created by some other part of the application), Spring Security will use it.
 
-This approach is useful when you want to avoid unnecessary session creation for stateless authentication mechanisms like **Basic Authentication**, but still allow using an existing session if one is already there.
+When using `SessionCreationPolicy.NEVER`, Spring Security will **never** create a session, but it **will use** an existing session **if one already exists**.
 
-- **No Session Creation**: If there is no existing session, Spring Security will not create one.
-- **Session Reuse**: If the client sends a valid `JSESSIONID` cookie representing an existing session, it will be reused.
-- **Stateless Authentication**: With Basic Authentication or other stateless methods, sessions won't be created unless some external component explicitly does it.
+This policy is useful when you want to integrate with an existing session management system but don't want Spring Security to initiate new sessions on its own.
 
-This behavior ensures better support for truly stateless applications, but still integrates well with existing session-based systems if needed.
+- **No Session Creation**: Spring Security will not create a session.
+- **Session Reuse**: If the client sends a valid `JSESSIONID` cookie, Spring Security will use the existing session.
+- **Authentication Requirements**: Without an existing session, credentials must be provided with each request.
 
 ```java
 @Override
@@ -1160,7 +1159,93 @@ In the following example:
 
 - three HTTP requests and responses are exchanged with `SessionCreationPolicy.NEVER`.
 - the first request sends credentials in the `Authorization` header.
-- the server authenticates the user but **does not create** a session.
+- the server authenticates the user, processes the request, but **does not create a session**.
+- the second request does not send credentials and fails with **401 Unauthorized**.
+- the third request includes a valid `JSESSIONID` cookie from a previously existing session, allowing access without resending credentials.
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+````
+
+````http
+HTTP/1.1 401 Unauthorized
+Content-Length: 0
+````
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Cookie: JSESSIONID=abcd1234
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
+
+***
+
+With `NEVER`, Spring Security will not create a new session, but if a session already exists, it will be reused for authentication and authorization.
+
+#### `SessionCreationPolicy.STATELESS`
+When using `SessionCreationPolicy.STATELESS`, Spring Security will **never** create a session, and it will also **never** use an existing session. Every request must be independently authenticated without relying on any session state.
+
+This approach is ideal for stateless authentication mechanisms such as **Basic Authentication**, **Bearer Tokens**, or any API-based authentication, ensuring that the server remains completely stateless.
+
+- **No Session Creation**: Sessions are never created.
+- **No Session Reuse**: Even if the client sends a `JSESSIONID` cookie, it will be ignored.
+- **Stateless Authentication**: Each request must provide all necessary authentication credentials.
+
+This behavior ensures maximum scalability and security for REST APIs and other stateless services.
+
+```java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .authorizeRequests()
+            .antMatchers("/public/**").permitAll()
+            .anyRequest().authenticated()
+            .and()
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+        .httpBasic();
+}
+```
+
+In the following example:
+
+- three HTTP requests and responses are exchanged with `SessionCreationPolicy.STATELESS`.
+- the first request sends credentials in the `Authorization` header.
+- the server authenticates the user and processes the request, but **does not create or use any session**.
 - the second request does not send credentials and fails with **401 Unauthorized**.
 - the third request resends credentials in the `Authorization` header and succeeds.
 
@@ -1191,7 +1276,6 @@ Host: example.com
 
 ````http
 HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Basic realm="Realm"
 Content-Length: 0
 ````
 
@@ -1215,37 +1299,7 @@ Content-Length: 20
 
 ***
 
-Notice that without a session and without credentials, the server has no way to authenticate the user, resulting in 401 Unauthorized responses. When credentials are resent, access is granted again.
-
-#### `SessionCreationPolicy.STATELESS`
-With `SessionCreationPolicy.STATELESS`, no session is created, and the application remains fully stateless.
-
-Even if there was session data (such as a session ID) from a previous request, it will be ignored. Each request is treated independently, and all necessary information (like authentication) must be provided with the request itself, typically through tokens.
-
-**This ensures that each request is independent, with no session state maintained or used on the server, which is crucial for stateless architectures like REST APIs.**
-
-```java
-@Override
-protected void configure(HttpSecurity http) throws Exception {
-    http
-        .authorizeRequests()
-            .antMatchers("/public/**").permitAll()
-            .anyRequest().authenticated()
-            .and()
-        .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-        .httpBasic();
-}
-```
-
-#### Summary
-| Policy                                        | What happens on the server                                                         | What happens in the response                        | What happens in subsequent requests                                          |
-|-----------------------------------------------|------------------------------------------------------------------------------------|-----------------------------------------------------|------------------------------------------------------------------------------|
-| `SessionCreationPolicy.ALWAYS`                | A session is always created, even if one already exists.                           | `JSESSIONID` cookie is set with a session ID.       | The client sends the `JSESSIONID` cookie with each request.                  |
-| `SessionCreationPolicy.IF_REQUIRED` (default) | A session is created only when deemed necessary.                                   | `JSESSIONID` cookie is set if a session is created. | The client sends the `JSESSIONID` cookie with each request.                  |
-| `SessionCreationPolicy.NEVER`                 | No session is created. However, pre-existing session data **might** still be used. | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g. Basic Auth). |
-| `SessionCreationPolicy.STATELESS`             | No session is created, and no state is maintained.                                 | No `JSESSIONID` cookie is set.                      | Authentication must be sent explicitly in request headers (e.g. JWT).        |
+With `STATELESS`, every request must include authentication credentials because the server does not maintain any session state between requests.
 
 ### Timeout
 Session timeout determines how long a session remains active before expiring due to **inactivity**. This refers to the amount of time a session can remain **idle** (without user activity or requests) before it is **invalidated**.

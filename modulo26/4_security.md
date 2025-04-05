@@ -766,7 +766,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 This session is typically linked to the user’s interaction with the application, ensuring that subsequent requests can reference the same session and access the user’s authentication details without requiring them to log in again.
 
 ### JSESSIONID
-When a server creates an authentication-related session, it typically adds a session identifier `JSESSIONID` to the HTTP response. This session identifier is placed in the response as a cookie (by default) or as part of the response headers. This allows the client (usually a browser) to track the session across requests.
+When a server creates an authentication-related session, it typically adds a session identifier `JSESSIONID` to the HTTP response.
+
+This session identifier is placed in the response as a cookie or as part of the response headers. This allows the client (usually a browser) to track the session across requests.
 
 For example, a server-side session might result in the following:
 

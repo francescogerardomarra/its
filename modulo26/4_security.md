@@ -369,6 +369,12 @@ One such implementation is the `InMemoryUserDetailsManager`, which allows you to
 
 For applications with many users or those requiring persistence, relying on an in-memory solution is not ideal. In such cases, a more scalable solution, like storing user credentials in a database or using an external identity provider, would be necessary to ensure security, scalability, and persistence over time.
 
+In the provided code, the `passwordEncoder.encode("password")` method scrambles the password `"password"` using the algorithm defined in the `PasswordEncoder` bean (in this case, BCrypt). This makes the password unreadable unless someone has access to the secret algorithm and its parameters. So, even if an attacker gains access to the application’s memory or database, they won’t be able to easily decipher the original password, because it has been securely transformed using the "codebook."
+
+The `PasswordEncoder` is injected into the `userDetailsService` method to ensure that passwords are securely encoded before they are added to the `InMemoryUserDetailsManager`. This approach follows best practices for storing passwords and ensures that user data remains protected from unauthorized access.
+
+In short, the `PasswordEncoder` is like a "magic" codebook that ensures passwords are stored in a safe, unreadable format, preventing security breaches due to exposed passwords.
+
 ```java
 package com.example.security;
 

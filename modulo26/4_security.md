@@ -347,7 +347,13 @@ This is what each in-place method does:
 ---
 
 ## Basic Authentication
-Basic Authentication is a simple way to secure an API or web application by requiring the client to send a username and password in the request header.
+**Basic Authentication** involves sending the username and password with every HTTP request. This happens because **Basic Authentication** is stateless by design. Unlike some other authentication mechanisms that can maintain a session, Basic Authentication does not retain any memory of previous interactions between the client and the server.
+
+HTTP itself is a **stateless protocol**, meaning that each request is independent of any previous requests. This stateless nature of HTTP means that the server doesn't store information about prior requests, including authentication status.
+
+When a client wants to authenticate itself to a server, it sends the credentials (username and password) in the `Authorization` header of each HTTP request. These credentials are typically encoded in **Base64** format, creating a string like `username:password`. This encoded string is then included in the `Authorization` header.
+
+Since Basic Authentication doesn't use sessions or cookies to remember an authenticated user, the client must include the **username and password** with each request to prove its identity again. The server does not "remember" that the client was authenticated previously; it simply checks the credentials provided in each request.
 
 Here is an example of how the credentials are expected in a POST request when Basic Authentication is used:
 
@@ -453,6 +459,16 @@ Due to the configuration:
 
 - **Step 8**: If the **password does not match** or no matching user is found, authentication **fails**, and the user is denied access.
     - In this case, Spring Security typically returns a **401 Unauthorized** HTTP status code.
+
+- **Step 9**: After the initial successful authentication, each subsequent request from the client will need to include the **username and password** in the `Authorization` header again.
+
+- **Step 10**: Since **Basic Authentication** is stateless, the server does not remember previous authentication. Each request is treated as a new request, requiring the client to send the **credentials** every time.
+
+- **Step 11**: If the **client omits** the `Authorization` header or sends **incorrect credentials**, the server will respond with a **401 Unauthorized** status code, prompting the client to provide valid credentials.
+
+- **Step 12**: If the client correctly resends the credentials in the `Authorization` header, the server will revalidate the username and password and either grant or deny access based on the comparison of the credentials.
+
+- **Step 13**: This process repeats with each HTTP request, maintaining the stateless nature of Basic Authentication, ensuring the client always provides credentials for each request.
 
 ### JdbcUserDetailsManager
 As we know, in Spring Security, the "phone book" for user credentials (username and password) is the `UserDetailsService`. This service is responsible for looking up user details and verifying if the provided credentials match. However, there are different types of "phone books" that can be used to store and manage these credentials.
@@ -642,6 +658,17 @@ Due to the configuration:
     - In this case, Spring Security typically returns a **401 Unauthorized** HTTP status code, indicating that the credentials were invalid or the user does not exist.
 
 - **Step 10**: If authentication is successful, Spring Security proceeds to handle the request, applying any security policies such as role-based access control (RBAC) or any other configured rules (e.g. permission checks) before granting access to the requested resource.
+
+- **Step 11**: After the initial successful authentication, each subsequent request from the client must include the **username and password** in the `Authorization` header again, as Basic Authentication is stateless.
+
+- **Step 12**: Since **Basic Authentication** is stateless, the server does not retain any memory of the previous request. Each request is treated independently, requiring the client to send the **credentials** every time.
+
+- **Step 13**: If the **client omits** the `Authorization` header or sends **incorrect credentials**, Spring Security will respond with a **401 Unauthorized** status code, prompting the client to resend valid credentials.
+
+- **Step 14**: If the client resends the **correct credentials** in the `Authorization` header, Spring Security will repeat the authentication process:
+    - The **`JdbcUserDetailsManager`** will query the database again to verify the credentials, check the user’s **enabled status**, and retrieve the **hashed password**.
+
+- **Step 15**: This process repeats for each HTTP request. Even if the user has been authenticated once, the server will not remember the authentication for subsequent requests unless another mechanism (e.g., session management or tokens) is used.
 
 ---
 

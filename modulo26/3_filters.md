@@ -10,53 +10,146 @@ Filters are part of the servlet container and allow you to manipulate the reques
 In Spring, filters are commonly used to process requests or responses in a way that is **independent of the business logic**. Filters sit in between the client and the servlet (or controller), intercepting and potentially modifying the request and/or response before the request reaches the servlet or after the servlet generates the response.
 
 #### Definition, Chaining, Registration
-From a theoretical point of view, the implementation lifecycle of a filter can be broken down into three main stages:
+The implementation of a filter is a **three-step** process:
 
 1. **Definition**: In this stage, the filter is created by implementing the `jakarta.servlet.Filter` interface or by extending an abstract class like `GenericFilter`. The filter class contains the logic that defines how incoming requests and outgoing responses should be processed, typically by overriding methods like `doFilter()`.
 2. **Chaining**: As part of the definition, the **filter chain** comes into play. A filter chain allows multiple filters to be executed in a specific order. When the `doFilter()` method is called, the filter can either continue processing the request by calling `chain.doFilter(request, response)` or halt the chain. This chaining mechanism ensures that each filter in the chain can perform its task before passing the request to the next filter or the target resource (like a servlet or controller).
-3. **Registration**: Once defined, the filter must be registered with the web application so that it can be invoked during the request-response cycle. This registration can be done either through the `web.xml` file (in older servlet versions) or via annotations like `@WebFilter` (in modern servlet-based applications). The filter is mapped to specific URL patterns or servlet paths to determine when it should be executed.
 
-In summary, the filter lifecycle involves:
-- **Definition** of the filter's behavior.
-- **Chaining** of filters to ensure that multiple filters can work in sequence on the request and response.
-- **Registration** of the filter within the web application's configuration.
+   The `doFilter()` method is executed for both **requests** and **responses**, depending on where the code is placed inside the method:
+
+   - **Before** calling `chain.doFilter(request, response)`, the filter executes for **incoming requests** (pre-processing). This is where you can inspect or modify the request before it reaches the target resource.
+
+   - **After** calling `chain.doFilter(request, response)`, the filter executes for **outgoing responses** (post-processing). This is where you can modify or inspect the response after it has been processed by the target resource or subsequent filters.
+
+   This dual processing mechanism allows for powerful and flexible request and response handling at different stages of the request lifecycle.
+3. **Registration**: Once defined, the filter must be registered with the web application so that it can be invoked during the request-response cycle. This registration can be done in different ways.
 
 #### Lifecycle
-As soon as a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle.
+As soon as a request is made to the application, a **request-response pair** is created and associated throughout the entire lifecycle of that request.
 
-Filters can intercept and modify both **requests** and **responses** at various stages of the HTTP request lifecycle:
-- **Request Interception**: Filters can alter or inspect the request before it reaches the servlet or controller.
-- **Response Interception**: Filters can manipulate the response that is sent back to the client after the servlet has processed the request.
+Filters can **intercept** and **modify** both **requests** and **responses** at various stages of the HTTP request lifecycle:
+
+- **Request Interception**: Filters can alter, validate, or inspect the incoming request **before** it reaches the servlet or controller.
+- **Response Interception**: Filters can manipulate or enrich the outgoing response **after** the controller has processed the request.
 
 Filters have the ability to:
-- **Modify the request**: Add additional headers, parameters, or modify the request body.
-- **Log request details**: Useful for auditing or debugging.
-- **Authenticate requests**: A typical use case is JWT (JSON Web Token) authentication.
-- **Modify the response**: Add headers, change the response body, or handle logging.
-- **Redirect or terminate the request/response**: For example, if authentication fails, you might stop the request processing and return a 401 Unauthorized response.
+- **Modify the request**: Add or remove headers, parameters, or even modify the request body.
+- **Log request details**: Useful for auditing, monitoring, or debugging.
+- **Authenticate and authorize**: Common in JWT (JSON Web Token) authentication, API gateway filters, etc.
+- **Modify the response**: Set headers, transform the body, or manage CORS settings.
+- **Short-circuit request flow**: Terminate processing early (e.g., respond immediately with 401 Unauthorized if authentication fails).
 
-Here's how this flow works in the context of filters:
+The **filter flow** is **bidirectional**.
 
-1. **Request Handling**:
-    - When the HTTP request reaches the application, a **request object** is created, and a **response object** is also prepared, even though it is initially empty (the response body hasn't been generated yet). This response object is created early by the servlet container to ensure that a response can be sent back to the client once the request is processed.
-    - Both the request and response are passed through the filter chain together.
+First it moves **forward** (request), reaching the controller, then **unwinds back** (response), returning through the filters.
 
-2. **Filters and Request-Response Interaction**:
-    - Filters receive both the **request** and **response** objects and can interact with them.
-    - **Request Interception**: Filters can inspect, log, or modify the incoming **request** before it reaches the servlet or controller.
-    - **Response Interception**: Even before the controller processes the request, the filter has access to the **response** object. Although the response body is empty at this point, filters can set or modify **response headers**, like setting authentication or CORS headers.
+- **Request Handling Phase**
+  - When an HTTP request arrives, the **servlet container** immediately creates:
+     - a **request object** (populated with incoming request data),
+     - a **response object** (empty initially, but ready to be filled).
+  - The **request and response** objects are passed through the **filter chain**.
+  - Each filter gets a chance to **intercept, validate, or modify** the incoming request **before** it hits the controller.
 
-   The key here is that the **response object** exists from the very beginning of the request lifecycle, even before the controller generates any content for it. Filters can modify headers or perform actions like logging, authentication checks, or other pre-processing tasks on the response, even though its body hasn't been populated yet.
+- Execution Inside Filters
+  - Filters operate through the `doFilter(request, response, chain)` method.
 
-3. **Controller Processing**:
-    - After the request passes through all filters, it reaches the controller, where the request is processed. The controller generates content for the **response** object, such as setting the HTTP status, adding headers, and generating the response body.
+| **Phase**                                      | **Inside doFilter**                                    |
+|:-----------------------------------------------|:-------------------------------------------------------|
+| **Before** `chain.doFilter(request, response)` | Code runs for incoming requests (**pre-processing**)   |
+| **After** `chain.doFilter(request, response)`  | Code runs for outgoing responses (**post-processing**) |
 
-4. **Post-Processing by Filters**:
-    - Once the controller has generated the response, the response object travels back through the filter chain. Filters can now inspect or modify the **response** before it is sent to the client. This is typically where you can perform logging or modify the content of the response (e.g. adding custom headers or logging response times).
+- Thus:
+  - **Before** calling `chain.doFilter(...)` → filters handle the **request phase**.
+  - **After** calling `chain.doFilter(...)` → filters handle the **response phase**.
+
+| **Code Position**                              | **Executed When**                                                  |
+|:-----------------------------------------------|:-------------------------------------------------------------------|
+| **Before** `chain.doFilter(request, response)` | During **request flow** (before reaching controller)               |
+| **After** `chain.doFilter(request, response)`  | During **response flow** (after controller has generated response) |
+
+- **Forward flow**: request is pushed through the filters toward the target controller.  
+- **Backward flow**: after the controller processes the request, the response is sent back through the filters in reverse order.
+
+So the flow timeline looks like this:
+
+```plaintext
+Incoming HTTP Request
+    ↓
+[Filter A] (before chain.doFilter)
+    ↓
+[Filter B] (before chain.doFilter)
+    ↓
+[Controller] (business logic, populates response)
+    ↑
+[Filter B] (after chain.doFilter)
+    ↑
+[Filter A] (after chain.doFilter)
+    ↑
+Outgoing HTTP Response
+```
+
+Summing up:
+
+- The request **travels down** the filter chain.
+- After reaching the controller, **the response travels back up** through the chain.
+- **Each filter regains control** *after* `chain.doFilter()` returns, allowing post-processing on the response.
+- The **response object exists from the beginning** of the request, even before it has any content. Filters can set headers or status codes early if needed.
+- **The body** (payload) of the response is typically **populated by the controller**.
+- **Post-processing** filters (code after `chain.doFilter`) can:
+   - Inspect response headers and status codes.
+   - Log the outcome (e.g., response time, success/failure).
+   - Modify the response if necessary (add CORS headers, security tokens, etc.).
+- **Control Flow**: Once `chain.doFilter` is called, the flow **"dives" into deeper filters or the controller**. Once the controller has finished, the flow **"unwinds" back** through the filters.
+
+| **Stage**                                        | **Action**                                         |
+|:-------------------------------------------------|:---------------------------------------------------|
+| Request enters                                   | Request object and empty Response object created.  |
+| Pre-Processing (Filters before `chain.doFilter`) | Request inspection, validation, modification.      |
+| Controller processing                            | Request is handled, response body generated.       |
+| Post-Processing (Filters after `chain.doFilter`) | Response inspection, logging, header modification. |
+| Response exits                                   | Response sent back to client.                      |
+
+A quick code example of a filter definition and chaining:
+
+```java
+@Override
+public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
+
+    // Request phase: pre-processing
+    System.out.println("🔸 Before chain.doFilter - Request incoming");
+
+    // Passing control to the next filter or controller
+    chain.doFilter(request, response);
+
+    // Response phase: post-processing
+    System.out.println("🟢 After chain.doFilter - Response outgoing");
+}
+````
+
+Output Order:
+
+```
+🔸 Before chain.doFilter - Request incoming
+(Controller runs)
+🟢 After chain.doFilter - Response outgoing
+```
 
 #### Use Cases
-- **Authentication**: A filter can intercept incoming requests to verify the presence of a JWT token in the request headers, validate the token, and allow or deny access to the resources based on the token's validity.
-- **Logging**: A filter can log details about incoming requests (e.g. request method, URL, headers, body) for auditing, debugging, or monitoring purposes.
+
+Filters are often used to perform specific tasks at different stages of the request-response lifecycle. These tasks can be categorized into actions taken **before** and **after** the call to `chain.doFilter(request, response)`.
+
+- **Before `chain.doFilter(request, response)`**:
+   - **Authentication / Authorization Checks**: A filter can intercept incoming requests to verify the presence of an authentication token (e.g., JWT in the headers). It can then validate the token, check the user's roles or permissions, and allow or deny access to the requested resource based on the token's validity.
+   - **Logging Request Details**: Filters can log essential details about the incoming request such as the HTTP method, requested URL, headers, query parameters, and even the body. This is useful for debugging, monitoring, or auditing requests.
+   - **Modifying Headers or Body of Incoming Requests**: Filters can modify or enrich incoming requests by adding headers (e.g., security headers), or even transforming the request body if necessary (e.g., sanitizing input or enriching the payload).
+
+- **After `chain.doFilter(request, response)`**:
+   - **Logging Response Details**: After the request has been processed by the target resource and subsequent filters, a filter can log details about the outgoing response, such as the response status code, headers, and body content. This is essential for debugging or performance monitoring.
+   - **Adding Security Headers to the Outgoing Response**: Filters can add important security-related headers to the response, such as CORS (Cross-Origin Resource Sharing) or CSP (Content Security Policy), which enhance the security posture of the application.
+   - **Auditing Outgoing Data**: Filters can be used to audit outgoing data for compliance or security reasons, such as checking for sensitive information before the response is sent to the client or logging the data for analysis.
+
+These use cases demonstrate how filters can play a crucial role in various stages of request and response handling, helping manage authentication, logging, security, and data auditing in a flexible and modular way.
 
 #### Filter Chain
 A **filter chain** is a sequence of filters that process a request and/or response in the order they are defined. Each filter in the chain can:

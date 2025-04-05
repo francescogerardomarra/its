@@ -774,7 +774,7 @@ For example, a server-side session might result in the following:
 
 - **Session ID**: A unique identifier for the session (e.g. `JSESSIONID=12345abcde`).
   - This is stored as a cookie on the client side (browser), which is sent with subsequent requests to maintain the session.
-- **Other session data**: Information about the authenticated user, such as their roles, permissions, or user-specific data might be stored in the session on the server side, but this data is not automatically sent in the response. It’s only accessed from the server's session store when needed.
+- **Other session data**: Information about the authenticated user, such as their roles, permissions, or user-specific data might be stored in the session on the server side, but this data is not automatically sent in the response. It’s only accessed from the server's session store when needed under the underlying `JSESSIONID`.
 
 Here’s an example of a response with a session ID in a cookie:
 

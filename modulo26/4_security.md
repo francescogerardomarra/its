@@ -930,7 +930,7 @@ Content-Length: 20
 {
 "message": "Access granted"
 }
-```
+````
 
 **Scenario 2: session is required**
 

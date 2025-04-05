@@ -855,61 +855,49 @@ Given that **Basic Authentication** is inherently **stateless**, the session may
 
 If **no session is required** (e.g. you're using **HTTP Basic Authentication**, where authentication is done per request without session persistence), **a session will not be created**.
 
-````http
-### Request 1: (Initial request with Basic Authentication)
-# The client sends a request to access /protected-resource with Basic Authentication.
-GET /protected-resource HTTP/1.1
-Host: example.com
-Authorization: Basic dXNlcjpwYXNzd29yZA==  // Base64-encoded username:password ("user:password")
-
-### Response 1: (Server response to the first request)
-# The server responds with a 200 OK status, indicating that the credentials are valid.
-# No session cookie is sent, which shows that no session was created.
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 20
-
-{
-  "message": "Access granted"
-}
-
-### Request 2: (Another request to the same protected resource)
-# The client makes another HTTP request to the same protected resource with the same Basic Authentication credentials.
-GET /protected-resource HTTP/1.1
-Host: example.com
-Authorization: Basic dXNlcjpwYXNzd29yZA==  // Base64-encoded username:password ("user:password")
-
-### Response 2: (Server response to the second request)
-# The server responds with a 200 OK status again, confirming that the credentials are still valid.
-# No session cookie is included, meaning no session was created.
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 20
-
-{
-  "message": "Access granted"
-}
-
-### Request 3: (Third request to the protected resource)
-# The client sends a third request to the same protected resource, again using Basic Authentication.
-GET /protected-resource HTTP/1.1
-Host: example.com
-Authorization: Basic dXNlcjpwYXNzd29yZA==  // Base64-encoded username:password ("user:password")
-
-### Response 3: (Server response to the third request)
-# The server again responds with a 200 OK status because the credentials are valid.
-# No session cookie is sent, showing that no session was created during any of the requests.
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 20
-
-{
-  "message": "Access granted"
-}
-````
-
 If authentication requires **session storage**, such as when you're using form-based login, or a custom filter that needs to store the authentication in the session, then **a session will be created**.
 
+```http
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+```
+
+```http
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+```
+
+```http
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+```
 
 In your case, with **HTTP Basic Authentication** and `SessionCreationPolicy.IF_REQUIRED`, **no session will be created** unless explicitly required by the application or by some other part of the security context. If you don’t need session-based authentication, the session will likely **not be created**.
 

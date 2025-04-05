@@ -735,34 +735,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
-### What Happens When a Request Comes Through
-
-#### Request Matching
 - Spring Security matches request URLs against the configured `antMatchers` rules:
-  - If the URL matches `/public/**`, it is allowed without authentication (`permitAll()`).
-  - If the URL matches `/admin/**`, the user must have the "ADMIN" role.
-  - If the URL matches `/user/**`, the user must have the "USER" role.
-  - **Important**: rules about the role are defined before authentication but are **only applied after the user is authenticated**.
-  - Any other request requires authentication (`authenticated()`).
+    - `/public/**` is allowed without authentication (`permitAll()`).
+    - `/admin/**` requires the user to have the "ADMIN" role.
+    - `/user/**` requires the user to have the "USER" role.
+    - Rules about roles are defined before authentication, but **they are applied only after the user has been authenticated**.
+    - Any other request requires authentication (`authenticated()`).
 
-#### Authentication
-- If a user is not authenticated, Spring Security triggers basic authentication (`httpBasic()`), prompting for credentials.
+- If a request matches a protected URL (like `/admin/**` or `/user/**`), the user must be authenticated via HTTP Basic Authentication (`httpBasic()`), which prompts for credentials.
 - The username and password are verified against the in-memory user store (`InMemoryUserDetailsManager`).
-- **Authentication happens first**: This process establishes the user’s identity and retrieves the roles associated with that user. Only after successful authentication will Spring Security apply the role-based rules.
+- **Authentication happens first**: Spring Security establishes the user’s identity by verifying the credentials provided.
+- Once authentication is successful, Spring Security retrieves the user's roles and applies the role-based rules.
 
-#### Role Authorization
-- After the user is authenticated, Spring Security checks if the user has the required role for the requested URL.
-  - For example, if the request matches `/admin/**`, Spring Security will check if the user has the "ADMIN" role using the `hasRole()` method.
-- **Role checks only happen after authentication**. Until authentication is successful, Spring Security cannot determine the user's roles.
-- If the user lacks the appropriate role, the request is denied.
+- After authentication, Spring Security checks if the user has the required role for the requested URL.
+    - For example, if the request matches `/admin/**`, it checks if the user has the "ADMIN" role using `hasRole()`.
+- Role-based checks are applied **only after successful authentication**, as the system needs to know the user’s identity before checking their roles.
+- If the user doesn't have the appropriate role, access is denied.
 
-#### Successful Access
-- If authentication and role checks pass, the request proceeds to the corresponding handler (e.g. a controller method).
+- If authentication and role checks pass, the request proceeds to the corresponding handler (e.g., a controller method).
 
-#### Unsuccessful Access
 - If authentication or role checks fail, an HTTP 401 (Unauthorized) or 403 (Forbidden) response is returned.
 
-This setup ensures that requests are properly secured, and only authenticated and authorized users can access certain parts of the application based on their roles.
+- This setup ensures that only authenticated and authorized users can access specific parts of the application based on their roles.
 
 ---
 

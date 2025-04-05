@@ -816,7 +816,6 @@ In Spring Security both ways are feasible.
 Herein we look at how it is possible to create and manage authentication-related sessions by specifying a `SessionCreationPolicy`.
 
 #### `SessionCreationPolicy.IF_REQUIRED`
-
 By default, Spring Security uses `SessionCreationPolicy.IF_REQUIRED`. This means that an authentication-related session is created only when deemed necessary by the framework.
 
 As result, the following:
@@ -1048,7 +1047,7 @@ This ensures that authentication-related sessions are always created, even for s
 
 - **Session Creation**: A session is created when there is no existing session cookie (`JSESSIONID`).
 - **Session Reuse**: If the client sends a valid `JSESSIONID` cookie, the existing session will be reused without creating a new one.
-- **Stateless Authentication**: Even though mechanisms like Basic Authentication are stateless, Spring Security ensures that a session will be created if necessary.
+- **Stateless Authentication**: Even though mechanisms like Basic Authentication are stateless, Spring Security ensures that a session will be created.
 
 This behavior ensures that sessions are always available, providing more flexibility in scenarios where you want to keep track of user sessions even for stateless requests.
 
@@ -1132,11 +1131,15 @@ Content-Length: 20
 ***
 
 #### `SessionCreationPolicy.NEVER`
-With `SessionCreationPolicy.NEVER`, a session will never be created by Spring Security.
+When using `SessionCreationPolicy.NEVER`, Spring Security will **never** create a new session itself. However, if a session already exists (for example, created by some other part of the application), Spring Security will use it.
 
-Even though no new sessions will be created, existing session data could still persist and be used.
+This approach is useful when you want to avoid unnecessary session creation for stateless authentication mechanisms like **Basic Authentication**, but still allow using an existing session if one is already there.
 
-The server may still have session data from previous requests and use them if sessions were created earlier (even though they won't create new ones).
+- **No Session Creation**: If there is no existing session, Spring Security will not create one.
+- **Session Reuse**: If the client sends a valid `JSESSIONID` cookie representing an existing session, it will be reused.
+- **Stateless Authentication**: With Basic Authentication or other stateless methods, sessions won't be created unless some external component explicitly does it.
+
+This behavior ensures better support for truly stateless applications, but still integrates well with existing session-based systems if needed.
 
 ```java
 @Override
@@ -1152,6 +1155,67 @@ protected void configure(HttpSecurity http) throws Exception {
         .httpBasic();
 }
 ```
+
+In the following example:
+
+- three HTTP requests and responses are exchanged with `SessionCreationPolicy.NEVER`.
+- the first request sends credentials in the `Authorization` header.
+- the server authenticates the user but **does not create** a session.
+- the second request does not send credentials and fails with **401 Unauthorized**.
+- the third request resends credentials in the `Authorization` header and succeeds.
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+````
+
+````http
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Basic realm="Realm"
+Content-Length: 0
+````
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
+
+***
+
+Notice that without a session and without credentials, the server has no way to authenticate the user, resulting in 401 Unauthorized responses. When credentials are resent, access is granted again.
 
 #### `SessionCreationPolicy.STATELESS`
 With `SessionCreationPolicy.STATELESS`, no session is created, and the application remains fully stateless.

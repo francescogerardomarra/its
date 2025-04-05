@@ -1300,7 +1300,7 @@ Session timeout determines how long a session remains active before expiring due
 
 For example, if an application has an **inactivity timeout** of **30 minutes**, and the user doesn’t make any requests within that time, the session will **expire** and the user will be logged out.
 
-Recall that, in Spring Security, when using `SessionCreationPolicy.IF_REQUIRED` a session is created only if necessary. Then we can configure various behaviour of a session timeout as follows: 
+In Spring Security, when using `SessionCreationPolicy.IF_REQUIRED` along with **form-based login**, a session is guaranteed to be created upon successful authentication. Then we can configure various behaviors related to session timeout as follows:
 
 ```java
 @Override
@@ -1310,74 +1310,70 @@ protected void configure(HttpSecurity http) throws Exception {
             .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to /session-expired
             .anyRequest().authenticated() // All other requests require authentication
         .and()
-        .httpBasic()
+        .formLogin() // Use form-based login, which creates a session upon successful authentication
         .and()
         .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only if required
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only if required (will happen after form login)
             .sessionTimeout(Duration.ofMinutes(30)) // Set session timeout (inactivity timeout) to 30 minutes
             .invalidSessionUrl("/session-expired") // Redirect if session is invalid due to inactivity
-            .maximumSessions(1) // Optional: Limit concurrent sessions per user
+            .maximumSessions(1) // Limit concurrent sessions per user
             .expiredUrl("/session-expired"); // Redirect if session expires
 }
 ```
 
 - **`sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)`**
 
-    - This setting defines when Spring Security should create a session.
+    - Defines when Spring Security should create a session.
 
-    - **`SessionCreationPolicy.IF_REQUIRED`** (default behavior): A session is created **only if needed**.
-        - If your application is **stateful** (e.g. maintains user session information), a session will be created when the user first authenticates.
-        - If your application is **stateless** (e.g. REST APIs), no session will be created unless explicitly required.
+    - With **formLogin()**, a session **is created** after successful authentication.
 
-    - This approach provides flexibility, ensuring that a session is created only when necessary, based on your application's needs.
+    - **`SessionCreationPolicy.IF_REQUIRED`** ensures a session is created **only when necessary**, and since form login requires storing authentication data, a session will be created.
 
 - **`sessionTimeout(Duration.ofMinutes(30))`**
 
-    - This setting specifies the **inactivity timeout** for the session.
+    - Specifies the **inactivity timeout** for the session.
 
-    - **Inactivity Timeout**: The session will be considered expired if the user does not perform any action (e.g. make a request) within the defined period (30 minutes in this case).
-        - If the user is idle for 30 minutes without interacting with the application, the session will automatically expire.
+    - If the user is **idle for 30 minutes** without making any request, the session will automatically expire.
 
-    - **Behavior**: After the inactivity timeout period, the session will be invalidated, and the user will be redirected to the `/session-expired` URL.
+    - Behavior: After the inactivity timeout period, the session is invalidated and the user is redirected to `/session-expired`.
 
 - **`invalidSessionUrl("/session-expired")`**
 
-    - This setting specifies the URL to redirect the user if their session is considered **invalid**.
+    - Specifies the URL to redirect users if their session becomes **invalid** (e.g., missing or corrupted session cookie).
 
-    - **Invalid Session**: A session is invalid if it is explicitly invalidated or if there is an issue (e.g. session data corruption or missing session cookies).
-
-    - **Behavior**: If a user tries to access a resource with an invalid session, they will be redirected to `/session-expired`.
-        - This page informs the user that their session is no longer valid and may prompt them to log in again.
+    - If a user attempts to access a protected resource with an invalid session, they are redirected to `/session-expired`.
 
 - **`maximumSessions(1)`**
 
-    - This configuration limits the number of concurrent sessions a user can have.
+    - Limits the number of concurrent sessions per user to **one**.
 
-    - **One Session per User**: Setting `maximumSessions(1)` ensures that only one active session is allowed per user.
-        - If the user logs in from one device and then logs in from another, the first session will be invalidated.
+    - If the user logs in from a second device, the first session is invalidated.
 
-    - **Behavior**: This is useful when you want to enforce **single-session login**, meaning users cannot have multiple sessions across different devices or browsers.
+    - Behavior: Ensures users can only have one active session at a time, enhancing security.
 
-    - **JSESSIONID Management**: The **JSESSIONID** is a session identifier that tracks a user's active session in a web application. With **`maximumSessions(1)`** in place, the user can only have one valid **JSESSIONID** at any given time.
-        - If the user logs in from a new device or browser, the previously issued **JSESSIONID** will be invalidated, and a new **JSESSIONID** will be generated for the new session.
-        - This ensures that a user's identity is tied to a single active session at any time, making it easier to manage session security.
-
-    - **Security Considerations**: This approach helps mitigate risks like session hijacking or unauthorized access across multiple devices, as only one session can be active per user. It ensures that users do not maintain multiple concurrent sessions, which can be particularly important for high-security environments.
+    - **JSESSIONID Management**: Only one valid **JSESSIONID** per user is allowed. New logins replace older sessions.
 
 - **`expiredUrl("/session-expired")`**
 
-    - This setting defines the URL to redirect the user when their session **expires** due to inactivity.
+    - Specifies where to redirect users when their session **expires** due to inactivity.
 
-    - **Expired Session**: A session expires when it has been inactive for a certain period, defined by the session timeout setting.
+    - After a timeout, users will land on `/session-expired`, typically prompting them to log in again.
 
-    - **Behavior**: If the session expires due to inactivity (e.g. the user hasn't made any request for a specified period), they will be redirected to `/session-expired`.
-        - This page typically informs the user that their session has timed out and prompts them to log in again.
+- **Note**: We ensure `/session-expired` is accessible to unauthenticated users:
 
-- **Note**: We have added `/session-expired` to the list of **public URLs** in the `authorizeRequests()` section:
     ```java
-    .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to /session-expired
+    .antMatchers("/public/**", "/session-expired").permitAll()
     ```
-    - This ensures that the **`/session-expired`** URL is publicly accessible, meaning users can visit this page even if they are not authenticated.
+
+  This way, users whose sessions have expired or become invalid can access the page without needing an active session.
+
+In summary:
+- **Using `formLogin()` with `SessionCreationPolicy.IF_REQUIRED` guarantees session creation**.
+- Sessions are subject to **inactivity timeout**.
+- Invalid or expired sessions redirect users to **`/session-expired`**.
+- Concurrent session control with **`maximumSessions(1)`** strengthens security.
+
+This ensures a robust and secure session handling mechanism for stateful web applications.
 
 ### Logout
 Logout functionality allows users to safely end their session and ensures that session data is properly cleared upon logout.

@@ -884,7 +884,7 @@ In the following example:
 GET /protected-resource HTTP/1.1
 Host: example.com
 Authorization: Basic dXNlcjpwYXNzd29yZA==
-```
+````
 
 ```http
 HTTP/1.1 200 OK

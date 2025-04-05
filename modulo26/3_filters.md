@@ -202,15 +202,16 @@ If a filter is correctly **defined, registered and chained**, its three methods 
     - This method is called when the filter is destroyed, typically when the servlet container shuts down or when the filter is no longer needed. You can use this method for cleanup tasks, such as releasing resources (e.g. closing database connections or cleaning up thread pools). The container automatically calls this method before destroying the filter instance.
 
 #### OncePerRequestFilter, GenericFilterBean
-Apart from implementing this interface directly, a filter can be defined by extending specific abstract filter classes always of type `jakarta.servlet.Filter`.
+You can define a filter either by directly implementing the `jakarta.servlet.Filter` interface or by extending an abstract class like `GenericFilter`, which is still part of the `jakarta.servlet.Filter` ecosystem.
 
-These abstract classes simply offer default implementations of some of the methods from the `Filter` interface, allowing you to focus on overriding just the `doFilter()` method if no other customization is needed. You can define a filter either by directly implementing the `jakarta.servlet.Filter` interface or by extending an abstract class like `GenericFilter`, which is still part of the `jakarta.servlet.Filter` ecosystem.
+These abstract classes simply offer default implementations of some of the methods from the `Filter` interface, allowing you to focus on overriding just the `doFilter()` method if no other customization is needed.
 
 Available Abstract Classes for Filter Implementation:
 
 1. **`OncePerRequestFilter`**:
-    - This class ensures that the filter is executed only once per request, even if the request undergoes multiple forwarding or dispatching during its lifecycle. In traditional servlet-based applications, requests can be forwarded from one resource to another (e.g. from one servlet to another or from a controller to a view). This means that a single HTTP request may pass through multiple resources, and without proper handling, a filter might execute multiple times during these forwards.
-    - **Forwarding and Its Impact**: When forwarding occurs, the same HTTP request is internally routed to a different resource without the client being aware. However, this can cause filters to be executed repeatedly if the forwarding process isn't managed carefully. For example, if a filter is responsible for tasks like logging, authentication, or setting headers, it could execute multiple times across different forwards, resulting in duplicate log entries, unnecessary re-authentication, or redundant changes to the response.
+    - This class ensures that the filter is executed only once per request, even if the request undergoes multiple forwarding or dispatching during its lifecycle.
+    - In traditional servlet-based applications, requests can be forwarded from one resource to another (e.g. from one servlet to another or from a controller to a view). This means that a single HTTP request may pass through multiple resources, and without proper handling, a filter might execute multiple times during these forwards.
+    - **Forwarding**: When forwarding occurs, the same HTTP request is internally routed to a different resource without the client being aware. However, this can cause filters to be executed repeatedly if the forwarding process isn't managed carefully. For example, if a filter is responsible for tasks like logging, authentication, or setting headers, it could execute multiple times across different forwards, resulting in duplicate log entries, unnecessary re-authentication, or redundant changes to the response.
     - **How `OncePerRequestFilter` Avoids Multiple Executions**: The `OncePerRequestFilter` class is specifically designed to prevent filters from running multiple times during the same request, even when forwarding or dispatching occurs. It achieves this by ensuring that the filter's actions are only performed once during the entire request lifecycle. The filter tracks whether it has already been executed for the current request and skips further executions if it has.
     - This is especially important when filters are involved in critical tasks like session validation, logging, or resource cleanup. Without this safeguard, a filter could cause unintended side effects if executed multiple times, potentially leading to errors or performance issues.
     - **Benefits**:
@@ -221,11 +222,10 @@ Available Abstract Classes for Filter Implementation:
     - **Example Use Case**: Imagine a filter that logs request details for monitoring purposes. Without `OncePerRequestFilter`, this logging could be duplicated if the request is forwarded to several resources (like different servlets or views). By using `OncePerRequestFilter`, the logging will happen only once for the entire request, regardless of how many forwards or dispatches occur.
 
 2. **`GenericFilterBean`**:
-    - This is a Spring-specific class that implements the `jakarta.servlet.Filter` interface and offers more Spring-friendly features, such as dependency injection.
-    - It allows you to easily integrate Spring beans into your filter, which is helpful for service or repository injections.
+    - This is a Spring-specific class that implements the `jakarta.servlet.Filter` interface and offers more Spring-friendly features.
 
 #### Registration Methods
-In Spring Boot, filters can be defined by either implementing the `jakarta.servlet.Filter` interface or by extending a superclass like `OncePerRequestFilter`. After defining the filter, you need to register it to make it part of the Spring Boot application context. Depending on how you define and register the filter, the filter may or may not be a Spring Bean. Below are the main methodologies for filter registration:
+After defining and chaining a filter, you need to register it to make it part of the Spring Boot application context. Depending on how you define and register the filter, the filter may or may not be a Spring Bean. Below are the main methodologies for filter registration:
 
 1. **Registering a Filter as a Bean in a `@Configuration` Class**:
     - **Filter Definition**: The filter is defined as a standard class, often implementing the `jakarta.servlet.Filter` interface or extending `OncePerRequestFilter`. It is not necessarily a Spring Bean at this point.
@@ -279,21 +279,41 @@ public class CustomFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // Filter initialization logic (if needed)
+        // This method runs once when the filter is initialized, and it's often used for setup tasks.
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        // Custom logic for request processing (e.g. JWT validation)
-        System.out.println("Authenticating request...");
 
-        // Pass the request/response along the filter chain
+        // Phase 1: **Before chain.doFilter(request, response)** (Request Processing / Pre-processing)
+        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+
+        System.out.println("Processing incoming request...");  // Before passing the request along the chain
+
+        // Custom logic for request processing (e.g., JWT validation, logging, security checks)
+        // In this phase, you might check for an authentication token, validate input, or log details for auditing.
+
+        // Pass the request and response along the filter chain
+        // The control is passed to the next filter in the chain, or the target servlet/controller, if there are no more filters.
         chain.doFilter(request, response);
+
+        // Phase 2: **After chain.doFilter(request, response)** (Response Processing / Post-processing)
+        // This is where we can modify the response or perform additional actions after the target resource has processed the request.
+
+        // Control flow returns here once the request has passed through the rest of the filter chain and the target resource.
+
+        System.out.println("Processing outgoing response...");  // After the target resource has processed the request
+
+        // Custom logic for response processing (e.g., adding headers, logging response status)
+        // In this phase, we could add security headers to the response, log response details, or modify the response content.
+
     }
 
     @Override
     public void destroy() {
         // Cleanup logic (if needed)
+        // This method is called once when the filter is destroyed. It’s often used for resource cleanup (e.g., closing database connections).
     }
 }
 ````
@@ -326,11 +346,28 @@ public class CustomFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        // Pre-processing logic before passing the request along the filter chain
-        System.out.println("Request is being filtered");
 
-        // Pass request and response to the next filter in the chain
+        // Phase 1: **Before chain.doFilter(request, response)** (Request Processing / Pre-processing)
+        // This is where we perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+
+        System.out.println("Processing incoming request..."); // Before passing the request along the chain
+
+        // Custom logic for request processing (e.g., JWT validation, logging, security checks)
+        // In this phase, you might check for an authentication token, validate input, or log details for auditing.
+
+        // Pass the request and response along the filter chain
+        // The control is passed to the next filter in the chain, or the target servlet/controller, if there are no more filters.
         chain.doFilter(request, response);
+
+        // Phase 2: **After chain.doFilter(request, response)** (Response Processing / Post-processing)
+        // This is where we can modify the response or perform additional actions after the target resource has processed the request.
+
+        // Control flow returns here once the request has passed through the rest of the filter chain and the target resource.
+
+        System.out.println("Processing outgoing response..."); // After the target resource has processed the request
+
+        // Custom logic for response processing (e.g., adding headers, logging response status)
+        // In this phase, we could add security headers to the response, log response details, or modify the response content.
     }
 
     @Override
@@ -385,11 +422,28 @@ public class CustomFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        // Pre-processing logic
-        System.out.println("Custom Filter Processing Request");
 
-        // Pass the request along the filter chain
+        // Phase 1: **Before chain.doFilter(request, response)** (Request Processing / Pre-processing)
+        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+
+        System.out.println("Processing incoming request...");  // Before passing the request along the chain
+
+        // Custom logic for request processing (e.g., JWT validation, logging, security checks)
+        // In this phase, you might check for an authentication token, validate input, or log details for auditing.
+
+        // Pass the request and response along the filter chain
+        // The control is passed to the next filter in the chain, or the target servlet/controller, if there are no more filters.
         chain.doFilter(request, response);
+
+        // Phase 2: **After chain.doFilter(request, response)** (Response Processing / Post-processing)
+        // This is where we can modify the response or perform additional actions after the target resource has processed the request.
+
+        // Control flow returns here once the request has passed through the rest of the filter chain and the target resource.
+
+        System.out.println("Processing outgoing response...");  // After the target resource has processed the request
+
+        // Custom logic for response processing (e.g., adding headers, logging response status)
+        // In this phase, we could add security headers to the response, log response details, or modify the response content.
     }
 
     @Override
@@ -445,9 +499,7 @@ public class SecurityConfig {
 ````java
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -460,11 +512,27 @@ public class CustomSecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        // Custom filter logic here
-        System.out.println("Custom Security Filter Applied");
-        
-        // Continue the filter chain
+
+        // Phase 1: **Before filterChain.doFilter(request, response)** (Request Processing / Pre-processing)
+        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+
+        System.out.println("Processing incoming request in Custom Security Filter...");  // Pre-processing the request
+
+        // Custom logic for request processing (e.g., security checks, logging, validation)
+        // In this phase, you might check for authentication tokens, validate user roles, or log incoming request details.
+
+        // Continue with the filter chain, passing the request and response to the next filter or resource
         filterChain.doFilter(request, response);
+
+        // Phase 2: **After filterChain.doFilter(request, response)** (Response Processing / Post-processing)
+        // This is where we can perform actions after the request has been processed by the target resource (e.g., servlet).
+
+        // Control flow returns here once the request has passed through the rest of the filter chain and the target resource.
+
+        System.out.println("Processing outgoing response in Custom Security Filter...");  // Post-processing the response
+
+        // Custom logic for response processing (e.g., adding security headers, logging response status)
+        // In this phase, you could add security headers to the response or log details about the response before sending it to the client.
     }
 }
 ````
@@ -502,9 +570,7 @@ public class SecurityConfig {
 
 ````java
 import org.springframework.web.filter.OncePerRequestFilter;
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -516,11 +582,27 @@ public class CustomSecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        // Custom filter logic here
-        System.out.println("Custom Security Filter Applied");
 
-        // Continue the filter chain
+        // Phase 1: **Before filterChain.doFilter(request, response)** (Request Processing / Pre-processing)
+        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+
+        System.out.println("Processing incoming request in Custom Security Filter...");  // Pre-processing the request
+
+        // Custom logic for request processing (e.g., security checks, logging, validation)
+        // You could validate authentication tokens, check user roles, log the incoming request, or perform other security-related checks.
+
+        // Continue with the filter chain, passing the request and response to the next filter or resource
         filterChain.doFilter(request, response);
+
+        // Phase 2: **After filterChain.doFilter(request, response)** (Response Processing / Post-processing)
+        // This is where we can perform actions after the request has been processed by the target resource (e.g., servlet).
+
+        // Control flow returns here once the request has passed through the rest of the filter chain and the target resource.
+
+        System.out.println("Processing outgoing response in Custom Security Filter...");  // Post-processing the response
+
+        // Custom logic for response processing (e.g., adding security headers, logging response status)
+        // You could add security headers, modify the response, log details about the response, or perform other post-processing actions.
     }
 }
 ````

@@ -351,9 +351,9 @@ This is what each in-place method does:
 
 HTTP itself is a **stateless protocol**, meaning that each request is independent of any previous requests. This stateless nature of HTTP means that the server doesn't store information about prior requests, including authentication status.
 
-When a client wants to authenticate itself to a server, it sends the credentials (username and password) in the `Authorization` header of each HTTP request. These credentials are typically encoded in **Base64** format, creating a string like `username:password`. This encoded string is then included in the `Authorization` header.
-
 Since Basic Authentication doesn't use sessions or cookies to remember an authenticated user, the client must include the **username and password** with each request to prove its identity again. The server does not "remember" that the client was authenticated previously; it simply checks the credentials provided in each request.
+
+When a client wants to authenticate itself to a server, it sends the credentials (username and password) in the `Authorization` header of each HTTP request. These credentials are typically encoded in **Base64** format, creating a string like `username:password`. This encoded string is then included in the `Authorization` header.
 
 Here is an example of how the credentials are expected in a POST request when Basic Authentication is used:
 

@@ -1042,7 +1042,9 @@ Content-Length: 20
 ***
 
 #### `SessionCreationPolicy.ALWAYS`
-When using `SessionCreationPolicy.ALWAYS`, Spring Security guarantees that a session will be created if one doesn't already exist. If the client sends a valid session cookie (e.g., `JSESSIONID`), the session will be reused. However, if no session exists, one will be created. This ensures that authentication-related sessions are always created, even for stateless authentication mechanisms like **Basic Authentication**.
+When using `SessionCreationPolicy.ALWAYS`, Spring Security guarantees that a session will be created if one doesn't already exist. If the client sends a valid session cookie (e.g., `JSESSIONID`), the session will be reused. However, if no session exists, one will be created.
+
+This ensures that authentication-related sessions are always created, even for stateless authentication mechanisms like **Basic Authentication**.
 
 - **Session Creation**: A session is created when there is no existing session cookie (`JSESSIONID`).
 - **Session Reuse**: If the client sends a valid `JSESSIONID` cookie, the existing session will be reused without creating a new one.

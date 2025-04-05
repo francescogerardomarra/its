@@ -365,7 +365,7 @@ Content-Type: application/json
 ### InMemoryUserDetailsManager
 As we know, in Spring Security, the "phone book" for user credentials (username and password) is the `UserDetailsService`. This service is responsible for looking up user details and checking if the provided credentials match. However, there are different types of "phone books" that can be used to store and manage these credentials.
 
-One such implementation is the `InMemoryUserDetailsManager`, which allows you to inject hardcoded user-password pairs directly into the system. While this is simple and useful for small applications or testing scenarios, it does not scale well for larger applications. As the number of users grows, hardcoding all user credentials in memory becomes impractical and inefficient. Additionally, the `InMemoryUserDetailsManager` is volatile, meaning that once the application is restarted, all stored user data is lost.
+One such implementation is the `InMemoryUserDetailsManager`, which allows you to inject hardcoded user-password pairs directly into the system. While this is simple and useful for small applications or testing scenarios, it does not scale well for larger applications. As the number of users grows, hardcoding all user credentials in memory becomes impractical and inefficient.
 
 For applications with many users or those requiring persistence, relying on an in-memory solution is not ideal. In such cases, a more scalable solution, like storing user credentials in a database or using an external identity provider, would be necessary to ensure security, scalability, and persistence over time.
 

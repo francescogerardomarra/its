@@ -819,8 +819,6 @@ Herein we look at how it is possible to create and manage authentication-related
 
 By default, Spring Security uses `SessionCreationPolicy.IF_REQUIRED`. This means that a session is created only when deemed necessary by the framework.
 
-That is, when no session creation policy is defined in the security filter chain, **Spring Security uses `SessionCreationPolicy.IF_REQUIRED` as the default**. This means that **the decision to create a session is left to the framework** based on the authentication mechanism being used.
-
 As result, the following:
 
 ```java
@@ -851,53 +849,79 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ````
 
-Given that **Basic Authentication** is inherently **stateless**, the session may not be created at all.
+That is, when no session creation policy is defined in the security filter chain, **Spring Security uses `SessionCreationPolicy.IF_REQUIRED` as the default**. This means that **the decision to create a session is left to the framework** based on the authentication mechanism being used.
 
-If **no session is required** (e.g. you're using **HTTP Basic Authentication**, where authentication is done per request without session persistence), **a session will not be created**.
+**Scenario 1: no session is required**
+
+Basic Authentication is inherently **stateless**, so if the security filter chain is as follows:
+
+````java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .authorizeRequests()
+            .antMatchers("/public/**").permitAll()  // Allow public access to specific URLs
+            .anyRequest().authenticated()          // Require authentication for all other requests
+            .and()
+        .httpBasic()                               // Enable HTTP Basic Authentication
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);  // Default, session is created if needed
+}
+````
+
+no session will be created at all because it is deemed **not required**
+
+In the following example:
+
+- three HTTP requests and responses are exchanged with **Basic Authentication**;
+- each request sends the credentials in the `Authorization` header
+- the server responds with a **`200 OK`** status, and each time, a message is returned indicating access is granted. Importantly, no session cookies are sent, which means no session is created, maintaining the stateless nature of **Basic Authentication**. The behavior of each request and response shows that authentication is done per request without relying on session storage.
+
+```http
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+```
+
+```http
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+```
+
+```http
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+```
+
+**Scenario 2: session is required**
 
 If authentication requires **session storage**, such as when you're using form-based login, or a custom filter that needs to store the authentication in the session, then **a session will be created**.
-
-```http
-GET /protected-resource HTTP/1.1
-Host: example.com
-Authorization: Basic dXNlcjpwYXNzd29yZA==
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 20
-
-{
-"message": "Access granted"
-}
-```
-
-```http
-GET /protected-resource HTTP/1.1
-Host: example.com
-Authorization: Basic dXNlcjpwYXNzd29yZA==
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 20
-
-{
-"message": "Access granted"
-}
-```
-
-```http
-GET /protected-resource HTTP/1.1
-Host: example.com
-Authorization: Basic dXNlcjpwYXNzd29yZA==
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 20
-
-{
-"message": "Access granted"
-}
-```
 
 In your case, with **HTTP Basic Authentication** and `SessionCreationPolicy.IF_REQUIRED`, **no session will be created** unless explicitly required by the application or by some other part of the security context. If you don’t need session-based authentication, the session will likely **not be created**.
 

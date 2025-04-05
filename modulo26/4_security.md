@@ -1000,7 +1000,7 @@ Host: example.com
 
 ***
 
-````http
+````plaintext
 POST /login HTTP/1.1
 Host: example.com
 Content-Type: application/x-www-form-urlencoded

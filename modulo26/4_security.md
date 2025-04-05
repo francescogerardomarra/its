@@ -880,7 +880,7 @@ In the following example:
 - the server responds with a **`200 OK`** status, and each time, a message is returned indicating access is granted;
 - no session cookies are sent, which means no session is created, maintaining the stateless nature of **Basic Authentication**. The behavior of each request and response shows that authentication is done per request without relying on session storage.
 
-```http
+````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
 Authorization: Basic dXNlcjpwYXNzd29yZA==
@@ -898,7 +898,7 @@ Content-Length: 20
 
 ***
 
-```http
+````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
 Authorization: Basic dXNlcjpwYXNzd29yZA==
@@ -916,7 +916,7 @@ Content-Length: 20
 
 ***
 
-```http
+````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
 Authorization: Basic dXNlcjpwYXNzd29yZA==
@@ -970,7 +970,7 @@ In the following example:
 - the server processes the credentials, responds with a **302 redirect** back to the protected resource, and sets a **session cookie** (like `JSESSIONID`) to maintain the user's authenticated session;
 - the third request sends the session cookie along with the request to the protected resource, confirming the user is authenticated and granting access to the resource.
 
-````http
+````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
 ````
@@ -982,7 +982,7 @@ Location: /login
 
 ***
 
-````http
+````plaintext
 GET /login HTTP/1.1
 Host: example.com
 ````
@@ -1017,7 +1017,7 @@ Set-Cookie: JSESSIONID=abcd1234
 
 ***
 
-````http
+````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
 Cookie: JSESSIONID=abcd1234

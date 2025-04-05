@@ -806,11 +806,14 @@ The server uses the session ID in the cookie to:
 - Use that data to authorize the user’s access to the requested resource.
 
 ### SessionCreationPolicies
-You can configure Spring Security with the `HttpSecurity` object to specify how session management should be handled.
+There are mainly two ways to preserve authentication and authorization across multiple requests without submitting username/password each time:
 
-**Creating a session typically means that a `JSESSIONID` is introduced** (stored in the user's browser as a cookie) to maintain the session state across requests. This introduces session management overhead and can lead to security concerns. With stateless authentication, there's no need for the server to store session state, and the token (e.g. JWT) itself is sufficient for each request.
+- **stateful:** using an _authentication-related session_ i.e. a `JSESSIONID` is introduced** and sent to the client as a cookie to maintain the session state across requests; this introduces session management overhead and can lead to security concerns;
+- **state-less:** using session-less authentication with no need for the server to store session state; a the token (e.g. JWT) itself is sufficient for each request.
 
-Let’s look at how different session policies affect what happens with sessions.
+In Spring Security both ways are feasible.
+
+Herein we look at how it is possible to create and manage authentication-related sessions by specifying a `SessionCreationPolicy`.
 
 #### `SessionCreationPolicy.IF_REQUIRED`
 

@@ -183,31 +183,30 @@ If a filter is correctly **defined, registered and chained**, its three methods 
     - This method is called once when the filter is created. It’s typically used for initialization tasks, like reading configuration parameters, setting up resources, or preparing anything that the filter needs to operate. The `FilterConfig` provides access to the filter's initialization parameters and the `ServletContext` for the filter.
 
 2. **`doFilter(ServletRequest request, ServletResponse response, FilterChain chain)`**:
-    - This is the main method that intercepts the request and response. You can modify the request and response, perform logging, check authentication, manipulate headers, or any other tasks before passing control along the chain.
-    - **Request-Response Pair**: As soon as a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle. This pair represents the HTTP request (from the client) and the response (that will be sent back to the client). In the context of filters:
-        - The `request` object represents the HTTP request received from the client.
-        - The `response` object represents the HTTP response that will be returned to the client.
-    - You **must** call `chain.doFilter(request, response)` to pass the request and response to the next filter or servlet in the chain. If you don't call this method, the request/response will be stuck in the filter, and no further processing will occur. It’s crucial to allow the request to continue through the chain to complete the processing and return the response.
-    - If you don't call `chain.doFilter(request, response)` in any filter—whether it's the last one or not:
-        - The **request will not proceed** to the next filter or to the controller (or servlet).
-        - The **response will not be generated** or sent back to the client.
-        - The **request will be blocked** in the current filter.
-        - Any **subsequent filters, including the controller or servlet, will not be reached**.
-        - The **response will not be processed** either.
-    - The `doFilter` method provides `ServletRequest` and `ServletResponse` objects, which are generic types. In many cases, you'll need more specific functionality, such as working with HTTP-specific headers, request parameters, or status codes. This is where **casting** becomes useful:
-        - **`HttpServletRequest`**: By casting the generic `ServletRequest` to an `HttpServletRequest`, you can access HTTP-specific features like headers, cookies, parameters, and methods such as `getMethod()` or `getRequestURI()`.
-        - **`HttpServletResponse`**: Similarly, casting the generic `ServletResponse` to an `HttpServletResponse` allows you to interact with HTTP-specific features like status codes, headers, and the response body.
+   - This is the main method that intercepts the request and response. You can modify the request and response, perform logging, check authentication, manipulate headers, or perform any other tasks before passing control along the chain to the next filter or servlet.
+   - **Request-Response Pair**: As soon as a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle. This pair represents the HTTP request (from the client) and the response (that will be sent back to the client). In the context of filters:
+      - The `request` object represents the HTTP request received from the client.
+      - The `response` object represents the HTTP response that will be returned to the client.
+   - You **must** call `chain.doFilter(request, response)` to pass the request and response to the next filter or servlet in the chain. If you don't call this method, the request/response will be stuck in the filter, and no further processing will occur. It’s crucial to allow the request to continue through the chain to complete the processing and return the response.
+   - If you don't call `chain.doFilter(request, response)` in any filter, whether it's the last one or not:
+      - The **request will not proceed** to the next filter or to the controller (or servlet).
+      - The **response will not be generated** or sent back to the client.
+      - The **request will be blocked** in the current filter.
+      - Any **subsequent filters, including the controller or servlet, will not be reached**.
+      - The **response will not be processed** either, leaving the client without a response.
+   - The `doFilter` method provides `ServletRequest` and `ServletResponse` objects, which are generic types. In many cases, you'll need more specific functionality, such as working with HTTP-specific headers, request parameters, or status codes. This is where **casting** becomes useful:
+      - **`HttpServletRequest`**: By casting the generic `ServletRequest` to an `HttpServletRequest`, you can access HTTP-specific features like headers, cookies, parameters, and methods such as `getMethod()` or `getRequestURI()`.
+      - **`HttpServletResponse`**: Similarly, casting the generic `ServletResponse` to an `HttpServletResponse` allows you to interact with HTTP-specific features like status codes, headers, and the response body.
+   - **Unwinding During Response**: After the request has been passed down the filter chain and the target resource (like a servlet or controller) has generated a response, the filters will **unwind** in reverse order. This means that the filters that originally processed the request will now handle the response. This is the **post-processing phase**, where you can modify the response, log details, or add additional headers before sending it back to the client. For example:
+      - **Logging Response Details**: Filters can log the response status, headers, or even the content of the response.
+      - **Adding Headers**: Security-related headers, such as CORS or Content-Security-Policy (CSP), can be added during the response phase.
+      - **Modifying the Response**: Filters can make changes to the response body, such as compression or encryption, before it is sent back to the client.
+   - **Control Flow Returns After `chain.doFilter(request, response)`**: It's important to note that once `chain.doFilter(request, response)` is called, the control flow passes to the next filter or the target resource. After that, the filter method returns to each filter in reverse order. This means that after the request has been processed and the response is being sent back, control returns to each filter in the reverse order, allowing them to perform tasks such as logging response details, adding headers, or auditing the data. This gives filters an opportunity to modify the response before it reaches the client.
+
+   This **unwinding process** ensures that each filter gets a chance to handle the response after the request has been processed, providing a powerful mechanism for both pre- and post-processing tasks.
 
 3. **`destroy()`**:
     - This method is called when the filter is destroyed, typically when the servlet container shuts down or when the filter is no longer needed. You can use this method for cleanup tasks, such as releasing resources (e.g. closing database connections or cleaning up thread pools). The container automatically calls this method before destroying the filter instance.
-
-As mentioned earlier, when a request is made to the application, a **request-response pair** is created and associated throughout the entire request lifecycle. Here’s how this flow works in the context of filters:
-
-- When a request is made, the `ServletRequest` object is created to represent the HTTP request.
-- The `ServletResponse` object is created to represent the HTTP response that will be sent back to the client.
-- In the `doFilter()` method, the filter can inspect and modify both the request and the response objects before passing them to the next entity in the chain (whether it’s another filter or the target servlet).
-- The filter must call `chain.doFilter(request, response)` to continue the request-response flow, allowing other filters or the servlet to process the request and generate a response.
-- Without calling `chain.doFilter()`, the request/response processing will be halted in the filter, and no further action will be taken.
 
 #### OncePerRequestFilter, GenericFilterBean
 Apart from implementing this interface directly, a filter can be defined by extending specific abstract filter classes always of type `jakarta.servlet.Filter`.

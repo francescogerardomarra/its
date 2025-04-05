@@ -1,9 +1,7 @@
 ### Spring Filters
 A **filter** is an object that performs filtering tasks on either the **request** or the **response** within an application such as a Web Service. 
 
-Recall that a **servlet** is a Java class that handles HTTP requests and responses in a web application.  
-It runs on a web server, typically an application server like Apache Tomcat.  
-Servlets are used to extend the capabilities of a server by providing dynamic content.
+Recall that a **servlet** is a Java class that handles HTTP requests and responses in a web application. It runs on a web server, typically an application server like Apache Tomcat. Servlets are used to extend the capabilities of a server by providing dynamic content.
 
 Filters are part of the servlet container and allow you to manipulate the request and/or response before it reaches the targeted servlet or after the servlet has processed it.
 

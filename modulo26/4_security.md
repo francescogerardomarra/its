@@ -10,54 +10,54 @@ Main concepts involved:
 ---
 
 ## pom.xml
-**Spring Boot** provides a set of *"starter"* POMs that group related dependencies together for ease of use. These starter POMs allow you to import a whole set of dependencies that are commonly used together.
+**Spring Boot** provides a set of **starter** POMs that group related dependencies together for ease of use. These starter POMs allow you to import a whole set of dependencies that are commonly used together.
 
 **Spring Boot starters** simplify dependency management by providing predefined sets of commonly used libraries for specific functionalities (e.g., `spring-boot-starter-web` for web applications, `spring-boot-starter-data-jpa` for JPA, etc.).
 
-Spring Boot provides a **BOM (Bill of Materials)** that ensures you're using compatible versions of dependencies. You don't need to specify version numbers for Spring Boot dependencies if you're using the Spring Boot BOM.
+Spring Boot provides a **BOM (Bill of Materials)** that ensures you're using compatible versions of dependencies including **starters**. You don't need to specify version numbers for Spring Boot dependencies if you're using the Spring Boot BOM.
 
 Once you've imported the **BOM**, you can add Spring Boot dependencies **without specifying their versions**, because they will be managed by the BOM:
 
 ````xml
 <dependencyManagement>
-        <dependencies>
-            <!-- Import Spring Boot BOM (Bill of Materials) for version management -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.5.4</version> <!-- Replace with the version you are using -->
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
-        <!-- Spring Boot Starter Web: for building web applications -->
+        <!-- Import Spring Boot BOM (Bill of Materials) for version management -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- Spring Boot Starter Data JPA: for JPA and database integration -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-        <!-- Spring Boot Starter Security: for adding security features -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
-        <!-- Optional: Spring Boot Starter Test for testing -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>2.5.4</version> <!-- Replace with the version you are using -->
+            <scope>import</scope>
+            <type>pom</type>
         </dependency>
     </dependencies>
+</dependencyManagement>
+
+<dependencies>
+    <!-- Spring Boot Starter Web: for building web applications -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- Spring Boot Starter Data JPA: for JPA and database integration -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <!-- Spring Boot Starter Security: for adding security features -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!-- Optional: Spring Boot Starter Test for testing -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
 ````
 
 If you need more control over the versions or if you're not using **Spring Boot starters**, you can directly import individual dependencies into your `pom.xml`. You will need to specify **both the group ID**, **artifact ID**, and the **version** of the dependency.

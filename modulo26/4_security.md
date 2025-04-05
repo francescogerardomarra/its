@@ -1042,7 +1042,13 @@ Content-Length: 20
 ***
 
 #### `SessionCreationPolicy.ALWAYS`
-With `SessionCreationPolicy.ALWAYS`, a session is created for every request even if one already exists.
+When using `SessionCreationPolicy.ALWAYS`, Spring Security guarantees that a session will be created if one doesn't already exist. If the client sends a valid session cookie (e.g., `JSESSIONID`), the session will be reused. However, if no session exists, one will be created. This ensures that authentication-related sessions are always created, even for stateless authentication mechanisms like **Basic Authentication**.
+
+- **Session Creation**: A session is created when there is no existing session cookie (`JSESSIONID`).
+- **Session Reuse**: If the client sends a valid `JSESSIONID` cookie, the existing session will be reused without creating a new one.
+- **Stateless Authentication**: Even though mechanisms like Basic Authentication are stateless, Spring Security ensures that a session will be created if necessary.
+
+This behavior ensures that sessions are always available, providing more flexibility in scenarios where you want to keep track of user sessions even for stateless requests.
 
 ```java
 @Override
@@ -1058,6 +1064,70 @@ protected void configure(HttpSecurity http) throws Exception {
         .httpBasic();
 }
 ```
+
+In the following example:
+
+- three HTTP requests and responses are exchanged, but this time with `SessionCreationPolicy.ALWAYS`.
+- the first request sends credentials in the `Authorization` header.
+- the server responds with a **`200 OK`** status, creates a session, and sends a session cookie (`JSESSIONID`).
+- in the subsequent requests, no credentials are included, but the session is reused using the `JSESSIONID` cookie, maintaining the user's authenticated session.
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+Set-Cookie: JSESSIONID=abcd1234
+
+{
+"message": "Access granted"
+}
+````
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Cookie: JSESSIONID=abcd1234
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Cookie: JSESSIONID=abcd1234
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
+
+***
 
 #### `SessionCreationPolicy.NEVER`
 With `SessionCreationPolicy.NEVER`, a session will never be created by Spring Security.

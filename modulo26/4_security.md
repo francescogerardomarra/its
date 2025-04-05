@@ -817,7 +817,7 @@ Herein we look at how it is possible to create and manage authentication-related
 
 #### `SessionCreationPolicy.IF_REQUIRED`
 
-By default, Spring Security uses `SessionCreationPolicy.IF_REQUIRED`. This means that a session is created only when deemed necessary by the framework.
+By default, Spring Security uses `SessionCreationPolicy.IF_REQUIRED`. This means that an authentication-related session is created only when deemed necessary by the framework.
 
 As result, the following:
 
@@ -849,7 +849,9 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ````
 
-That is, when no session creation policy is defined in the security filter chain, **Spring Security uses `SessionCreationPolicy.IF_REQUIRED` as the default**. This means that **the decision to create a session is left to the framework** based on the authentication mechanism being used.
+That is, when no session creation policy is defined in the security filter chain, Spring Security uses `SessionCreationPolicy.IF_REQUIRED` as the default.
+
+This means that **the decision to create an authentication-related session is left to the framework** based on the authentication mechanism being used.
 
 **Scenario 1: no session is required**
 
@@ -875,7 +877,8 @@ In the following example:
 
 - three HTTP requests and responses are exchanged with **Basic Authentication**;
 - each request sends the credentials in the `Authorization` header
-- the server responds with a **`200 OK`** status, and each time, a message is returned indicating access is granted. Importantly, no session cookies are sent, which means no session is created, maintaining the stateless nature of **Basic Authentication**. The behavior of each request and response shows that authentication is done per request without relying on session storage.
+- the server responds with a **`200 OK`** status, and each time, a message is returned indicating access is granted;
+- no session cookies are sent, which means no session is created, maintaining the stateless nature of **Basic Authentication**. The behavior of each request and response shows that authentication is done per request without relying on session storage.
 
 ```http
 GET /protected-resource HTTP/1.1
@@ -921,10 +924,90 @@ Content-Length: 20
 
 **Scenario 2: session is required**
 
-If authentication requires **session storage**, such as when you're using form-based login, or a custom filter that needs to store the authentication in the session, then **a session will be created**.
+As opposite to Basic Authentication which is **stateless**, if **form-based authentication** is in use then Spring Security will consider an authentication-related session as required and will introduce a `JSESSIONID` as a session cookie.
 
-In your case, with **HTTP Basic Authentication** and `SessionCreationPolicy.IF_REQUIRED`, **no session will be created** unless explicitly required by the application or by some other part of the security context. If you don’t need session-based authentication, the session will likely **not be created**.
+In this case the security filter chain will look like as follows:
 
+````java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .authorizeRequests()
+            .antMatchers("/public/**").permitAll()  // Allow public access to specific URLs
+            .anyRequest().authenticated()          // Require authentication for all other requests
+            .and()
+        .formLogin()                               // Enable form-based authentication
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);  // Create a session if required
+}
+````
+
+where we simply replaced `httpBasic() ` with `formLogin()`.
+
+As result:
+
+- form-based authentication is enabled;
+- when users try to access a protected resource without being authenticated, they will be redirected to a default login form;
+- this form prompts for the username and password to be submitted through an HTML-form.
+
+For **form-based authentication**, the session will be created because it is deemed **required**.
+
+In the following example:
+
+- **three HTTP requests and responses** are exchanged, starting with a **GET request** to access a protected resource, followed by a **POST request** to the login page, and finally, a request to access the protected resource again;
+- the first request is a **GET request** to the protected resource, which redirects the user to the login page as they are not authenticated;
+- the second request is a **POST request** where the user submits their credentials (username and password) via the login form;
+- the server processes the credentials, responds with a **302 redirect** back to the protected resource, and sets a **session cookie** (like `JSESSIONID`) to maintain the user's authenticated session;
+- the third request sends the session cookie along with the request to the protected resource, confirming the user is authenticated and granting access to the resource.
+
+````http
+GET /protected-resource HTTP/1.1
+Host: example.com
+
+HTTP/1.1 302 Found
+Location: /login
+````
+
+````http
+GET /login HTTP/1.1
+Host: example.com
+
+<!-- HTML Form for login -->
+<form method="POST" action="/login">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+    <button type="submit">Login</button>
+</form>
+````
+
+````http
+POST /login HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 43
+
+username=user&password=password
+
+HTTP/1.1 302 Found
+Location: /protected-resource
+Set-Cookie: JSESSIONID=abcd1234
+````
+
+````http
+GET /protected-resource HTTP/1.1
+Host: example.com
+Cookie: JSESSIONID=abcd1234
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
 
 #### `SessionCreationPolicy.ALWAYS`
 With `SessionCreationPolicy.ALWAYS`, a session is created for every request even if one already exists.

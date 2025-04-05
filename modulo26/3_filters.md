@@ -30,13 +30,6 @@ Filters can **intercept** and **modify** both **requests** and **responses** at 
 - **Request Interception**: Filters can alter, validate, or inspect the incoming request **before** it reaches the servlet or controller.
 - **Response Interception**: Filters can manipulate or enrich the outgoing response **after** the controller has processed the request.
 
-Filters have the ability to:
-- **Modify the request**: Add or remove headers, parameters, or even modify the request body.
-- **Log request details**: Useful for auditing, monitoring, or debugging.
-- **Authenticate and authorize**: Common in JWT (JSON Web Token) authentication, API gateway filters, etc.
-- **Modify the response**: Set headers, transform the body, or manage CORS settings.
-- **Short-circuit request flow**: Terminate processing early (e.g., respond immediately with 401 Unauthorized if authentication fails).
-
 The **filter flow** is **bidirectional**.
 
 First it moves **forward** (request), reaching the controller, then **unwinds back** (response), returning through the filters.

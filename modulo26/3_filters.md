@@ -121,7 +121,7 @@ public void doFilter(ServletRequest request, ServletResponse response, FilterCha
     chain.doFilter(request, response);
 
     // Response phase: post-processing
-    System.out.println("🟢 After chain.doFilter - Response outgoing");
+    System.out.println("After chain.doFilter - Response outgoing");
 }
 ````
 
@@ -130,7 +130,7 @@ Output Order:
 ```
 🔸 Before chain.doFilter - Request incoming
 (Controller runs)
-🟢 After chain.doFilter - Response outgoing
+🔸 After chain.doFilter - Response outgoing
 ```
 
 #### Use Cases

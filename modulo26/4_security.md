@@ -1216,15 +1216,14 @@ Content-Length: 20
 With `NEVER`, Spring Security will not create a new session, but if a session already exists, it will be reused for authentication and authorization.
 
 #### `SessionCreationPolicy.STATELESS`
-When using `SessionCreationPolicy.STATELESS`, Spring Security will **never** create a session, and it will also **never** use an existing session. Every request must be independently authenticated without relying on any session state.
 
-This approach is ideal for stateless authentication mechanisms such as **Basic Authentication**, **Bearer Tokens**, or any API-based authentication, ensuring that the server remains completely stateless.
+When using `SessionCreationPolicy.STATELESS`, Spring Security will **neither create** nor **use** a session.
 
-- **No Session Creation**: Sessions are never created.
-- **No Session Reuse**: Even if the client sends a `JSESSIONID` cookie, it will be ignored.
-- **Stateless Authentication**: Each request must provide all necessary authentication credentials.
+Every request must contain all the necessary authentication information (e.g., credentials), because Spring Security will **not** rely on any session state. Even if the client sends a valid session cookie (like `JSESSIONID`), Spring Security will ignore it.
 
-This behavior ensures maximum scalability and security for REST APIs and other stateless services.
+- **No Session Creation**: Spring Security will not create a session.
+- **No Session Reuse**: Spring Security will not use an existing session.
+- **Authentication Requirements**: Every request must be independently authenticated.
 
 ```java
 @Override
@@ -1245,9 +1244,9 @@ In the following example:
 
 - three HTTP requests and responses are exchanged with `SessionCreationPolicy.STATELESS`.
 - the first request sends credentials in the `Authorization` header.
-- the server authenticates the user and processes the request, but **does not create or use any session**.
+- the server authenticates the user and processes the request.
 - the second request does not send credentials and fails with **401 Unauthorized**.
-- the third request resends credentials in the `Authorization` header and succeeds.
+- the third request sends a `JSESSIONID` cookie from a previously existing session, but Spring Security **ignores** it and requires credentials again.
 
 ***
 
@@ -1284,22 +1283,17 @@ Content-Length: 0
 ````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
-Authorization: Basic dXNlcjpwYXNzd29yZA==
+Cookie: JSESSIONID=abcd1234
 ````
 
 ````http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 20
-
-{
-"message": "Access granted"
-}
+HTTP/1.1 401 Unauthorized
+Content-Length: 0
 ````
 
 ***
 
-With `STATELESS`, every request must include authentication credentials because the server does not maintain any session state between requests.
+With `STATELESS`, Spring Security ignores any session (even valid `JSESSIONID` cookies) and always expects credentials with every request.
 
 ### Timeout
 Session timeout determines how long a session remains active before expiring due to **inactivity**. This refers to the amount of time a session can remain **idle** (without user activity or requests) before it is **invalidated**.

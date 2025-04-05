@@ -1,12 +1,6 @@
 # Spring Security
 Spring Security is a comprehensive framework for securing Java applications, especially those built with Spring. It provides a wide array of functionalities like authentication, authorization, protection against common vulnerabilities (e.g.: CSRF, session fixation, session hijacking), and integrates easily with both web and enterprise applications.
 
-Main concepts involved:
-
-- **Authentication**: Verifying the identity of the user.
-- **Authorization**: Checking if the authenticated user has permission to access a resource.
-- **Security Filter Chain**: A series of filters that intercept and process HTTP requests to apply security policies like authentication and authorization.
-
 ---
 
 ## pom.xml
@@ -190,11 +184,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 ```
 
 ### WebSecurityConfigurerAdapter
-`WebSecurityConfigurerAdapter` is a base class in Spring Security that provides default implementations for several methods related to configuring web security. When you extend this class, you can override its methods to customize the security configuration for your application.
+`WebSecurityConfigurerAdapter` is a base class in Spring Security that provides default implementations for several methods related to configuring web security. When you extend this class, you can override its methods to customize the security configuration for your application.  The `@Override`  annotation is used to indicate that a method is overriding a method in the superclass.
 
-That it, it is a convenience class that makes it easy to set up security configurations in Spring. By extending this class, you gain access to several methods that can be overridden to configure HTTP security, authentication mechanisms, and more.
-
-The `@Override`  annotation is used to indicate that a method is overriding a method in the superclass. In this case, the `@Override` annotation is applied to the `configure(HttpSecurity http)` method, which is inherited from `WebSecurityConfigurerAdapter`. By overriding this method, you can customize how HTTP security is applied to the web application, such as controlling which URLs are accessible and how users are authenticated.
+In this case, the `@Override` annotation is applied to the `configure(HttpSecurity http)` method, which is inherited from `WebSecurityConfigurerAdapter`. By overriding this method, you can customize how HTTP security is applied to the web application, such as controlling which URLs are accessible and how users are authenticated.
 
 By extending `WebSecurityConfigurerAdapter` and overriding its methods, you can tailor the security settings to meet your specific requirements. For example, you can decide which endpoints are publicly accessible, configure authentication types, and apply authorization rules as needed.
 
@@ -210,9 +202,9 @@ public PasswordEncoder passwordEncoder() {
 }
 ```
 
-The PasswordEncoder bean is used to hash user passwords securely before storing them. The `BCryptPasswordEncoder` is a cryptographic algorithm that provides secure, slow hashing designed to be resistant to brute-force attacks.
+The PasswordEncoder bean is used to hash user passwords securely before storing them.
 
-BCrypt is a strong, adaptive hashing algorithm designed to be slow, which makes it more difficult for attackers to crack passwords using brute-force methods.
+The `BCryptPasswordEncoder` is a cryptographic algorithm that provides secure, slow hashing designed to be resistant to brute-force attacks. It is designed to be slow, which makes it more difficult for attackers to crack passwords using brute-force methods.
 
 Some alternatives are:
 
@@ -249,13 +241,15 @@ public PasswordEncoder passwordEncoder() {
 ````
 
 ### UserDetailsService Bean and InMemoryUserDetailsManager
-Think of `UserDetailsService` like a phone book, but for users on a website. It keeps track of all the people who can enter and what their passwords are. So, when someone tries to log in, we ask this phone book, "Do you know this person, and do they have the correct password?"
+Think of `UserDetailsService` like a phone book, but for users on a website. It keeps track of all the people who can enter and what their passwords are. So, when someone tries to log in, we ask this phone book:
+
+````text
+"Do you know this person, and do they have the correct password?"
+````
 
 The `UserDetailsService` is like the helper who looks up the details about each person and checks if they are allowed to enter.
 
-Now, `InMemoryUserDetailsManager` is like a special phone book that keeps all of the people’s details in a notebook inside the computer's memory. It’s really fast to look through because it’s all kept in the computer’s brain, but it’s not stored anywhere permanent (like a library). If you turn off the computer, the phone book gets erased.
-
-So, the `InMemoryUserDetailsManager` is like a phone book that’s kept in the computer’s short-term memory for quick lookups, but if you restart the computer, it forgets who was in the phone book.
+Now, `InMemoryUserDetailsManager` is like a special phone book that keeps all of the people’s details in a notebook inside the computer's memory. It’s really fast to look through because it’s all kept in the computer’s brain, but it’s not stored anywhere permanent (like a database).
 
 ```java
 @Bean
@@ -269,18 +263,20 @@ public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         }
 ```
 
-- **UserDetailsService**: This method defines the UserDetailsService bean. UserDetailsService is an interface used by Spring Security to fetch user details (such as username, password, and authorities) for authentication. The InMemoryUserDetailsManager is a simple implementation of UserDetailsService that holds users in memory instead of a database.
+- **UserDetailsService**: This method defines the `UserDetailsService` bean, which is an interface used by Spring Security to retrieve user information (like the username, password, and roles) for authentication purposes. The `InMemoryUserDetailsManager` is a simple implementation of `UserDetailsService` that stores user details in memory, rather than in a persistent database.
 
 - **InMemoryUserDetailsManager**:
-    - It is used to manage user details in memory. In this case, a user with the username "user" and an encoded password "password" is created and stored.
-    - When Spring Security attempts to authenticate a user, it uses the InMemoryUserDetailsManager to find the user’s details (such as username, password, and authorities).
-    - **Best Practice**: Hardcoding passwords directly in the source code, as done in this example, should be avoided. For better security, consider using externalized secrets management strategies, such as loading encrypted passwords from a secure file, database, or using tools like HashiCorp Vault, AWS Secrets Manager, or environment variables to inject sensitive data securely into the application.
-    - The `InMemoryUserDetailsManager` is suitable for simple use cases, such as development or small applications.
-
-- **How Spring Security Uses It**:
-    - When an authentication request is made (for example, using HTTP Basic Authentication), Spring Security will call the UserDetailsService to retrieve user information.
-    - The InMemoryUserDetailsManager will load the user by their username and compare the provided password with the encoded password stored in memory.
-    - If the authentication is successful, the user will be granted access to the requested resource.
+    - The `InMemoryUserDetailsManager` is used to store user details temporarily in the computer's memory. Think of it as a fast, in-memory "phone book" where user details are quickly accessible while the application is running. However, unlike a database, this data is not stored permanently and is lost when the application stops.
+    - In this example, a user with the username "user" and an encoded password "password" is created and stored in memory.
+    - When Spring Security needs to authenticate a user, it queries the `InMemoryUserDetailsManager` to retrieve the user's information, such as their username, password, and assigned roles.
+    - **Password Encoding**: Instead of storing a user's password in plain text (which could be insecure), the password is encoded before being saved. Imagine having a secret codebook where you write down all your passwords, but instead of writing the password directly, you scramble it using a pattern only you know. Even if someone finds your codebook, they won’t be able to read the passwords unless they know the pattern.
+        - The `PasswordEncoder` works like that secret codebook. It transforms the password into a scrambled version, ensuring that even if the encoded password is exposed, it cannot be easily decoded by an attacker.
+        - The method `passwordEncoder.encode("password")` scrambles the password, making it unreadable unless someone knows how to decode it using the same algorithm and key.
+    - **Best Practice**: Hardcoding passwords directly in your code (like in this example) is not a secure practice. For better security, it’s recommended to use externalized secrets management solutions. You can securely store passwords in a secure file, database, or use tools like HashiCorp Vault, AWS Secrets Manager, or environment variables to inject sensitive data into the application securely.
+    - The `InMemoryUserDetailsManager` is suitable for simple or temporary use cases, like development or small applications. For production environments with more users or long-term data storage needs, a more permanent solution, like a database, is recommended.
+    - When an authentication request is made (for example, using HTTP Basic Authentication), Spring Security calls the `UserDetailsService` to fetch the user details.
+    - The `InMemoryUserDetailsManager` will then compare the username provided in the request with the stored user information in memory, and check if the password matches by comparing the encoded version of the password.
+    - If the authentication is successful (i.e., the username and encoded password match), the user is granted access to the requested resource.
 
 - **Multiple users**:
   - If you need to define additional users, you can simply add more `manager.createUser()` calls to the `InMemoryUserDetailsManager`. For example:
@@ -308,7 +304,9 @@ InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
 ```
 
 ### Security filter chain
-In Spring Security, a **security filter chain** is a sequence of filters automatically applied to secure your application. These filters handle tasks such as authentication, authorization, and protection against common threats. The code below demonstrates how Spring Security’s **fluent API** allows developers to configure the behavior of this security filter chain through **in-place method calls**.
+In Spring Security, a **security filter chain** is a sequence of filters automatically applied to secure your application. These filters handle tasks such as authentication, authorization, and protection against common threats.
+
+The code below demonstrates how Spring Security’s **fluent API** allows developers to configure the behavior of this security filter chain through **in-place method calls**.
 
 Each method in the chain returns the object itself (or another object with similar methods), allowing for method chaining and enabling the developer to write more readable and expressive code. Methods like `.authorizeRequests()`, `.antMatchers()`, `.permitAll()`, and others are chained together, modifying the security configuration in a clean and concise manner.
 

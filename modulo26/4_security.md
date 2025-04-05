@@ -894,6 +894,8 @@ Content-Length: 20
 }
 ```
 
+***
+
 ```http
 GET /protected-resource HTTP/1.1
 Host: example.com
@@ -907,6 +909,8 @@ Content-Length: 20
 "message": "Access granted"
 }
 ```
+
+***
 
 ```http
 GET /protected-resource HTTP/1.1
@@ -968,6 +972,8 @@ HTTP/1.1 302 Found
 Location: /login
 ````
 
+***
+
 ````http
 GET /login HTTP/1.1
 Host: example.com
@@ -982,6 +988,8 @@ Host: example.com
 </form>
 ````
 
+***
+
 ````http
 POST /login HTTP/1.1
 Host: example.com
@@ -989,11 +997,15 @@ Content-Type: application/x-www-form-urlencoded
 Content-Length: 43
 
 username=user&password=password
+````
 
+````http
 HTTP/1.1 302 Found
 Location: /protected-resource
 Set-Cookie: JSESSIONID=abcd1234
 ````
+
+***
 
 ````http
 GET /protected-resource HTTP/1.1

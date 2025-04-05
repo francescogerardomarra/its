@@ -880,6 +880,8 @@ In the following example:
 - the server responds with a **`200 OK`** status, and each time, a message is returned indicating access is granted;
 - no session cookies are sent, which means no session is created, maintaining the stateless nature of **Basic Authentication**. The behavior of each request and response shows that authentication is done per request without relying on session storage.
 
+***
+
 ````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
@@ -932,6 +934,8 @@ Content-Length: 20
 }
 ````
 
+***
+
 **Scenario 2: session is required**
 
 As opposite to Basic Authentication which is **stateless**, if **form-based authentication** is in use then Spring Security will consider an authentication-related session as required and will introduce a `JSESSIONID` as a session cookie.
@@ -969,6 +973,8 @@ In the following example:
 - the second request is a **POST request** where the user submits their credentials (username and password) via the login form;
 - the server processes the credentials, responds with a **302 redirect** back to the protected resource, and sets a **session cookie** (like `JSESSIONID`) to maintain the user's authenticated session;
 - the third request sends the session cookie along with the request to the protected resource, confirming the user is authenticated and granting access to the resource.
+
+***
 
 ````plaintext
 GET /protected-resource HTTP/1.1
@@ -1032,6 +1038,8 @@ Content-Length: 20
 "message": "Access granted"
 }
 ````
+
+***
 
 #### `SessionCreationPolicy.ALWAYS`
 With `SessionCreationPolicy.ALWAYS`, a session is created for every request even if one already exists.

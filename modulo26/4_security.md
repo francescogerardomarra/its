@@ -657,7 +657,7 @@ Due to the configuration:
 - **Step 9**: If the **password does not match** or no matching user is found, authentication **fails**.
     - In this case, Spring Security typically returns a **401 Unauthorized** HTTP status code, indicating that the credentials were invalid or the user does not exist.
 
-- **Step 10**: If authentication is successful, Spring Security proceeds to handle the request, applying any security policies such as role-based access control (RBAC) or any other configured rules (e.g. permission checks) before granting access to the requested resource.
+- **Step 10**: If authentication is successful, Spring Security proceeds to handle the request.
 
 - **Step 11**: After the initial successful authentication, each subsequent request from the client must include the **username and password** in the `Authorization` header again, as Basic Authentication is stateless.
 

@@ -1,5 +1,5 @@
 # Spring Security
-Spring Security is a comprehensive framework for securing Java applications, especially those built with Spring. It provides a wide array of functionalities like authentication, authorization, protection against common vulnerabilities (e.g.: CSRF, session fixation, session hijacking), and integrates easily with both web and enterprise applications.
+Spring Security is a comprehensive framework for securing Java applications, especially those built with Spring. It provides a wide array of functionalities like authentication, authorization, protection against common vulnerabilities (e.g.: CSRF), and integrates easily with both web and enterprise applications.
 
 ---
 

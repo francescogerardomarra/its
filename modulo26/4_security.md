@@ -884,7 +884,9 @@ In the following example:
 GET /protected-resource HTTP/1.1
 Host: example.com
 Authorization: Basic dXNlcjpwYXNzd29yZA==
+```
 
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 20
@@ -900,7 +902,9 @@ Content-Length: 20
 GET /protected-resource HTTP/1.1
 Host: example.com
 Authorization: Basic dXNlcjpwYXNzd29yZA==
+````
 
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 20
@@ -916,7 +920,9 @@ Content-Length: 20
 GET /protected-resource HTTP/1.1
 Host: example.com
 Authorization: Basic dXNlcjpwYXNzd29yZA==
+````
 
+````http
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 20
@@ -967,7 +973,9 @@ In the following example:
 ````http
 GET /protected-resource HTTP/1.1
 Host: example.com
+````
 
+````http
 HTTP/1.1 302 Found
 Location: /login
 ````
@@ -977,7 +985,9 @@ Location: /login
 ````http
 GET /login HTTP/1.1
 Host: example.com
+````
 
+````html
 <!-- HTML Form for login -->
 <form method="POST" action="/login">
     <label for="username">Username:</label>
@@ -1011,7 +1021,9 @@ Set-Cookie: JSESSIONID=abcd1234
 GET /protected-resource HTTP/1.1
 Host: example.com
 Cookie: JSESSIONID=abcd1234
+````
 
+````http
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 20

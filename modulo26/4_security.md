@@ -506,70 +506,107 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
-The `JdbcUserDetailsManager` is used to retrieve and manage user credentials stored in a relational database. It provides a persistent solution for applications that need to scale and store user data, especially for large applications.
+- **JdbcUserDetailsManager in Spring Security**
 
-- **Database Interaction**:  
-  It interacts with a relational database to load user credentials and authorities, which are necessary for user authentication and authorization.
+    - The `JdbcUserDetailsManager` is used to retrieve and manage user credentials stored in a relational database.
+    - It offers a persistent solution for applications that need to scale and store user data securely, making it ideal for large applications.
 
-- **Default Database Schema**:  
-  By default, `JdbcUserDetailsManager` works with two core tables: `users` and `authorities`. These tables hold the necessary information for user authentication and the roles or permissions associated with the user.
+- **Key Features:**
 
-  The `users` table stores the basic user information, including the username, password (encrypted), and the status of the user (enabled or disabled).
+    - **Database Interaction:**
 
-  The `authorities` table is used to store user roles or permissions. It links the username to specific roles (e.g. `ADMIN`, `USER`, `GUEST`), which are then used by Spring Security to grant or restrict access to certain resources.
+        - Interacts with a relational database to load user credentials and authorities required for user authentication and authorization.
 
-  Example schema for these tables:
+    - **Default Database Schema:**
 
-  ```sql
-  CREATE TABLE users (
-      username VARCHAR(50) NOT NULL PRIMARY KEY,
-      password VARCHAR(255) NOT NULL,
-      enabled BOOLEAN NOT NULL
-  );
+        - Relies on two core tables: `users` and `authorities`.
+        - These tables store the necessary information for user authentication and roles/permissions.
+        - **users table:**
+            - Stores username, password (**hashed**, not encrypted), and enabled status.
+        - **authorities table:**
+            - Links usernames to roles (e.g., ADMIN, USER, GUEST).
 
-  CREATE TABLE authorities (
-      username VARCHAR(50) NOT NULL,
-      authority VARCHAR(50) NOT NULL,
-      FOREIGN KEY (username) REFERENCES users(username)
-  );
-  ```
-  
-- **`users` Table**:  
-  The `users` table contains the basic information for each user, including the `username`, their `encrypted password`, and an `enabled` status. The `enabled` status indicates whether the user is allowed to authenticate and log into the system. If the user is marked as disabled (`enabled = false`), they cannot log in, even if they provide the correct username and password.
+- **Example Schema:**
 
-- **`authorities` Table**:  
-  The `authorities` table stores the roles or permissions assigned to each user. Each entry in this table links a user (via their `username`) to a particular `authority` (which could be a role such as `ADMIN`, `USER`, `MANAGER`, etc.).
+```sql
+CREATE TABLE users (
+    username VARCHAR(50) NOT NULL PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    enabled BOOLEAN NOT NULL
+);
 
-  This table is critical for authorization. Once a user is authenticated, Spring Security checks the entries in the `authorities` table to determine what resources or actions the user is authorized to access. For example, if a user has the `ADMIN` authority, they may have access to admin-only pages, while a `USER` may have more limited access.
+CREATE TABLE authorities (
+    username VARCHAR(50) NOT NULL,
+    authority VARCHAR(50) NOT NULL,
+    FOREIGN KEY (username) REFERENCES users(username)
+);
+```
 
-- **Customizing SQL Queries**:  
-  While `JdbcUserDetailsManager` uses default SQL queries to interact with the `users` and `authorities` tables, you can customize these queries to fit the structure of your database. For example, if you have a custom schema or additional tables to store user data, you can override the default queries to match your specific setup.
+- **Table Breakdown:**
 
-- **`@Bean` Annotation**:  
-  The `@Bean` annotation is used to define methods that return Spring-managed objects. In this case, the `JdbcUserDetailsManager` is defined as a bean, which means Spring will manage its lifecycle and inject it where necessary for user authentication and authorization.
+    - **users Table:**
 
-- **Method Parameters**:
-    - `DataSource dataSource`: The `DataSource` provides the connection to the database. The `JdbcUserDetailsManager` uses this connection to query the `users` and `authorities` tables and retrieve user details.
-    - `PasswordEncoder passwordEncoder`: The `PasswordEncoder` is used to encode passwords before storing them in the database. It also ensures that passwords are properly hashed during authentication so that the original password is never exposed.
+        - Contains user information: username, **hashed** password, and enabled status.
+        - If `enabled = false`, the user is prevented from logging in.
 
-- **Creating the `JdbcUserDetailsManager`**:
-  The `JdbcUserDetailsManager` is created and initialized with a `DataSource` (the database connection). This class is responsible for handling user authentication and authorization via JDBC.
+    - **authorities Table:**
 
-  ```java
-  JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
-  ```
+        - Holds user roles or permissions.
+        - Associates each username with an authority (e.g., ADMIN, USER).
 
-- **Setting the Password Encoder**:  
-  By configuring the `PasswordEncoder`, we ensure that passwords are securely hashed before being stored in the database and during the authentication process. This is crucial for protecting sensitive information, as plain-text passwords are never stored. The `PasswordEncoder` ensures that even if the database is compromised, the actual passwords cannot be easily retrieved or used.
+- **Customizing SQL Queries:**
 
-  For example, using `BCryptPasswordEncoder` applies a strong hashing algorithm that makes it computationally expensive to crack the password hashes, enhancing the security of the system.
+    - JdbcUserDetailsManager uses default queries but you can customize them if your schema differs.
 
-- **Returning the Bean**:  
-  After configuring the `JdbcUserDetailsManager` with the necessary data source and password encoder, the manager is returned from the method as a Spring bean. By declaring it as a bean, Spring will manage its lifecycle, allowing it to be automatically injected into other components (such as Spring Security’s authentication filters) where user authentication is required.
-  This enables Spring Security to leverage the `JdbcUserDetailsManager` for authenticating users based on the credentials stored in the relational database.
-  ```java
-  return userDetailsManager;
-  ```
+```java
+userDetailsManager.setUsersByUsernameQuery("SELECT username, password, enabled FROM my_users WHERE username = ?");
+userDetailsManager.setAuthoritiesByUsernameQuery("SELECT username, authority FROM my_user_roles WHERE username = ?");
+```
+
+- **Using the @Bean Annotation:**
+
+    - Defines methods that return Spring-managed objects.
+    - Declaring JdbcUserDetailsManager as a bean allows Spring to manage its lifecycle.
+
+- **Method Parameters:**
+
+    - **DataSource:**
+        - Provides the database connection used to query the `users` and `authorities` tables.
+
+    - **PasswordEncoder:**
+        - Defines the hashing algorithm used to handle passwords.
+        - Passwords are **never stored encrypted**, they are **only stored as hashed values**.
+        - The `PasswordEncoder` is **critical** for:
+            - **Hashing** the password before storage.
+            - **Verifying** the password during login by applying the same hashing algorithm and comparing the hashes.
+        - Without configuring a `PasswordEncoder`, the application would not know how to match the provided password with the stored hashed password.
+
+- **Example: Setting Up JdbcUserDetailsManager:**
+
+```java
+JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
+```
+
+- **Setting the Password Encoder:**
+
+    - **Essential for security**, as passwords must never be stored as plain text.
+    - Passwords are **stored as hashed values** using the algorithm defined by the `PasswordEncoder`.
+    - During authentication, the provided password is **hashed using the same algorithm** and compared with the stored hash.
+    - Example using BCrypt:
+
+```java
+PasswordEncoder encoder = new BCryptPasswordEncoder();
+```
+
+- **Important:** Even if the database is compromised, only **hashed passwords** are exposed, making it difficult to retrieve the original passwords.
+
+- **Returning the Bean:**
+
+    - After configuration, return the `JdbcUserDetailsManager` as a Spring bean:
+
+```java
+return userDetailsManager;
+```
 
 Due to the configuration:
 

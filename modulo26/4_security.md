@@ -522,7 +522,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         - Relies on two core tables: `users` and `authorities`.
         - These tables store the necessary information for user authentication and roles/permissions.
         - **users table:**
-            - Stores username, password (**hashed**, not encrypted), and enabled status.
+            - Stores username, password (**hashed**), and enabled status.
         - **authorities table:**
             - Links usernames to roles (e.g., ADMIN, USER, GUEST).
 
@@ -575,7 +575,7 @@ userDetailsManager.setAuthoritiesByUsernameQuery("SELECT username, authority FRO
 
     - **PasswordEncoder:**
         - Defines the hashing algorithm used to handle passwords.
-        - Passwords are **never stored encrypted**, they are **only stored as hashed values**.
+        - Passwords are **never stored in clear**, they are **stored as hashed values**.
         - The `PasswordEncoder` is **critical** for:
             - **Hashing** the password before storage.
             - **Verifying** the password during login by applying the same hashing algorithm and comparing the hashes.

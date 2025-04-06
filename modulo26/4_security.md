@@ -1240,6 +1240,26 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
+**Scenario 1: session can not be forced**
+So if the security filter chain is as follows:
+
+```java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .authorizeRequests()
+            .antMatchers("/public/**").permitAll()
+            .anyRequest().authenticated()
+            .and()
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+        .httpBasic();
+}
+```
+
+there will be no session-reuse and no session-creation.
+
 In the following example:
 
 - three HTTP requests and responses are exchanged with `SessionCreationPolicy.STATELESS`.
@@ -1294,6 +1314,101 @@ Content-Length: 0
 ***
 
 With `STATELESS`, Spring Security ignores any session (even valid `JSESSIONID` cookies) and always expects credentials with every request.
+
+**Scenario 2: session-less authentication with JWT**
+
+In contrast to traditional session-based authentication (like form login), when using **JWT (JSON Web Token)** for authentication with a **custom filter**, **no server-side session is ever created or required**. JWT authentication remains fully **stateless**.
+
+The security filter chain might look like this:
+
+```java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .authorizeRequests()
+            .antMatchers("/public/**").permitAll()  // Allow public access to specific URLs
+            .anyRequest().authenticated()          // Require authentication for all other requests
+            .and()
+        .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class) // Add custom JWT filter
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);  // Always stateless, no sessions created
+}
+```
+
+Notice:
+- A **custom filter** (`authenticationTokenFilter`) is added **before** the `UsernamePasswordAuthenticationFilter`.
+- `sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)` explicitly disables session creation.
+
+As a result:
+- Clients authenticate each request independently by sending a **JWT** in the `Authorization` header.
+- The custom filter extracts and validates the JWT.
+- If valid, the authentication is set in the `SecurityContext`.
+- **No session cookie** like `JSESSIONID` is ever issued.
+- Server-side memory usage is optimized because no user sessions are stored.
+
+Let's walk through an example with **three HTTP requests and responses**:
+
+- Each request contains a **Bearer token** (JWT) in the `Authorization` header.
+- The server responds with a **200 OK** and grants access if the token is valid.
+- **No session cookie** is used.
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+````
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+```
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+````
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+```
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+````
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+```
+
+***
+
+Thus, with a custom JWT authentication filter and `SessionCreationPolicy.STATELESS`, every request is self-contained, meaning no session is ever created, stored, or relied upon for maintaining user identity.
 
 ### Timeout
 Session timeout determines how long a session remains active before expiring due to **inactivity**. This refers to the amount of time a session can remain **idle** (without user activity or requests) before it is **invalidated**.
@@ -1381,7 +1496,7 @@ Logout functionality allows users to safely terminate their session and ensure t
 
 In this configuration, we handle user logout behavior, session invalidation, and cookie deletion, while ensuring a session is always created (`SessionCreationPolicy.ALWAYS`) even with inherently stateless mechanisms like HTTP Basic Authentication.
 
-For example, after a user logs out, they will be redirected to a custom login page (to be exposed in a custom controller) with a `logout` parameter, and their session will be invalidated.
+For example, after a user logs out, they will be redirected to a custom login page (to be exposed under a custom controller) with a `logout` parameter, and their session will be invalidated.
 
 ```java
 @Override

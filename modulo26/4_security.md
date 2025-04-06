@@ -1376,68 +1376,74 @@ In summary:
 This ensures a robust and secure session handling mechanism for stateful web applications.
 
 ### Logout
-Logout functionality allows users to safely end their session and ensures that session data is properly cleared upon logout.
 
-In this configuration, we handle user logout behavior, session invalidation, and cookie deletion to ensure that the session is completely cleared when the user logs out.
+Logout functionality allows users to safely terminate their session and ensure that session data is properly cleared upon logout.
 
-For example, after a user logs out, they will be redirected to the login page with a `logout` parameter, and their session will be invalidated.
+In this configuration, we handle user logout behavior, session invalidation, and cookie deletion, while ensuring a session is always created (`SessionCreationPolicy.ALWAYS`) even with inherently stateless mechanisms like HTTP Basic Authentication.
+
+For example, after a user logs out, they will be redirected to a custom login page (to be exposed in a custom controller) with a `logout` parameter, and their session will be invalidated.
 
 ```java
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-                .antMatchers("/public/**", "/session-expired", "/login").permitAll()  // Allow unauthenticated access to /public/**, /session-expired, and /login
-                .anyRequest().authenticated()  // All other requests require authentication
-            .and()
-            .httpBasic()
-            .and()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // Create session only if required
-                .sessionTimeout(Duration.ofMinutes(30))  // Set session timeout (inactivity timeout) to 30 minutes
-                .invalidSessionUrl("/session-expired")  // Redirect if session is invalid due to inactivity
-                .maximumSessions(1)  // Optional: Limit concurrent sessions per user
-                .expiredUrl("/session-expired")  // Redirect if session expires
-            .and()
-            .logout()
-                .logoutUrl("/logout")  // URL that triggers the logout process
-                .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
-                .invalidateHttpSession(true)  // Invalidate the session when logging out
-                .clearAuthentication(true)  // Clear authentication data on logout
-                .deleteCookies("JSESSIONID")  // Delete session cookies (e.g. JSESSIONID)
-                .permitAll();  // Allow all users to access the logout URL
-    }
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .authorizeRequests()
+            .antMatchers("/public/**", "/session-expired", "/login", "/logout").permitAll() // Allow unauthenticated access to public pages and logout
+            .anyRequest().authenticated() // All other requests require authentication
+        .and()
+        .httpBasic() // Use Basic authentication
+        .and()
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.ALWAYS) // Always create a session, even for Basic Auth
+            .sessionTimeout(Duration.ofMinutes(30)) // Set inactivity timeout to 30 minutes
+            .invalidSessionUrl("/session-expired") // Redirect if session is invalid due to inactivity
+            .maximumSessions(1) // Limit concurrent sessions per user
+            .expiredUrl("/session-expired") // Redirect if session expires
+        .and()
+        .logout()
+            .logoutUrl("/logout") // URL to trigger logout
+            .logoutSuccessUrl("/login?logout") // Redirect after successful logout
+            .invalidateHttpSession(true) // Invalidate the session on logout
+            .clearAuthentication(true) // Clear authentication data
+            .deleteCookies("JSESSIONID") // Delete the session cookie
+            .permitAll(); // Allow access to logout for all
+}
 ```
 
-- **`logoutUrl("/logout")`:**
-    - Defines the URL to trigger the logout process.
-    - Users can log out by accessing `/logout`, and their session will be invalidated.
+- **`sessionCreationPolicy(SessionCreationPolicy.ALWAYS)`**
+    - Forces the creation of a session for every request, even if the authentication method (e.g., Basic Auth) is stateless.
+    - Ensures session management features like logout and session invalidation are consistently available.
 
-- **`logoutSuccessUrl("/login?logout")`:**
-    - After successfully logging out, users will be redirected to the login page with a `logout` parameter in the URL (`/login?logout`).
-    - This parameter can be used to display a logout success message to the user.
+- **`logoutUrl("/logout")`**
+    - Defines the endpoint (`/logout`) to initiate the logout process.
 
-- **`invalidateHttpSession(true)`:**
-    - Ensures that the session is invalidated when the user logs out.
-    - This ensures that all session attributes are removed.
+- **`logoutSuccessUrl("/login?logout")`**
+    - After successful logout, users are redirected to the login page with a `logout` indicator, allowing the application to display a logout success message.
 
-- **`clearAuthentication(true)`:**
-    - Clears authentication data, effectively logging the user out of the system.
-    - This makes sure that the user’s security context is fully cleared.
+- **`invalidateHttpSession(true)`**
+    - Ensures the HTTP session is invalidated when the user logs out.
+    - Clears all session attributes, providing a clean logout.
 
-- **`deleteCookies("JSESSIONID")`:**
-    - Deletes the session cookie (`JSESSIONID`) when the user logs out.
-    - This helps prevent session hijacking, ensuring that the session identifier is no longer accessible after logout.
+- **`clearAuthentication(true)`**
+    - Clears the `Authentication` object from the security context.
+    - Fully removes the user's authentication state.
 
-- **`permitAll()`:**
-    - Ensures that the logout URL (`/logout`) is accessible to everyone, including unauthenticated users.
-    - This allows any user to log out, even if they aren't currently logged in.
+- **`deleteCookies("JSESSIONID")`**
+    - Deletes the `JSESSIONID` cookie, preventing session reuse and reducing security risks like session fixation.
 
-- **`antMatchers("/public/**", "/session-expired", "/login", "/logout").permitAll()`:**
-  - **`/public/**`**, **`/session-expired`**, **`/login`**, and **`/logout`** are publicly accessible.
-  - **`/logout`**: Allows users to log out, clearing session data and redirecting them to the login page.
-  - **`/login?logout`**: Redirects to the login page after successful logout, with a `logout` parameter to indicate the logout success.
-  - **`/session-expired`**: A page that informs users when their session has expired or is invalidated.
+- **`permitAll()`**
+    - Ensures that the logout endpoint is accessible without authentication, allowing users to initiate logout regardless of their session state.
+
+- **`antMatchers("/public/**", "/session-expired", "/login", "/logout").permitAll()`**
+    - Allows public access to important pages related to session and login management.
+
+In summary:
+- **Using `SessionCreationPolicy.ALWAYS` guarantees session creation** even with stateless auth like Basic.
+- **Logout fully clears session and authentication information.**
+- **Deleted cookies prevent any residual session identification.**
+- **Redirection to `/login?logout` provides a clear and user-friendly post-logout experience.**
+
+This ensures a robust, secure, and consistent logout mechanism across different authentication methods.
 
 ### Duration
 

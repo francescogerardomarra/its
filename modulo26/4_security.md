@@ -1749,13 +1749,13 @@ Then you need to perform the **registration** of this custom filter in your `Sec
 
 When you want to implement **custom logic in session management** (such as session expiration), it’s crucial to control **when** the custom logic is executed relative to **authentication**.
 
-First off, `UsernamePasswordAuthenticationFilter` is a Spring Security filter responsible for handling the process of authenticating a user based on their username and password. It plays a crucial role in HTTP-based authentication, particularly when the user logs in with their credentials, such as through **form-based** or **basic** authentication.
+First off, `UsernamePasswordAuthenticationFilter` is a Spring Security filter responsible for handling the process of authenticating a user based on their username and password. It plays a crucial role in HTTP-based authentication, particularly when the user logs in with their credentials, such as through **form-based** or **basic authentication**.
 
 Although you don't explicitly define this filter class, Spring Security automatically registers it in the security filter chain by default when using basic or form-based authentication. This filter ensures that user credentials are processed correctly during the authentication process, allowing Spring Security to authenticate the user successfully.
 
 Having said that, in this case, using `addFilterBefore()` you add the **custom filter** before the **`UsernamePasswordAuthenticationFilter`** in the filter chain to ensure that session expiration is checked **before authentication** takes place.
 
-In the following `SecurityConfig` class, we configure Spring Security to handle form-based authentication with custom session expiration logic. A custom `SessionExpirationFilter` is injected via constructor injection and added before the `UsernamePasswordAuthenticationFilter` to check for session validity before authentication. The session management is set to create sessions only when required and form login does require a session to function.
+In the following `SecurityConfig` class, we configure Spring Security to handle form-based authentication with custom session expiration logic. A custom `SessionExpirationFilter` is injected via constructor injection and added before the `UsernamePasswordAuthenticationFilter` to check for session validity before authentication. The session management is set to create sessions only when required and form-based authentication does require a session to function.
 
 ```java
 @Configuration

@@ -1601,10 +1601,8 @@ In summary:
 
 This ensures a robust, secure, and consistent logout mechanism across different authentication methods.
 
-### Session-length
-Session cookies, like `JSESSIONID`, typically do not carry a `max-age` or `expiry` attribute. Instead, they last as long as the session is active (i.e. until the browser is closed, unless the session is explicitly invalidated by the server). This behavior is because **session cookies are non-persistent cookies**. They are stored in the session storage of the browser, meaning they only exist during the browser session. When the session ends (i.e. the browser is closed), the cookie is automatically deleted. The browser handles this automatically without needing an explicit expiration time.
-
-When the server sends a `JSESSIONID` cookie without setting a `max-age` or `expiry` time, it becomes a session cookie:
+### Length
+When the server sends a `JSESSIONID` cookie without setting a `max-age` or `expiry` time, it becomes an authentication-related session cookie:
 
 ````http
 Set-Cookie: JSESSIONID=abc123; Path=/; HttpOnly; Secure; SameSite=Strict

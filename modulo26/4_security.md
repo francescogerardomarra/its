@@ -1631,7 +1631,7 @@ In this example:
 - The `Secure` flag ensures it is only sent over HTTPS.
 - The `SameSite=Strict` attribute provides additional security by restricting the cookie to first-party contexts only.
 
-To implement a maximum session length (not just an inactivity timeout), Spring Security does not provide a built-in way to enforce an absolute "maximum session length" — that is, a session expiration after a fixed duration, regardless of user activity. However, this behavior can be implemented manually by managing session expiration through custom components.
+To implement a maximum session length (not just an inactivity timeout), Spring Security does not provide a built-in way to enforce a session expiration after a fixed duration, regardless of user activity. However, this behavior can be implemented manually by managing session expiration through custom components.
 
 To achieve this, you need two main components:
 

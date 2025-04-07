@@ -1377,21 +1377,6 @@ Every request must contain all the necessary authentication information (e.g., c
 - **No Session Reuse**: Spring Security will not use an existing session.
 - **Authentication Requirements**: Every request must be independently authenticated.
 
-```java
-@Override
-protected void configure(HttpSecurity http) throws Exception {
-    http
-        .authorizeRequests()
-            .antMatchers("/public/**").permitAll()
-            .anyRequest().authenticated()
-            .and()
-        .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-        .httpBasic();
-}
-```
-
 So if the security filter chain is as follows:
 
 ```java

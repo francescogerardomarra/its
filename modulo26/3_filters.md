@@ -82,18 +82,6 @@ Summing up:
    - Modify the response if necessary (add CORS headers, security tokens, etc.).
 - **Control Flow**: Once `chain.doFilter` is called, the flow **"dives" into deeper filters or the controller**. Once the controller has finished, the flow **"unwinds" back** through the filters.
 
-| **Stage**                                        | **Action**                                                         |
-|:-------------------------------------------------|:-------------------------------------------------------------------|
-| Request enters                                   | Request object and empty Response object created.                  |
-| Pre-Processing (Filters before `chain.doFilter`) | Request inspection, validation, modification.                      |
-| Controller processing                            | Request is handled, response body generated.                       |
-| Post-Processing (Filters after `chain.doFilter`) | Response inspection, logging, header modification.                 |
-| Response exits                                   | Response sent back to client.                                      |
-| **Before** `chain.doFilter(request, response)`   | Code runs for incoming requests (**pre-processing**)               |
-| **After** `chain.doFilter(request, response)`    | Code runs for outgoing responses (**post-processing**)             |
-| **Before** `chain.doFilter(request, response)`   | During **request flow** (before reaching controller)               |
-| **After** `chain.doFilter(request, response)`    | During **response flow** (after controller has generated response) |
-
 A quick code example of a filter definition and chaining:
 
 ```java
@@ -119,6 +107,18 @@ Output Order:
 (Controller runs)
 🔸 After chain.doFilter - Response outgoing
 ```
+
+| **Stage**                                        | **Action**                                                         |
+|:-------------------------------------------------|:-------------------------------------------------------------------|
+| Request enters                                   | Request object and empty Response object created.                  |
+| Pre-Processing (Filters before `chain.doFilter`) | Request inspection, validation, modification.                      |
+| Controller processing                            | Request is handled, response body generated.                       |
+| Post-Processing (Filters after `chain.doFilter`) | Response inspection, logging, header modification.                 |
+| Response exits                                   | Response sent back to client.                                      |
+| **Before** `chain.doFilter(request, response)`   | Code runs for incoming requests (**pre-processing**)               |
+| **After** `chain.doFilter(request, response)`    | Code runs for outgoing responses (**post-processing**)             |
+| **Before** `chain.doFilter(request, response)`   | During **request flow** (before reaching controller)               |
+| **After** `chain.doFilter(request, response)`    | During **response flow** (after controller has generated response) |
 
 #### Use Cases
 

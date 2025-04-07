@@ -885,7 +885,7 @@ username=user&password=password
 ````http
 HTTP/1.1 302 Found
 Location: /protected-resource
-Set-Cookie: JSESSIONID=newSessionId1234; HttpOnly; Secure
+Set-Cookie: JSESSIONID=newSessionId1234; HttpOnly; Secure; SameSite=Strict
 ````
 
 ***
@@ -1169,7 +1169,7 @@ username=user&password=password
 ````http
 HTTP/1.1 302 Found
 Location: /protected-resource
-Set-Cookie: JSESSIONID=abcd5678; Path=/; HttpOnly; Secure
+Set-Cookie: JSESSIONID=abcd5678; Path=/; HttpOnly; Secure; SameSite=Strict
 ````
 
 ***

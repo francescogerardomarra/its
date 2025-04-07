@@ -1631,7 +1631,7 @@ In this example:
 - The `Secure` flag ensures it is only sent over HTTPS.
 - The `SameSite=Strict` attribute provides additional security by restricting the cookie to first-party contexts only.
 
-**Spring Security does not provide a built-in way to enforce a session expiration after a fixed duration, regardless of user activity**.
+**Spring Security does not provide a built-in way to enforce the expiration of an authentication-related session and the underlying non-persistent cookie after a fixed duration, regardless of user activity**.
 
 However, this behavior can be implemented manually by managing session expiration through custom components.
 

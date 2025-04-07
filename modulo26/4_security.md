@@ -760,6 +760,305 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 ---
 
+## Form-Based Authentication
+**Form-based authentication** is a widely used method for authenticating users in web applications, especially when a **better user experience** is desired compared to **Basic Authentication**.
+
+When a user attempts to access a protected resource without being authenticated, the server responds by redirecting the client to a **login page**, where the user can input their **username** and **password**. This approach separates the login process from other interactions, unlike Basic Authentication, where credentials are sent with each request.
+
+Once the user is authenticated, the server issues a **session cookie** (commonly `JSESSIONID`), which the client includes in subsequent requests to prove its identity. This allows the user to stay authenticated without resubmitting credentials for every request.
+
+Unlike Basic Authentication—which is **stateless** and requires credentials with each request—**form-based authentication** uses **HTTP cookies** to maintain the user's authenticated state across multiple requests, making the experience more seamless.
+
+**Default Login Page**
+
+By default, Spring Security provides a pre-built login page if none is specified.
+
+Here’s a basic configuration:
+
+```java
+package com.example.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http
+            .authorizeRequests()
+                .antMatchers("/public/**").permitAll()
+                .anyRequest().authenticated()
+            .and()
+            .formLogin(); // Enable Form-based Authentication with default login page
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
+
+  @Override
+  @Bean
+  public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+    InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+    manager.createUser(User.withUsername("user")
+            .password(passwordEncoder.encode("password"))
+            .build());
+    manager.createUser(User.withUsername("admin")
+            .password(passwordEncoder.encode("admin"))
+            .build());
+    return manager;
+  }
+}
+```
+
+With this configuration, if a user tries to access a protected resource, Spring Security will automatically redirect them to a default login page. That is, if you don't configure anything special, Spring Security automatically provides a simple login page at `/login`.
+
+Handshake sequence:
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+````
+
+````http
+HTTP/1.1 302 Found
+Location: /login
+````
+
+***
+
+````plaintext
+GET /login HTTP/1.1
+Host: example.com
+````
+
+````html
+<!-- Default HTML Form provided by Spring Security -->
+<form method="POST" action="/login">
+    <input type="text" name="username">
+    <input type="password" name="password">
+    <button type="submit">Login</button>
+</form>
+````
+
+***
+
+````plaintext
+POST /login HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 43
+
+username=user&password=password
+````
+
+````http
+HTTP/1.1 302 Found
+Location: /protected-resource
+Set-Cookie: JSESSIONID=abcd1234
+````
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Cookie: JSESSIONID=abcd1234
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
+
+***
+
+** Custom static HTML Login page**
+
+We can configure Spring Security to use your own static login page.
+
+```java
+package com.example.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests()
+                .requestMatchers("/login.html", "/public/**").permitAll() // Allow access to the custom login page
+                .anyRequest().authenticated()
+            .and()
+            .formLogin()
+                .loginPage("/login.html")    // Use custom login page
+                .loginProcessingUrl("/login") // Form POST action
+                .defaultSuccessUrl("/protected-resource", true) // Redirect after successful login
+                .failureUrl("/login.html?error=true"); // Redirect on failure
+
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        manager.createUser(User.withUsername("user")
+                .password(passwordEncoder.encode("password"))
+                .roles("USER")
+                .build());
+        manager.createUser(User.withUsername("admin")
+                .password(passwordEncoder.encode("admin"))
+                .roles("ADMIN")
+                .build());
+        return manager;
+    }
+}
+```
+
+Your `login.html` static page could look like this:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form method="POST" action="/login">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <div>
+            <button type="submit">Login</button>
+        </div>
+    </form>
+</body>
+</html>
+```
+
+With this setup, the handshake sequence remains **almost identical** to the one shown above, except that the `/login.html` page will be served when redirected instead of the default login page.
+
+The key flow remains:
+- Request protected resource.
+- Redirect to custom login page.
+- Submit credentials.
+- Receive session cookie (`JSESSIONID`) on successful authentication.
+- Include cookie in subsequent requests to access protected resources.
+
+In this setup, authentication state is maintained through the session cookie, rather than credentials being included in each request, providing a better user experience compared to Basic Authentication.
+
+Let’s walk through a full authentication handshake using Form-based authentication:
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+````
+
+````http
+HTTP/1.1 302 Found
+Location: /login.html
+````
+
+***
+
+````plaintext
+GET /login.html HTTP/1.1
+Host: example.com
+````
+
+````html
+<!-- HTML Form for login -->
+<form method="POST" action="/login">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+    <button type="submit">Login</button>
+</form>
+````
+
+***
+
+````plaintext
+POST /login HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 43
+
+username=user&password=password
+````
+
+````http
+HTTP/1.1 302 Found
+Location: /protected-resource
+Set-Cookie: JSESSIONID=abcd1234
+````
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Cookie: JSESSIONID=abcd1234
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
+
+***
+
+---
+
 ## Authentication-related session management
 **Creating an authentication-related session means generating a server-side session, referenced by a unique identifier, where certain information about the authenticated user is stored**.
 

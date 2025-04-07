@@ -48,15 +48,15 @@ First it moves **forward** (request), reaching the controller, then **unwinds ba
     - **Before** calling `chain.doFilter(...)` → filters handle the **request phase**.
     - **After** calling `chain.doFilter(...)` → filters handle the **response phase**.
 
+- **Forward flow**: request is pushed through the filters toward the target controller.
+- **Backward flow**: after the controller processes the request, the response is sent back through the filters in reverse order.
+
 | **Phase**                                      | **Inside doFilter**                                                |
 |:-----------------------------------------------|:-------------------------------------------------------------------|
 | **Before** `chain.doFilter(request, response)` | Code runs for incoming requests (**pre-processing**)               |
 | **After** `chain.doFilter(request, response)`  | Code runs for outgoing responses (**post-processing**)             |
 | **Before** `chain.doFilter(request, response)` | During **request flow** (before reaching controller)               |
 | **After** `chain.doFilter(request, response)`  | During **response flow** (after controller has generated response) |
-
-- **Forward flow**: request is pushed through the filters toward the target controller.  
-- **Backward flow**: after the controller processes the request, the response is sent back through the filters in reverse order.
 
 So the flow timeline looks like this:
 

@@ -1755,7 +1755,9 @@ Although you don't explicitly define this filter class, Spring Security automati
 
 Having said that, in this case, using `addFilterBefore()` you add the **custom filter** before the **`UsernamePasswordAuthenticationFilter`** in the filter chain to ensure that session expiration is checked **before authentication** takes place.
 
-In the following `SecurityConfig` class, we configure Spring Security to handle form-based authentication with custom session expiration logic. A custom `SessionExpirationFilter` is injected via constructor injection and added before the `UsernamePasswordAuthenticationFilter` to check for session validity before authentication. The session management is set to create sessions only when required and form-based authentication does require a session to function.
+In the following `SecurityConfig` class, we configure Spring Security to handle form-based authentication with custom session expiration logic. A custom `SessionExpirationFilter` is injected via constructor injection and added before the `UsernamePasswordAuthenticationFilter` to check for session validity before authentication.
+
+The session management is set to create sessions only when required and form-based authentication does require a session to function.
 
 ```java
 @Configuration

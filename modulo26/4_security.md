@@ -1766,7 +1766,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SessionExpirationFilter sessionExpirationFilter;
 
-    // Constructor injection of the SessionExpirationFilter
+    // Explicit Constructor injection of the SessionExpirationFilter
+    @Autowired
     public SecurityConfig(SessionExpirationFilter sessionExpirationFilter) {
         this.sessionExpirationFilter = sessionExpirationFilter;
     }

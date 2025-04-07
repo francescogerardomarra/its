@@ -100,9 +100,7 @@ For Spring Security 6.x (with Spring Boot 3.x and Java 17+):
 </dependency>
 ```
 
-Spring Security is a widely-used framework for securing Java-based applications. With the release of **Spring Security 6.x**, significant changes have been made compared to the earlier **Spring Security 5.x**.
-
-The main differences between the two versions are:
+With the release of **Spring Security 6.x**, significant changes have been made compared to the earlier **Spring Security 5.x**. The main differences between the two versions are:
 
 - **Java Version Support**:
     - **Spring Security 5.x**: Supports **Java 8** and higher, which means it works with older Java versions.

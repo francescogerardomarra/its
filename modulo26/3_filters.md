@@ -44,17 +44,14 @@ First it moves **forward** (request), reaching the controller, then **unwinds ba
 - Execution Inside Filters
   - Filters operate through the `doFilter(request, response, chain)` method.
 
-| **Phase**                                      | **Inside doFilter**                                    |
-|:-----------------------------------------------|:-------------------------------------------------------|
-| **Before** `chain.doFilter(request, response)` | Code runs for incoming requests (**pre-processing**)   |
-| **After** `chain.doFilter(request, response)`  | Code runs for outgoing responses (**post-processing**) |
-
 - Thus:
-  - **Before** calling `chain.doFilter(...)` → filters handle the **request phase**.
-  - **After** calling `chain.doFilter(...)` → filters handle the **response phase**.
+    - **Before** calling `chain.doFilter(...)` → filters handle the **request phase**.
+    - **After** calling `chain.doFilter(...)` → filters handle the **response phase**.
 
-| **Code Position**                              | **Executed When**                                                  |
+| **Phase**                                      | **Inside doFilter**                                                |
 |:-----------------------------------------------|:-------------------------------------------------------------------|
+| **Before** `chain.doFilter(request, response)` | Code runs for incoming requests (**pre-processing**)               |
+| **After** `chain.doFilter(request, response)`  | Code runs for outgoing responses (**post-processing**)             |
 | **Before** `chain.doFilter(request, response)` | During **request flow** (before reaching controller)               |
 | **After** `chain.doFilter(request, response)`  | During **response flow** (after controller has generated response) |
 

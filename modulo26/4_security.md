@@ -1602,7 +1602,7 @@ In summary:
 This ensures a robust, secure, and consistent logout mechanism across different authentication methods.
 
 ### Length
-When the server sends a `JSESSIONID` cookie without setting a `max-age` or `expiry` time, it becomes an authentication-related session cookie:
+When the server sends a `JSESSIONID` cookie without setting a `max-age` or `expiry` time, it becomes a **non-persistent cookie**:
 
 ````http
 Set-Cookie: JSESSIONID=abc123; Path=/; HttpOnly; Secure; SameSite=Strict

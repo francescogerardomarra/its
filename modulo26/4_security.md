@@ -834,7 +834,8 @@ In the following example:
 - Once the user submits the login form with their credentials (e.g., username `user`, password `password`), a `POST` request is sent back to the server.
 - The `JSESSIONID` cookie is included in this request to maintain the session while processing the authentication.
 - After the server validates the user's credentials, Spring Security will authenticate the user and store the authentication information in the session (`SecurityContext`).
-- **Session Fixation Protection**: To protect against session fixation attacks, the old session is invalidated, and a new session with a new `JSESSIONID` is created.
+- To protect against session fixation attacks, by default the old session is invalidated, and a new session with a new `JSESSIONID` is created.
+- **Session fixation** is a security vulnerability where an attacker tricks a user into using a known session ID; Spring Security enables "session fixation protection" by default.
 - The session (`JSESSIONID`) is now associated with the authenticated user's information.
 - The user will then be redirected to the originally requested protected resource (e.g., `/protected-resource`).
 - On subsequent requests, the client sends the new `JSESSIONID` cookie to prove that the session exists and the user is authenticated.

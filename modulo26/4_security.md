@@ -823,7 +823,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 With this configuration, if a user tries to access a protected resource, Spring Security will automatically redirect them to a default login page. That is, if you don't configure anything special, Spring Security automatically provides a simple login page at `/login`.
 
-Handshake sequence:
+In the following example:
+
+- When the user tries to access a protected resource (e.g., `/protected-resource`), Spring Security will first check if the user is authenticated.
+- Since the user is not authenticated, Spring Security will create a new HTTP session and generate a `JSESSIONID` cookie, which is sent to the client.
+- **Important**: The initial session is **not tied to any authenticated user**. It is created solely to facilitate future redirection (i.e., the "saved request" for the user's original destination). This session is not used for authentication but for preserving the user’s destination until they log in.
+- The user will be redirected to the login page (`/login`).
+- The client (browser) will be redirected to the default login page (`/login`).
+- The `JSESSIONID` cookie will be included in the request to ensure the session is maintained across the redirection, even though the user is not yet authenticated.
+- Spring Security automatically generates a login form for the user.
+- The form will typically have fields for the username and password, and the user is expected to enter their credentials.
+- Once the user submits the login form with their credentials (e.g., username `user`, password `password`), a `POST` request is sent back to the server.
+- The `JSESSIONID` cookie is included in this request to maintain the session while processing the authentication.
+- After the server validates the user's credentials, Spring Security will authenticate the user and store the authentication information in the session (`SecurityContext`).
+- **Session Fixation Protection**: To protect against session fixation attacks, the old session is invalidated, and a new session with a new `JSESSIONID` is created.
+- The session (`JSESSIONID`) is now associated with the authenticated user's information.
+- The user will then be redirected to the originally requested protected resource (e.g., `/protected-resource`).
+- On subsequent requests, the client sends the new `JSESSIONID` cookie to prove that the session exists and the user is authenticated.
+- Spring Security uses the session to confirm the user's authentication, granting access to the protected resource.
 
 ***
 
@@ -835,6 +852,7 @@ Host: example.com
 ````http
 HTTP/1.1 302 Found
 Location: /login
+Set-Cookie: JSESSIONID=abcd1234
 ````
 
 ***
@@ -842,6 +860,7 @@ Location: /login
 ````plaintext
 GET /login HTTP/1.1
 Host: example.com
+Cookie: JSESSIONID=abcd1234
 ````
 
 ````html
@@ -860,6 +879,7 @@ POST /login HTTP/1.1
 Host: example.com
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 43
+Cookie: JSESSIONID=abcd1234
 
 username=user&password=password
 ````
@@ -867,7 +887,7 @@ username=user&password=password
 ````http
 HTTP/1.1 302 Found
 Location: /protected-resource
-Set-Cookie: JSESSIONID=abcd1234
+Set-Cookie: JSESSIONID=newSessionId1234; HttpOnly; Secure
 ````
 
 ***
@@ -875,7 +895,7 @@ Set-Cookie: JSESSIONID=abcd1234
 ````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
-Cookie: JSESSIONID=abcd1234
+Cookie: JSESSIONID=newSessionId1234
 ````
 
 ````http
@@ -890,7 +910,7 @@ Content-Length: 20
 
 ***
 
-** Custom static HTML Login page**
+**Custom static HTML Login page**
 
 We can configure Spring Security to use your own static login page.
 
@@ -978,13 +998,13 @@ Your `login.html` static page could look like this:
 With this setup, the handshake sequence remains **almost identical** to the one shown above, except that the `/login.html` page will be served when redirected instead of the default login page.
 
 The key flow remains:
-- Request protected resource.
-- Redirect to custom login page.
-- Submit credentials.
-- Receive session cookie (`JSESSIONID`) on successful authentication.
-- Include cookie in subsequent requests to access protected resources.
+- **Request protected resource**: The user attempts to access a protected resource.
+- **Redirect to custom login page**: Since the user is not authenticated, they are redirected to the custom login page (`/login.html`). An initial session is created, but it is not tied to any authenticated user. The session cookie (`JSESSIONID=abcd1234`) is used only for maintaining the redirection state and saving the user's original request (the "saved request").
+- **Submit credentials**: The user submits their credentials (e.g., username and password) via the login form.
+- **Receive new session cookie**: After successful authentication, the session cookie (`JSESSIONID`) is updated with a new value (`newSessionId1234`) and the user's authentication information is stored in the session. This new session is now tied to the authenticated user.
+- **Include cookie in subsequent requests**: On subsequent requests, the client sends the updated `JSESSIONID` cookie to prove that the session exists and the user is authenticated. The user is then granted access to the protected resources.
 
-In this setup, authentication state is maintained through the session cookie, rather than credentials being included in each request, providing a better user experience compared to Basic Authentication.
+In this setup, **authentication state** is maintained through the session cookie, rather than credentials being included in each request, providing a better user experience compared to Basic Authentication. Additionally, this method prevents session fixation attacks by issuing a new session ID after successful authentication.
 
 Let’s walk through a full authentication handshake using Form-based authentication:
 
@@ -998,6 +1018,7 @@ Host: example.com
 ````http
 HTTP/1.1 302 Found
 Location: /login.html
+Set-Cookie: JSESSIONID=abcd1234
 ````
 
 ***
@@ -1005,6 +1026,7 @@ Location: /login.html
 ````plaintext
 GET /login.html HTTP/1.1
 Host: example.com
+Cookie: JSESSIONID=abcd1234
 ````
 
 ````html
@@ -1025,6 +1047,7 @@ POST /login HTTP/1.1
 Host: example.com
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 43
+Cookie: JSESSIONID=abcd1234
 
 username=user&password=password
 ````
@@ -1032,7 +1055,7 @@ username=user&password=password
 ````http
 HTTP/1.1 302 Found
 Location: /protected-resource
-Set-Cookie: JSESSIONID=abcd1234
+Set-Cookie: JSESSIONID=newSessionId1234; HttpOnly; Secure
 ````
 
 ***
@@ -1040,7 +1063,7 @@ Set-Cookie: JSESSIONID=abcd1234
 ````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
-Cookie: JSESSIONID=abcd1234
+Cookie: JSESSIONID=newSessionId1234
 ````
 
 ````http
@@ -1264,11 +1287,12 @@ For **form-based authentication**, the session will be created because it is dee
 
 In the following example:
 
-- **three HTTP requests and responses** are exchanged, starting with a **GET request** to access a protected resource, followed by a **POST request** to the login page, and finally, a request to access the protected resource again;
-- the first request is a **GET request** to the protected resource, which redirects the user to the login page as they are not authenticated;
-- the second request is a **POST request** where the user submits their credentials (username and password) via the login form;
-- the server processes the credentials, responds with a **302 redirect** back to the protected resource, and sets a **session cookie** (like `JSESSIONID`) to maintain the user's authenticated session;
-- the third request sends the session cookie along with the request to the protected resource, confirming the user is authenticated and granting access to the resource.
+- **Three HTTP requests and responses** are exchanged, starting with a **GET request** to access a protected resource, followed by a **POST request** to the login page, and finally, a request to access the protected resource again.
+- The first request is a **GET request** to the protected resource (`/protected-resource`), which redirects the user to the login page (`/login`) as they are not authenticated. At this point, the server creates an initial session for future redirection and sets a simple session cookie (`JSESSIONID=abcd1234`).
+- The second request is a **GET request** to the login page (`/login`). The browser sends the `JSESSIONID=abcd1234` cookie along with the request to maintain the session, though it's not authenticated yet. The login page is served with a form for the user to input their credentials.
+- The user submits their credentials (e.g., `username=user`, `password=password`) via the login form. This triggers a **POST request** to the server to authenticate the user.
+- The server processes the credentials, and upon successful authentication, responds with a **302 redirect** back to the originally requested protected resource (`/protected-resource`). The server also issues a new session cookie (`JSESSIONID=abcd5678; HttpOnly; Secure`) to replace the initial one, which now contains the authenticated user’s session details.
+- The third request sends the **new session cookie** (`JSESSIONID=abcd5678`) along with the request to the protected resource, confirming the user is authenticated. The server grants access to the protected resource and responds with the requested content.
 
 ***
 
@@ -1280,6 +1304,7 @@ Host: example.com
 ````http
 HTTP/1.1 302 Found
 Location: /login
+Set-Cookie: JSESSIONID=abcd1234; Path=/
 ````
 
 ***
@@ -1287,6 +1312,7 @@ Location: /login
 ````plaintext
 GET /login HTTP/1.1
 Host: example.com
+Cookie: JSESSIONID=abcd1234
 ````
 
 ````html
@@ -1307,6 +1333,7 @@ POST /login HTTP/1.1
 Host: example.com
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 43
+Cookie: JSESSIONID=abcd1234
 
 username=user&password=password
 ````
@@ -1314,7 +1341,7 @@ username=user&password=password
 ````http
 HTTP/1.1 302 Found
 Location: /protected-resource
-Set-Cookie: JSESSIONID=abcd1234
+Set-Cookie: JSESSIONID=abcd5678; Path=/; HttpOnly; Secure
 ````
 
 ***
@@ -1322,7 +1349,7 @@ Set-Cookie: JSESSIONID=abcd1234
 ````plaintext
 GET /protected-resource HTTP/1.1
 Host: example.com
-Cookie: JSESSIONID=abcd1234
+Cookie: JSESSIONID=abcd5678
 ````
 
 ````http

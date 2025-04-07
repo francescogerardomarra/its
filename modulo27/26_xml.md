@@ -969,7 +969,7 @@ This transformation ensures that the XML structure follows the schema rules with
 </bookstore>
 ```
 
-In this case, the `bookstore` root element declares a default namespace (`http://example.com/tech`) using the `xmlns` attribute without any prefix. This means that all child elements within `<bookstore>`—such as `<book>`, `<title>`, and `<author>`—are automatically part of this namespace without requiring explicit prefixes.
+In this case, the `bookstore` root element declares a default namespace (`http://example.com/tech`) using the `xmlns` attribute without any prefix. This means that all child elements within `<bookstore>` (such as `<book>`, `<title>`, and `<author>`) are automatically part of this namespace without requiring explicit prefixes.
 
 We define the default namespace at the schema level using `targetNamespace`. We also specify `elementFormDefault="qualified"`, which ensures that all elements within this schema belong to the namespace.
 

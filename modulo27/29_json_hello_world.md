@@ -233,7 +233,7 @@ public class Main {
 # **Lesson: JSON Schema Validation in Java 21 - Part 2**
 
 ## **1. Introduction to JSON Schema Validation**
-In the previous lesson, we explored basic JSON deserialization using Jackson. However, Jackson does not enforce **schema validation**—meaning it cannot check if a JSON document conforms to a predefined structure.
+In the previous lesson, we explored basic JSON deserialization using Jackson. However, Jackson does not enforce **schema validation** meaning it cannot check if a JSON document conforms to a predefined structure.
 
 To validate JSON against a **JSON Schema**, we need an additional library: **Everit JSON Schema**.
 
@@ -941,7 +941,7 @@ Process finished with exit code 0
 # **Lesson: Serializing/Deserializing JSON in Java 21 with Jackson Annotations**
 
 ## **1. Introduction to JSON Serialization and Deserialization**
-Serialization is the process of converting a Java object into a JSON format, while deserialization is the reverse—converting a JSON file into a Java object. This is useful when working with JSON-based data in Java applications. The **Jackson** library provides a simple and efficient way to handle JSON in Java.
+Serialization is the process of converting a Java object into a JSON format, while deserialization is the reverse (converting a JSON file into a Java object). This is useful when working with JSON-based data in Java applications. The **Jackson** library provides a simple and efficient way to handle JSON in Java.
 
 ### **What is Jackson?**
 Jackson is a powerful JSON processing library in Java that provides:

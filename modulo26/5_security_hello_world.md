@@ -165,7 +165,7 @@ Provides support for serializing and deserializing Java 8 Date and Time API obje
 logging.level.org.springframework.security=DEBUG
 logging.level.org.springframework.web=DEBUG
 ```
-- `logging.level.org.springframework.security=DEBUG`: Enables detailed logging for Spring Security internals—useful for debugging authentication and authorization issues.
+- `logging.level.org.springframework.security=DEBUG`: Enables detailed logging for Spring Security internals useful for debugging authentication and authorization issues.
 - `logging.level.org.springframework.web=DEBUG`: Enables detailed logging for HTTP requests and controller responses within Spring Web.
 
 ### Basic Authentication
@@ -200,8 +200,8 @@ admin.jwt.claim.role=admin
 admin.jwt.claim.permission=read,write,delete
 admin.jwt.claim.expiration.ms=600000
 ```
-- `admin.jwt.claim.sub`: The subject (`sub`) claim that identifies the principal—typically the username or user ID.
-- `admin.jwt.claim.role`: Sets the `role` claim in the JWT—used to authorize endpoints.
+- `admin.jwt.claim.sub`: The subject (`sub`) claim that identifies typically the username or user ID.
+- `admin.jwt.claim.role`: Sets the `role` claim in the JWT used to authorize endpoints.
 - `admin.jwt.claim.permission`: A custom `permission` claim listing specific actions allowed by the token bearer.
 - `admin.jwt.claim.expiration.ms`: JWT expiration time in milliseconds (10 minutes here).
 
@@ -1111,4 +1111,4 @@ Try the following scenarios to test security robustness:
 - Ensure the server is running at `http://localhost:8080`.
 - All endpoints now require a valid Bearer token in the `Authorization` header.
 - Use `curl -i` for more detailed responses during testing.
-- Do not assume any `user_id` or `item_id`—always retrieve dynamically from database or previous response.
+- Do not assume any `user_id` or `item_id`, always retrieve dynamically from database or previous response.

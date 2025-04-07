@@ -362,7 +362,7 @@ Authentication systems can be classified based on the **number of factors** used
 
 Authentication protocols are essential mechanisms for verifying identities within a networked environment.
 
-These protocols combine various authentication concepts—such as the **type of factor** (e.g. something you know, have, or are) and the **number of factors** (e.g. single, two, or multi-factor authentication) to provide tailored solutions based on security needs, user experience, and interoperability requirements. By leveraging these concepts, protocols ensure that only authorized entities can access protected resources, balancing security and usability.
+These protocols combine various authentication concepts such as the **type of factor** (e.g. something you know, have, or are) and the **number of factors** (e.g. single, two, or multi-factor authentication) to provide tailored solutions based on security needs, user experience, and interoperability requirements. By leveraging these concepts, protocols ensure that only authorized entities can access protected resources, balancing security and usability.
 
 ## HTTP Basic Authentication
 

@@ -1355,7 +1355,7 @@ The following operations are supported in our system:
 - Users cannot modify their ID or other users’ data.
 - Orders cannot be updated once created (modifications happen through item additions/removals).
 - Items cannot be deleted, only modified.
-- An order’s status cannot be manually changed—it follows predefined business logic.
+- An order’s status cannot be manually changed; it follows predefined business logic.
 
 ## Request and Response Mappings
 
@@ -3899,7 +3899,7 @@ Then:
 
 In a **bugged design**, where **entities** are directly exposed to API responses, a common issue is **recursive nesting**. This occurs due to **bidirectional relationships** between entities that lead to circular references, resulting in infinite loops during serialization. Let's break down why this happens and how **DTOs** can conceptually resolve the issue.
 
-In a flawed design, the system uses **entities**—the database models—as the objects to be serialized and returned in API responses. These entities often contain **bidirectional relationships**, where one entity references another, and vice versa. For example:
+In a flawed design, the system uses **entities** (the database models) as the objects to be serialized and returned by API responses. These entities often contain **bidirectional relationships**, where one entity references another, and vice versa. For example:
 - An `Order` entity contains a list of `OrderItem` entities.
 - Each `OrderItem` entity might have a reference back to the `Order` entity.
 

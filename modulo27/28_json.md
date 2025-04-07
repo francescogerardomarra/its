@@ -139,7 +139,7 @@ In this example:
 - The `user_id`, `name`, and `email` fields are simple key-value pairs that describe basic user information. Each field has a string value or number associated with it, which is a straightforward representation of the data.
 - The `phone` field is an object, which itself contains two phone numbers: `home` and `work`. This illustrates how JSON allows objects to be nested within other objects, supporting more complex structures. The `phone` object encapsulates additional data in a way that groups related information together, making it easier to work with.
 
-- The `roles` field is an array, containing multiple string values ("admin" and "editor"). This demonstrates how JSON can represent an ordered list of items using arrays, which can hold any type of data—strings, numbers, objects, etc. Arrays are particularly useful when you need to represent a collection of similar items.
+- The `roles` field is an array, containing multiple string values ("admin" and "editor"). This demonstrates how JSON can represent an ordered list of items using arrays, which can hold any type of data (strings, numbers, objects, etc). Arrays are particularly useful when you need to represent a collection of similar items.
 
 ### Real-World Application of JSON Objects
 

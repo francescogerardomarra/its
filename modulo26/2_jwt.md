@@ -149,7 +149,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
 
 ## Payload
 
-The **payload** is the part of a JSON Web Token (JWT) that contains the **claims**—statements about an entity (typically a user) and additional metadata. While the payload is encoded, it is **not encrypted**, meaning its contents can be read by anyone with access to the token.
+The **payload** is the part of a JSON Web Token (JWT) that contains the **claims** i.e. statements about an entity (typically a user) and additional metadata. While the payload is encoded, it is **not encrypted**, meaning its contents can be read by anyone with access to the token.
 
 Claims are key-value pairs that provide information to the recipient of the token. They play a central role in defining the token’s purpose and context. Claims can be categorized into three types: **registered**, **public**, and **private**.
 
@@ -187,7 +187,7 @@ eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTcx
 
 #### What Are Public Claims?
 
-**Public claims** are custom claims meant to be **shared and recognized across different systems and services**. They follow naming conventions—usually involving **namespaces**—to avoid clashes with standard or other custom claims.
+**Public claims** are custom claims meant to be **shared and recognized across different systems and services**. They follow naming conventions, usually involving **namespaces**, to avoid clashes with standard or other custom claims.
 
 At their core, public and private claims are structurally the same: they are both key-value pairs in a JWT payload. What differentiates them is **intent and interpretation**.
 
@@ -210,7 +210,7 @@ Example:
 This namespaced key reduces the risk of name collision and signals that `mycompany.com` owns the definition.
 
 ✅ Good: `https://yourdomain.com/subscriptionTier`: `"pro"`
-❌ Bad: `subscriptionTier`: `"pro"` — might conflict with other claims named the same.
+❌ Bad: `subscriptionTier`: `"pro"` because might conflict with other claims named the same.
 
 > 🔍 Important: Simply using a namespaced URI does **not automatically** make the claim meaningful to third parties. It must be accompanied by documentation or agreement.
 
@@ -228,7 +228,7 @@ You're issuing a token for a customer using a third-party helpdesk system that d
 ```
 This is only meaningful if `support.mycompany.com` (or a partner using it) has access to **documentation that defines `accessLevel`** and understands what "premium" means.
 
-Without documentation, it's just a string—they won't know what to do with it.
+Without documentation, it's just a string; they won't know what to do with it.
 
 #### When to Use Private Claims
 
@@ -840,7 +840,7 @@ A **JSON Web Key (JWK)** is a JSON-formatted data structure that represents a cr
 
 JWK provides a standardized way to distribute public keys securely and reliably. By publishing a JWK Set at a known endpoint and referencing keys via `kid` values, systems can validate JWTs without manual key distribution or configuration changes.
 
-In secure systems, the private key is never exposed — it stays with the issuer (authorization server), while public keys are safely distributed via JWKs for signature verification.
+In secure systems, the private key is never exposed and it stays with the issuer (authorization server), while public keys are safely distributed via JWKs for signature verification.
 
 #### Why JWKs Matter
 JWKs are essential for:

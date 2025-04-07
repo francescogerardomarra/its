@@ -441,7 +441,7 @@ Person added successfully
 The operation of inserting a new person into the system must use **POST** and not **GET** because it involves **creating new data** on the server. The **POST** method is specifically designed for operations that modify data, such as adding, updating, or deleting resources. 
 
 - **GET** requests are intended for **retrieving data**, and they should be idempotent, meaning they do not change the state of the server. Using GET for an action that modifies the server's data (like adding a new person) would violate this principle.
-- **POST** is used for actions that create or modify resources. In this case, it’s necessary to send the data (name, surname, city, age) in the request body, which aligns with the intended behavior of the endpoint—adding a new person.
+- **POST** is used for actions that create or modify resources. In this case, it’s necessary to send the data (name, surname, city, age) in the request body, which aligns with the intended behavior of the endpoint (adding a new person).
 
 In summary, **POST** should be used for actions that change the state of the server, such as creating or updating data, while **GET** is used for retrieving information without causing side effects.
 
@@ -878,7 +878,7 @@ Person added successfully
 The operation of inserting a new person into the system must use **POST** and not **GET** because it involves **creating new data** on the server. The **POST** method is specifically designed for operations that modify data, such as adding, updating, or deleting resources. 
 
 - **GET** requests are intended for **retrieving data**, and they should be idempotent, meaning they do not change the state of the server. Using GET for an action that modifies the server's data (like adding a new person) would violate this principle.
-- **POST** is used for actions that create or modify resources. In this case, it’s necessary to send the data (name, surname, city, age) in the request body, which aligns with the intended behavior of the endpoint—adding a new person.
+- **POST** is used for actions that create or modify resources. In this case, it’s necessary to send the data (name, surname, city, age) in the request body, which aligns with the intended behavior of the endpoint (adding a new person).
 
 In summary, **POST** should be used for actions that change the state of the server, such as creating or updating data, while **GET** is used for retrieving information without causing side effects.
 
@@ -1429,7 +1429,7 @@ Person added successfully
 The operation of inserting a new person into the system must use **POST** and not **GET** because it involves **creating new data** on the server. The **POST** method is specifically designed for operations that modify data, such as adding, updating, or deleting resources. 
 
 - **GET** requests are intended for **retrieving data**, and they should be idempotent, meaning they do not change the state of the server. Using GET for an action that modifies the server's data (like adding a new person) would violate this principle.
-- **POST** is used for actions that create or modify resources. In this case, it’s necessary to send the data (name, surname, city, age) in the request body, which aligns with the intended behavior of the endpoint—adding a new person.
+- **POST** is used for actions that create or modify resources. In this case, it’s necessary to send the data (name, surname, city, age) in the request body, which aligns with the intended behavior of the endpoint (adding a new person).
 
 In summary, **POST** should be used for actions that change the state of the server, such as creating or updating data, while **GET** is used for retrieving information without causing side effects.
 

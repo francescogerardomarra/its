@@ -765,7 +765,7 @@ When a user attempts to access a protected resource without being authenticated,
 
 Once the user is authenticated, the server issues a **session cookie** (commonly `JSESSIONID`), which the client includes in subsequent requests to prove its identity. This allows the user to stay authenticated without resubmitting credentials for every request.
 
-Unlike Basic Authentication—which is **stateless** and requires credentials with each request—**form-based authentication** uses **HTTP cookies** to maintain the user's authenticated state across multiple requests, making the experience more seamless.
+Unlike Basic Authentication, which is **stateless** and requires credentials with each request, **form-based authentication** uses **HTTP cookies** to maintain the user's authenticated state across multiple requests, making the experience more seamless.
 
 **Default Login Page**
 

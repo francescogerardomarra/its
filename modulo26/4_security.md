@@ -1916,7 +1916,7 @@ Subsequent authenticated requests may include the Anti-CSRF token as a custom he
 ```http
 GET /protected-resource HTTP/1.1
 Host: example.com
-Cookie: JSESSIONID=abcd1234
+Cookie: JSESSIONID=1234567890abcdef
 X-CSRF-Token: abc123xyz456
 ```
 

@@ -1591,7 +1591,7 @@ protected void configure(HttpSecurity http) throws Exception {
 - **`permitAll()`**
     - Ensures that the logout endpoint is accessible without authentication, allowing users to initiate logout regardless of their session state.
 
-- **`antMatchers("/public/**", "/session-expired", "/login", "/logout").permitAll()`**
+- **`antMatchers("/public/**", "/session-expired", "/login").permitAll()`**
     - Allows public access to important pages related to session and login management.
 
 In summary:

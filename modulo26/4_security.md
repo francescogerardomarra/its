@@ -1946,9 +1946,11 @@ By default, Spring Security provides protection against CSRF attacks if and only
 
 CSRF protection involves the use of an anti-CSRF token, which is generated per session and must be included in state-changing requests.
 
-If you want to turn on CSRF protection by force, you can add `.csrf().enable()` to your security filter chain.
+In form-based authentication, the security mechanism generates the **CSRF token** on the server side when the login page is requested. This token is associated with the user's session and is embedded in the login form as a **hidden input field**. The server ensures that each user session has a unique CSRF token to prevent attackers from using a stolen session to submit unauthorized requests.
 
-So the following:
+After the user submits the login form, the **CSRF token** is expected to be present in the request body as part of the form data (typically under the name `csrfToken`). For any subsequent state-changing POST requests (such as profile updates), the server expects the **CSRF token** to be included in the request body, and it must match the token associated with the user's session. If the token is missing or invalid, the server will reject the request with a **403 Forbidden** response.
+
+If you want to turn on CSRF protection by force, you can add `.csrf().enable()` to your security filter chain. So the following:
 
 ````java
 @Override
@@ -2010,14 +2012,32 @@ protected void configure(HttpSecurity http) throws Exception {
 
 Using the above configuration, in the following example:
 
-- **Three HTTP requests and responses** are exchanged, starting with a **GET request** to access a protected resource, followed by a **POST request** to the login page, and finally, a request to access the protected resource again.
-- The first request is a **GET request** to the protected resource (/protected-resource), which redirects the user to the login page (/login) as they are not authenticated. At this point, the server creates an initial session for future redirection and sets a simple session cookie (JSESSIONID=abcd1234).
-- The second request is a **GET request** to the login page (/login). The browser sends the JSESSIONID=abcd1234 cookie along with the request to maintain the session, though it's not authenticated yet. The login page is served with a form for the user to input their credentials, including a CSRF token embedded as a hidden input.
-- The user submits their credentials (e.g. username=user, password=password) via the login form along with the CSRF token. This triggers a **POST request** to the server to authenticate the user.
-- The server processes the credentials and the CSRF token, and upon successful authentication, responds with a **302 redirect** back to the originally requested protected resource (/protected-resource). The server also issues a new session cookie (JSESSIONID=abcd5678; HttpOnly; Secure) to replace the initial one, which now contains the authenticated user’s session details.
-- The third request sends the **new session cookie** (JSESSIONID=abcd5678) along with the request to the protected resource, confirming the user is authenticated. The server grants access to the protected resource and responds with the requested content.
-- Additionally, a **state-changing POST request** is made to the protected resource with a valid CSRF token, which succeeds.
-- Finally, another **state-changing POST request** is attempted without including the CSRF token, which fails with a 403 Forbidden response.
+- **Initial Non-Authenticated Request**
+  - A **GET request** is made to access the protected resource (`/protected-resource`).
+  - The server responds with a **302 redirect** to the login page, as the user is not authenticated.
+  - The server sets a session cookie (`JSESSIONID=abcd1234`) for the new session.
+
+- **GET Request to Login Page**
+  - The browser sends a **GET request** to the login page (`/login`) with the session cookie (`JSESSIONID=abcd1234`) attached.
+  - The server responds by serving the login page, which includes the login form with a hidden **CSRF token** for the session.
+
+- **POST Request to Login**
+  - The user submits their credentials (username, password) and the **CSRF token** via a **POST request** to authenticate the user.
+  - The server processes the credentials and the **CSRF token**, then responds with a **302 redirect** to the originally requested protected resource (`/protected-resource`).
+  - A new session cookie (`JSESSIONID=abcd5678; HttpOnly; Secure; SameSite=Strict`) is set to replace the initial one, indicating successful authentication.
+
+- **Accessing the Protected Resource After Authentication**
+  - A **GET request** is made to the protected resource (`/protected-resource`) with the new session cookie (`JSESSIONID=abcd5678`), confirming the user is authenticated.
+  - The server grants access to the protected resource and responds with the requested content.
+  - **No CSRF token is required** for this **GET request** since it's non-state-changing.
+
+- **State-Changing POST Request with CSRF Token**
+  - A **state-changing POST request** is made to the protected resource with a valid **CSRF token** to perform an action (e.g., updating the profile).
+  - The server validates the **CSRF token** and processes the request successfully.
+
+- **State-Changing POST Request Without CSRF Token**
+  - Another **state-changing POST request** is made to the protected resource without including the **CSRF token**.
+  - The server rejects the request with a **403 Forbidden** response due to the missing or invalid **CSRF token**.
 
 ***
 

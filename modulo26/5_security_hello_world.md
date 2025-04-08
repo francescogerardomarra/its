@@ -444,7 +444,7 @@ import java.util.Date;
  * <p>
  * Flow:
  * 1. The JWT token is generated with various claims (subject, role, permissions) and signed with a secret key.
- * 2. The generated token can be returned to the user (e.g., after a successful login).
+ * 2. The generated token can be returned to the user (e.g. after a successful login).
  * 3. When the token is sent back to the server, it can be validated to ensure the user is authenticated and authorized.
  * 4. Claims from the token can be extracted and used to make authorization decisions.
  */
@@ -544,7 +544,7 @@ public class AdminTokenProvider {
       // Token is valid if not expired and signature is correct.
       return true;
     } catch (JwtException e) {
-      // Return false if the token is invalid (e.g., incorrect signature, expired).
+      // Return false if the token is invalid (e.g. incorrect signature, expired).
       return false;
     }
   }

@@ -1571,7 +1571,7 @@ protected void configure(HttpSecurity http) throws Exception {
 ```
 
 - **`sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)`**
-  - Creates a session **only when needed** (e.g., when a user authenticates).
+  - Creates a session **only when needed** (e.g. when a user authenticates).
   - More efficient compared to always creating sessions.
   - Fits naturally with `formLogin`, where session usage is expected.
 
@@ -1841,7 +1841,7 @@ In summary:
 2. Attacker's Malicious Website:
    - The attacker creates a malicious website and tricks the user into visiting it while they are logged into the vulnerable web application.
    - Once the user visits the malicious site, an HTML page is rendered, and embedded JavaScript executes automatically in the browser.
-   - The JavaScript sends a state-changing request (e.g., POST, PUT, DELETE) to the vulnerable web application without the user’s knowledge.
+   - The JavaScript sends a state-changing request (e.g. POST, PUT, DELETE) to the vulnerable web application without the user’s knowledge.
    - The request includes the session cookie automatically, as the user is authenticated on the vulnerable site.
    - Because the request includes the session cookie, the web application treats it as a legitimate request from the authenticated user.
    - The malicious action is processed by the web application, even though it originated from the attacker's site.
@@ -2034,7 +2034,7 @@ Using the above configuration, in the following example:
   - **No CSRF token is required** for this **GET request** since it's non-state-changing.
 
 - **State-Changing POST Request with CSRF Token**
-  - A **state-changing POST request** is made to the protected resource with a valid **CSRF token** to perform an action (e.g., updating the profile).
+  - A **state-changing POST request** is made to the protected resource with a valid **CSRF token** to perform an action (e.g. updating the profile).
   - The server validates the **CSRF token** and processes the request successfully.
 
 - **State-Changing POST Request Without CSRF Token**

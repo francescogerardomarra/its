@@ -1890,15 +1890,9 @@ Set-Cookie: JSESSIONID=1234567890abcdef; Path=/; HttpOnly; Secure; SameSite=Stri
 X-CSRF-Token: abc123xyz456
 Content-Length: 1024
 
-<html>
-  <head><title>Welcome</title></head>
-  <body>
-    <h1>Welcome, JohnDoe!</h1>
-    <form action="/submit-form" method="POST">
-      <!-- form contents here -->
-    </form>
-  </body>
-</html>
+{
+  "message": "Welcome, JohnDoe!"
+}
 ````
 
 Alternatively, the **_Anti-CSRF token_** (`abc123xyz456`) can be included in the response body:

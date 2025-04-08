@@ -1251,7 +1251,7 @@ public class LoginController {
 
 ---
 
-# API Testing & Authentication Guide
+# API Testing with Authentication
 
 ## Connecting to PostgreSQL
 

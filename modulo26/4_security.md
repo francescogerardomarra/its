@@ -1545,7 +1545,7 @@ For example, after a user logs out, they will be redirected to a custom login pa
 protected void configure(HttpSecurity http) throws Exception {
     http
         .authorizeRequests()
-            .antMatchers("/public/**", "/session-expired", "/login", "/logout").permitAll() // Allow unauthenticated access to public pages and logout
+            .antMatchers("/public/**", "/session-expired", "/login").permitAll() // Allow unauthenticated access to public pages, login and session-expired
             .anyRequest().authenticated() // All other requests require authentication
         .and()
         .httpBasic() // Use Basic authentication
@@ -1722,6 +1722,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.Duration;
 
+@Component
 public class SessionExpirationFilter extends OncePerRequestFilter {
 
     private static final long MAX_SESSION_DURATION = Duration.ofHours(1).toMillis(); // 1 hour

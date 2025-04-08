@@ -1319,8 +1319,8 @@ The response contains a Bearer token. Use this token in the `Authorization` head
 ### Decode and Verify JWT Token
 To verify the token’s claims:
 
-- go to [jwt.io](https://jwt.io).
-- copy and paste the secret used to sign the JWT in the corresponding area;
+- go to [jwt.io](https://jwt.io)
+- copy and paste the secret used to sign the JWT in the corresponding area:
   ````bash
   VGhpcyBpcyBhIHNlY3VyZSBqZXN0IGtleSB0aGF0IGlzIGJlYXJlZCBvbiBhIFNoYTI1NiBtZWRpYSB0aGF0IGlzIGxvbmcgaW5vdWdoIHRoZSBjZXJ0YWluIHNlY3VyaXR5IHN0YW5kYXJkLCBhbmQgaXMgZXhwbGVjdGVkIHRvIGJlIGF1dGhvcml6ZWQuIFRoaXMga2V5IHdpbGwgYmUgc2lnbmVkIHdpdGggc2lnbmVkYXR1cmUgYWxnb3JpdGhtcyBzbyBpdCBpcyBhIHN0cm9uZyBzZWNyZXQuCg==
   ````

@@ -1316,15 +1316,15 @@ Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 The response contains a Bearer token. Use this token in the `Authorization` header for all subsequent API requests.
 
-### Decode JWT Token (Optional)
-To verify the token’s claims, decode it using:
-- [jwt.io](https://jwt.io)
-- Or command-line:
+### Decode and Verify JWT Token
+To verify the token’s claims:
 
-```bash
-TOKEN=your.jwt.token.here
-IFS='.' read -ra TOKENS <<< "$TOKEN" && echo "${TOKENS[1]}" | base64 -d | jq
-```
+- go to [jwt.io](https://jwt.io).
+- copy and paste the secret used to sign the JWT in the corresponding area;
+  ````bash
+  VGhpcyBpcyBhIHNlY3VyZSBqZXN0IGtleSB0aGF0IGlzIGJlYXJlZCBvbiBhIFNoYTI1NiBtZWRpYSB0aGF0IGlzIGxvbmcgaW5vdWdoIHRoZSBjZXJ0YWluIHNlY3VyaXR5IHN0YW5kYXJkLCBhbmQgaXMgZXhwbGVjdGVkIHRvIGJlIGF1dGhvcml6ZWQuIFRoaXMga2V5IHdpbGwgYmUgc2lnbmVkIHdpdGggc2lnbmVkYXR1cmUgYWxnb3JpdGhtcyBzbyBpdCBpcyBhIHN0cm9uZyBzZWNyZXQuCg==
+  ````
+- copy and  paste the Bearer token e.g. `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
 
 Expected claims:
 ```json

@@ -11,6 +11,8 @@ The key steps for securing the admin-only endpoints are as follows:
 1. An admin will send a **POST request** to `/shop/login` using **Basic Authentication**.
 2. If the credentials are valid, a **JWT token** will be generated and returned.
 3. The generated JWT token must be included as a `Bearer` token in the `Authorization` header to access protected endpoints such as `/shop/items` and `/shop/users`.
+4. The JWT token will expire after **10 minutes** (`admin.jwt.claim.expiration.ms=600000`).
+5. Once the JWT token expires, the admin will need to send another **POST request** to `/shop/login` with **Basic Authentication** to obtain a new JWT token.
 
 ---
 

@@ -78,7 +78,7 @@ Summing up:
 - **The body** (payload) of the response is typically **populated by the controller**.
 - **Post-processing** filters (code after `chain.doFilter`) can:
    - Inspect response headers and status codes.
-   - Log the outcome (e.g., response time, success/failure).
+   - Log the outcome (e.g. response time, success/failure).
    - Modify the response if necessary (add CORS headers, security tokens, etc.).
 - **Control Flow**: Once `chain.doFilter` is called, the flow **"dives" into deeper filters or the controller**. Once the controller has finished, the flow **"unwinds" back** through the filters.
 
@@ -125,9 +125,9 @@ Output Order:
 Filters are often used to perform specific tasks at different stages of the request-response lifecycle. These tasks can be categorized into actions taken **before** and **after** the call to `chain.doFilter(request, response)`.
 
 - **Before `chain.doFilter(request, response)`**:
-   - **Authentication / Authorization Checks**: A filter can intercept incoming requests to verify the presence of an authentication token (e.g., JWT in the headers). It can then validate the token, check the user's roles or permissions, and allow or deny access to the requested resource based on the token's validity.
+   - **Authentication / Authorization Checks**: A filter can intercept incoming requests to verify the presence of an authentication token (e.g. JWT in the headers). It can then validate the token, check the user's roles or permissions, and allow or deny access to the requested resource based on the token's validity.
    - **Logging Request Details**: Filters can log essential details about the incoming request such as the HTTP method, requested URL, headers, query parameters, and even the body. This is useful for debugging, monitoring, or auditing requests.
-   - **Modifying Headers or Body of Incoming Requests**: Filters can modify or enrich incoming requests by adding headers (e.g., security headers), or even transforming the request body if necessary (e.g., sanitizing input or enriching the payload).
+   - **Modifying Headers or Body of Incoming Requests**: Filters can modify or enrich incoming requests by adding headers (e.g. security headers), or even transforming the request body if necessary (e.g. sanitizing input or enriching the payload).
 
 - **After `chain.doFilter(request, response)`**:
    - **Logging Response Details**: After the request has been processed by the target resource and subsequent filters, a filter can log details about the outgoing response, such as the response status code, headers, and body content. This is essential for debugging or performance monitoring.
@@ -281,11 +281,11 @@ public class CustomFilter implements Filter {
             throws IOException, ServletException {
 
         // Phase 1: **Before chain.doFilter(request, response)** (Request Processing / Pre-processing)
-        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g. servlet).
 
         System.out.println("Processing incoming request...");  // Before passing the request along the chain
 
-        // Custom logic for request processing (e.g., JWT validation, logging, security checks)
+        // Custom logic for request processing (e.g. JWT validation, logging, security checks)
         // In this phase, you might check for an authentication token, validate input, or log details for auditing.
 
         // Pass the request and response along the filter chain
@@ -299,7 +299,7 @@ public class CustomFilter implements Filter {
 
         System.out.println("Processing outgoing response...");  // After the target resource has processed the request
 
-        // Custom logic for response processing (e.g., adding headers, logging response status)
+        // Custom logic for response processing (e.g. adding headers, logging response status)
         // In this phase, we could add security headers to the response, log response details, or modify the response content.
 
     }
@@ -307,7 +307,7 @@ public class CustomFilter implements Filter {
     @Override
     public void destroy() {
         // Cleanup logic (if needed)
-        // This method is called once when the filter is destroyed. It’s often used for resource cleanup (e.g., closing database connections).
+        // This method is called once when the filter is destroyed. It’s often used for resource cleanup (e.g. closing database connections).
     }
 }
 ````
@@ -342,11 +342,11 @@ public class CustomFilter implements Filter {
             throws IOException, ServletException {
 
         // Phase 1: **Before chain.doFilter(request, response)** (Request Processing / Pre-processing)
-        // This is where we perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+        // This is where we perform actions on the incoming request before it reaches the target resource (e.g. servlet).
 
         System.out.println("Processing incoming request..."); // Before passing the request along the chain
 
-        // Custom logic for request processing (e.g., JWT validation, logging, security checks)
+        // Custom logic for request processing (e.g. JWT validation, logging, security checks)
         // In this phase, you might check for an authentication token, validate input, or log details for auditing.
 
         // Pass the request and response along the filter chain
@@ -360,7 +360,7 @@ public class CustomFilter implements Filter {
 
         System.out.println("Processing outgoing response..."); // After the target resource has processed the request
 
-        // Custom logic for response processing (e.g., adding headers, logging response status)
+        // Custom logic for response processing (e.g. adding headers, logging response status)
         // In this phase, we could add security headers to the response, log response details, or modify the response content.
     }
 
@@ -418,11 +418,11 @@ public class CustomFilter implements Filter {
             throws IOException, ServletException {
 
         // Phase 1: **Before chain.doFilter(request, response)** (Request Processing / Pre-processing)
-        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g. servlet).
 
         System.out.println("Processing incoming request...");  // Before passing the request along the chain
 
-        // Custom logic for request processing (e.g., JWT validation, logging, security checks)
+        // Custom logic for request processing (e.g. JWT validation, logging, security checks)
         // In this phase, you might check for an authentication token, validate input, or log details for auditing.
 
         // Pass the request and response along the filter chain
@@ -436,7 +436,7 @@ public class CustomFilter implements Filter {
 
         System.out.println("Processing outgoing response...");  // After the target resource has processed the request
 
-        // Custom logic for response processing (e.g., adding headers, logging response status)
+        // Custom logic for response processing (e.g. adding headers, logging response status)
         // In this phase, we could add security headers to the response, log response details, or modify the response content.
     }
 
@@ -508,24 +508,24 @@ public class CustomSecurityFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // Phase 1: **Before filterChain.doFilter(request, response)** (Request Processing / Pre-processing)
-        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g. servlet).
 
         System.out.println("Processing incoming request in Custom Security Filter...");  // Pre-processing the request
 
-        // Custom logic for request processing (e.g., security checks, logging, validation)
+        // Custom logic for request processing (e.g. security checks, logging, validation)
         // In this phase, you might check for authentication tokens, validate user roles, or log incoming request details.
 
         // Continue with the filter chain, passing the request and response to the next filter or resource
         filterChain.doFilter(request, response);
 
         // Phase 2: **After filterChain.doFilter(request, response)** (Response Processing / Post-processing)
-        // This is where we can perform actions after the request has been processed by the target resource (e.g., servlet).
+        // This is where we can perform actions after the request has been processed by the target resource (e.g. servlet).
 
         // Control flow returns here once the request has passed through the rest of the filter chain and the target resource.
 
         System.out.println("Processing outgoing response in Custom Security Filter...");  // Post-processing the response
 
-        // Custom logic for response processing (e.g., adding security headers, logging response status)
+        // Custom logic for response processing (e.g. adding security headers, logging response status)
         // In this phase, you could add security headers to the response or log details about the response before sending it to the client.
     }
 }
@@ -578,24 +578,24 @@ public class CustomSecurityFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // Phase 1: **Before filterChain.doFilter(request, response)** (Request Processing / Pre-processing)
-        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g., servlet).
+        // This is where we can perform actions on the incoming request before it reaches the target resource (e.g. servlet).
 
         System.out.println("Processing incoming request in Custom Security Filter...");  // Pre-processing the request
 
-        // Custom logic for request processing (e.g., security checks, logging, validation)
+        // Custom logic for request processing (e.g. security checks, logging, validation)
         // You could validate authentication tokens, check user roles, log the incoming request, or perform other security-related checks.
 
         // Continue with the filter chain, passing the request and response to the next filter or resource
         filterChain.doFilter(request, response);
 
         // Phase 2: **After filterChain.doFilter(request, response)** (Response Processing / Post-processing)
-        // This is where we can perform actions after the request has been processed by the target resource (e.g., servlet).
+        // This is where we can perform actions after the request has been processed by the target resource (e.g. servlet).
 
         // Control flow returns here once the request has passed through the rest of the filter chain and the target resource.
 
         System.out.println("Processing outgoing response in Custom Security Filter...");  // Post-processing the response
 
-        // Custom logic for response processing (e.g., adding security headers, logging response status)
+        // Custom logic for response processing (e.g. adding security headers, logging response status)
         // You could add security headers, modify the response, log details about the response, or perform other post-processing actions.
     }
 }

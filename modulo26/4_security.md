@@ -6,7 +6,7 @@ Spring Security is a comprehensive framework for securing Java applications, esp
 ## pom.xml
 **Spring Boot** provides a set of **starter** POMs that group related dependencies together for ease of use. These starter POMs allow you to import a whole set of dependencies that are commonly used together.
 
-**Spring Boot starters** simplify dependency management by providing predefined sets of commonly used libraries for specific functionalities (e.g., `spring-boot-starter-web` for web applications, `spring-boot-starter-data-jpa` for JPA, etc.).
+**Spring Boot starters** simplify dependency management by providing predefined sets of commonly used libraries for specific functionalities (e.g. `spring-boot-starter-web` for web applications, `spring-boot-starter-data-jpa` for JPA, etc.).
 
 Spring Boot provides a **BOM (Bill of Materials)** that ensures you're using compatible versions of dependencies including **starters**. You don't need to specify version numbers for Spring Boot dependencies if you're using the Spring Boot BOM.
 
@@ -274,7 +274,7 @@ public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
     - The `InMemoryUserDetailsManager` is suitable for simple or temporary use cases, like development or small applications. For production environments with more users or long-term data storage needs, a more permanent solution, like a database, is recommended.
     - When an authentication request is made (for example, using HTTP Basic Authentication), Spring Security calls the `UserDetailsService` to fetch the user details.
     - The `InMemoryUserDetailsManager` will then compare the username provided in the request with the stored user information in memory, and check if the password matches by comparing the encoded version of the password.
-    - If the authentication is successful (i.e., the username and encoded password match), the user is granted access to the requested resource.
+    - If the authentication is successful (i.e. the username and encoded password match), the user is granted access to the requested resource.
 
 - **Multiple users**:
   - If you need to define additional users, you can simply add more `manager.createUser()` calls to the `InMemoryUserDetailsManager`. For example:
@@ -538,7 +538,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         - **users table:**
             - Stores username, password (**hashed**), and enabled status.
         - **authorities table:**
-            - Links usernames to roles (e.g., ADMIN, USER, GUEST).
+            - Links usernames to roles (e.g. ADMIN, USER, GUEST).
 
 - **Example Schema:**
 
@@ -566,7 +566,7 @@ CREATE TABLE authorities (
     - **authorities Table:**
 
         - Holds user roles or permissions.
-        - Associates each username with an authority (e.g., ADMIN, USER).
+        - Associates each username with an authority (e.g. ADMIN, USER).
 
 - **Customizing SQL Queries:**
 
@@ -666,7 +666,7 @@ Due to the configuration:
 - **Step 14**: If the client resends the **correct credentials** in the `Authorization` header, Spring Security will repeat the authentication process:
     - The **`JdbcUserDetailsManager`** will query the database again to verify the credentials, check the user’s **enabled status**, and retrieve the **hashed password**.
 
-- **Step 15**: This process repeats for each HTTP request. Even if the user has been authenticated once, the server will not remember the authentication for subsequent requests unless another mechanism (e.g., session management or tokens) is used.
+- **Step 15**: This process repeats for each HTTP request. Even if the user has been authenticated once, the server will not remember the authentication for subsequent requests unless another mechanism (e.g. session management or tokens) is used.
 
 ---
 
@@ -750,7 +750,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 - Role-based checks are applied **only after successful authentication**, as the system needs to know the user’s identity before checking their roles.
 - If the user doesn't have the appropriate role, access is denied.
 
-- If authentication and role checks pass, the request proceeds to the corresponding handler (e.g., a controller method).
+- If authentication and role checks pass, the request proceeds to the corresponding handler (e.g. a controller method).
 
 - If authentication or role checks fail, an HTTP 401 (Unauthorized) or 403 (Forbidden) response is returned.
 
@@ -823,21 +823,21 @@ With this configuration, if a user tries to access a protected resource, Spring 
 
 In the following example:
 
-- When the user tries to access a protected resource (e.g., `/protected-resource`), Spring Security will first check if the user is authenticated.
+- When the user tries to access a protected resource (e.g. `/protected-resource`), Spring Security will first check if the user is authenticated.
 - Since the user is not authenticated, Spring Security will create a new HTTP session and generate a `JSESSIONID` cookie, which is sent to the client.
-- **Important**: The initial session is **not tied to any authenticated user**. It is created solely to facilitate future redirection (i.e., the "saved request" for the user's original destination). This session is not used for authentication but for preserving the user’s destination until they log in.
+- **Important**: The initial session is **not tied to any authenticated user**. It is created solely to facilitate future redirection (i.e. the "saved request" for the user's original destination). This session is not used for authentication but for preserving the user’s destination until they log in.
 - The user will be redirected to the login page (`/login`).
 - The client (browser) will be redirected to the default login page (`/login`).
 - The `JSESSIONID` cookie will be included in the request to ensure the session is maintained across the redirection, even though the user is not yet authenticated.
 - Spring Security automatically generates a login form for the user.
 - The form will typically have fields for the username and password, and the user is expected to enter their credentials.
-- Once the user submits the login form with their credentials (e.g., username `user`, password `password`), a `POST` request is sent back to the server.
+- Once the user submits the login form with their credentials (e.g. username `user`, password `password`), a `POST` request is sent back to the server.
 - The `JSESSIONID` cookie is included in this request to maintain the session while processing the authentication.
 - After the server validates the user's credentials, Spring Security will authenticate the user and store the authentication information in the session (`SecurityContext`).
 - To protect against session fixation attacks, by default the old session is invalidated, and a new session with a new `JSESSIONID` is created.
 - **Session fixation** is a security vulnerability where an attacker tricks a user into using a known session ID; Spring Security enables "session fixation protection" by default.
 - The session (`JSESSIONID`) is now associated with the authenticated user's information.
-- The user will then be redirected to the originally requested protected resource (e.g., `/protected-resource`).
+- The user will then be redirected to the originally requested protected resource (e.g. `/protected-resource`).
 - On subsequent requests, the client sends the new `JSESSIONID` cookie to prove that the session exists and the user is authenticated.
 - Spring Security uses the session to confirm the user's authentication, granting access to the protected resource.
 
@@ -1119,7 +1119,7 @@ In the following example:
 - **Three HTTP requests and responses** are exchanged, starting with a **GET request** to access a protected resource, followed by a **POST request** to the login page, and finally, a request to access the protected resource again.
 - The first request is a **GET request** to the protected resource (`/protected-resource`), which redirects the user to the login page (`/login`) as they are not authenticated. At this point, the server creates an initial session for future redirection and sets a simple session cookie (`JSESSIONID=abcd1234`).
 - The second request is a **GET request** to the login page (`/login`). The browser sends the `JSESSIONID=abcd1234` cookie along with the request to maintain the session, though it's not authenticated yet. The login page is served with a form for the user to input their credentials.
-- The user submits their credentials (e.g., `username=user`, `password=password`) via the login form. This triggers a **POST request** to the server to authenticate the user.
+- The user submits their credentials (e.g. `username=user`, `password=password`) via the login form. This triggers a **POST request** to the server to authenticate the user.
 - The server processes the credentials, and upon successful authentication, responds with a **302 redirect** back to the originally requested protected resource (`/protected-resource`). The server also issues a new session cookie (`JSESSIONID=abcd5678; HttpOnly; Secure`) to replace the initial one, which now contains the authenticated user’s session details.
 - The third request sends the **new session cookie** (`JSESSIONID=abcd5678`) along with the request to the protected resource, confirming the user is authenticated. The server grants access to the protected resource and responds with the requested content.
 
@@ -1194,7 +1194,7 @@ Content-Length: 20
 ***
 
 #### `SessionCreationPolicy.ALWAYS`
-When using `SessionCreationPolicy.ALWAYS`, Spring Security guarantees that a session will be created if one doesn't already exist. If the client sends a valid session cookie (e.g., `JSESSIONID`), the session will be reused. However, if no session exists, one will be created.
+When using `SessionCreationPolicy.ALWAYS`, Spring Security guarantees that a session will be created if one doesn't already exist. If the client sends a valid session cookie (e.g. `JSESSIONID`), the session will be reused. However, if no session exists, one will be created.
 
 This ensures that authentication-related sessions are always created, even for stateless authentication mechanisms like **Basic Authentication**.
 
@@ -1372,7 +1372,7 @@ With `NEVER`, Spring Security will not create a new session, but if a session al
 
 When using `SessionCreationPolicy.STATELESS`, Spring Security will **neither create** nor **use** a session.
 
-Every request must contain all the necessary authentication information (e.g., credentials), because Spring Security will **not** rely on any session state. Even if the client sends a valid session cookie (like `JSESSIONID`), Spring Security will ignore it.
+Every request must contain all the necessary authentication information (e.g. credentials), because Spring Security will **not** rely on any session state. Even if the client sends a valid session cookie (like `JSESSIONID`), Spring Security will ignore it.
 
 - **No Session Creation**: Spring Security will not create a session.
 - **No Session Reuse**: Spring Security will not use an existing session.
@@ -1496,7 +1496,7 @@ protected void configure(HttpSecurity http) throws Exception {
 
 - **`invalidSessionUrl("/session-expired")`**
 
-    - Specifies the URL to redirect users if their session becomes **invalid** (e.g., missing or corrupted session cookie).
+    - Specifies the URL to redirect users if their session becomes **invalid** (e.g. missing or corrupted session cookie).
 
     - If a user attempts to access a protected resource with an invalid session, they are redirected to `/session-expired`.
 
@@ -1568,7 +1568,7 @@ protected void configure(HttpSecurity http) throws Exception {
 ```
 
 - **`sessionCreationPolicy(SessionCreationPolicy.ALWAYS)`**
-    - Forces the creation of a session for every request, even if the authentication method (e.g., Basic Auth) is stateless.
+    - Forces the creation of a session for every request, even if the authentication method (e.g. Basic Auth) is stateless.
     - Ensures session management features like logout and session invalidation are consistently available.
 
 - **`logoutUrl("/logout")`**
@@ -1652,7 +1652,7 @@ It provides two methods that you must override to handle session-related events:
 - **`sessionCreated(HttpSessionEvent se)`**:
   - This method is called when a new HTTP session is created.
   - The method receives an `HttpSessionEvent` object, which contains the session that was just created.
-  - You can use this method to perform tasks such as setting attributes in the session, like a timestamp of when the session was created (e.g., tracking the session’s creation time).
+  - You can use this method to perform tasks such as setting attributes in the session, like a timestamp of when the session was created (e.g. tracking the session’s creation time).
 
 - **`sessionDestroyed(HttpSessionEvent se)`**:
   - This method is called when an HTTP session is invalidated or expires.
@@ -1708,7 +1708,7 @@ The `SessionExpirationFilter` is a custom filter designed to enforce a maximum s
 It works as follows:
 - **Session Retrieval**: The filter first checks if there is an existing session using `request.getSession(false)` to avoid creating a new session.
 - **Creation Time Check**: If the session exists, it retrieves the creation time from the session attribute (`sessionCreationTime`), which was set by the `SessionCreationListener`.
-- **Expiration Logic**: If the session's creation time exceeds the maximum allowed duration (e.g., 1 hour), the session is invalidated, and the user is redirected to a "session expired" page.
+- **Expiration Logic**: If the session's creation time exceeds the maximum allowed duration (e.g. 1 hour), the session is invalidated, and the user is redirected to a "session expired" page.
 - **Non-expired Sessions**: If the session is within the allowed duration, the request continues through the filter chain.
 
 ```java
@@ -1817,7 +1817,27 @@ However, **CSRF** is *not* generally a concern for **stateless applications**, s
 
 That said, **CSRF** can still be a problem in stateless applications under certain conditions. If the **JWT** is stored in **cookies** (instead of being passed in headers), it could be vulnerable to **CSRF**, as cookies would be sent automatically with cross-site requests. Additionally, if tokens are stored insecurely in places like *localStorage* or *sessionStorage*, they could be exposed through **XSS** (Cross-Site Scripting) attacks, potentially allowing attackers to use the token in malicious requests, which could resemble **CSRF** attacks.
 
-In summary, while **CSRF** is mostly a concern for **session-based applications**, it can still be a risk for stateless **JWT-based** applications if the token is improperly stored in **cookies** or exposed through other vulnerabilities like **XSS**. Therefore, while **CSRF** is less of an issue in stateless systems, proper token storage and handling are still essential to maintain security.
+In summary:
+
+- **Cross-Site Request Forgery (CSRF)**:
+  - An attack where an attacker tricks an authenticated user into performing an unwanted action on a web application.
+  - Exploits the trust a web application has in the user's browser.
+
+- **Main vulnerability in Stateful, Session-based applications**:
+    - CSRF is a concern for applications that maintain session data and identify users based on session IDs stored in cookies.
+    - Browsers automatically send cookies with each request to the same domain.
+    - Attackers can trick the user into making a malicious request.
+    - The browser automatically sends the session cookie, making the request appear legitimate to the server.
+
+- **CSRF and Stateless Applications (e.g. JWT-based)**:
+    - Stateless applications using JWT for authentication are less vulnerable to CSRF.
+    - Tokens are typically passed in HTTP headers (e.g. `Authorization: Bearer <token>`), not stored in cookies.
+    - Since tokens are not automatically sent with requests by the browser, attackers cannot trigger requests that would include the token.
+
+- **Possible CSRF risks in Stateless Applications**:
+    - If JWT is stored in cookies (instead of HTTP headers), it can be vulnerable to CSRF attacks because cookies are automatically sent with cross-site requests.
+    - If JWTs are stored insecurely (e.g. in `localStorage` or `sessionStorage`), they can be exposed via Cross-Site Scripting (XSS) attacks.
+    - Attackers could potentially steal the token and use it in malicious requests, similar to CSRF attacks.
 
 #### Unfolding
 1. User Login and Session Cookies:

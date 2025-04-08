@@ -1879,7 +1879,7 @@ This happens because the attacker does not have access to the **correct CSRF tok
 
 Thus, Anti-CSRF tokens work alongside `SameSite` cookie settings, ensuring that **only legitimate requests** are processed, even in cases where `SameSite` protections are insufficient.
 
-In the following example, after successful authentication, an authentication-related cookie is issued to the client and an **_Anti-CSRF token_** (`abc123xyz456`) is included in a custom header (**_X-CSRF-Token_**), which will be used by the client for subsequent requests to prevent CSRF attacks:
+In the following example, after successful authentication, an authentication-related cookie is issued to the client and an **_Anti-CSRF token_** (`abc123xyz456`) is included as a custom header (**_X-CSRF-Token_**), which will be used by the client for subsequent requests to prevent CSRF attacks:
 
 ````http
 HTTP/1.1 200 OK
@@ -1911,7 +1911,7 @@ Content-Length: 150
 }
 ````
 
-subsequent authenticated requests will usually include the Anti-CSRF token is a custom header:
+Subsequent authenticated requests may include the Anti-CSRF token as a custom header:
 
 
 ```http
@@ -1920,8 +1920,6 @@ Host: example.com
 Cookie: JSESSIONID=abcd1234
 X-CSRF-Token: abc123xyz456
 ```
-
-however this is an implementation choice.
 
 ### Anti-CSRF in Spring Security
 In a stateful application, such as one using Spring Security with session management, authentication-related data is tied to an active session. This session is crucial for tracking user state across multiple requests. However, this introduces the risk of Cross-Site Request Forgery (CSRF) attacks, where a malicious actor can trick an authenticated user into performing unintended actions.

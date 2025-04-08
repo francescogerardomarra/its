@@ -422,7 +422,7 @@ public boolean validateToken(String token) {
 
 This validation is fundamental to the security of any endpoint protected by JWT-based authentication.
 
-The `AdminTokenProvider` is thus a reusable, secure, and configurable utility for JWT management, facilitating both token generation during login and token verification during request filtering.
+***
 
 ````java
 package com.example.security.jwt;
@@ -438,20 +438,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
 
-/**
- * This class is responsible for generating and validating JWT tokens for admin users.
- * It allows you to create a JWT token with claims such as subject, role, and permissions,
- * as well as validate and extract the claims from an incoming JWT token.
- * <p>
- * The JWT token is signed using a secret key, which is injected from the application properties.
- * This class also provides the logic to validate whether the token has expired.
- * <p>
- * Flow:
- * 1. The JWT token is generated with various claims (subject, role, permissions) and signed with a secret key.
- * 2. The generated token can be returned to the user (e.g. after a successful login).
- * 3. When the token is sent back to the server, it can be validated to ensure the user is authenticated and authorized.
- * 4. Claims from the token can be extracted and used to make authorization decisions.
- */
 @Component
 public class AdminTokenProvider {
 
@@ -555,6 +541,8 @@ public class AdminTokenProvider {
 }
 ````
 
+***
+
 ---
 
 ## AuthenticationTokenFilter
@@ -568,12 +556,12 @@ This filter is implemented by extending Spring's `OncePerRequestFilter`, ensurin
 
 The `AuthenticationTokenFilter` bean will be registered within the `SecurityConfig` class and will be added to the Spring Security filter chain before the `UsernamePasswordAuthenticationFilter` to ensure JWTs are processed before any standard authentication mechanisms. Here's how it is registered:
 
-##### Annotations
+### Annotations
 
 - `@Component`: Marks this class as a Spring-managed component, allowing it to be auto-detected through classpath scanning and registered as a bean in the application context.
 - `@Autowired`: Used on the constructor to inject the `AdminTokenProvider` dependency automatically from the Spring container.
 
-###### Constructor
+### Constructor
 
 ```java
 @Autowired
@@ -584,7 +572,7 @@ public AuthenticationTokenFilter(AdminTokenProvider adminTokenProvider) {
 
 This constructor injects the `AdminTokenProvider`, which is a utility class responsible for validating the JWT and extracting its claims. The use of `@Autowired` allows Spring to provide this dependency automatically when creating an instance of `AuthenticationTokenFilter`.
 
-###### `doFilterInternal()` Method
+### `doFilterInternal()` Method
 
 ```java
 @Override
@@ -635,7 +623,7 @@ This is the core method of the filter and is executed for every HTTP request.
         - Any subsequent filters or components that rely on the `SecurityContext` to check the user's roles, permissions, or any other security-related information will fail to retrieve any valid user data if the authentication object is not set.
         - This can lead to security breaches, where unauthorized users gain access to sensitive resources, or it could result in denial of service if access is mistakenly blocked for legitimate users.
 
-###### `getTokenFromRequest()` Method
+### `getTokenFromRequest()` Method
 
 ```java
 private String getTokenFromRequest(HttpServletRequest request) {
@@ -658,7 +646,7 @@ This helper method extracts the JWT token from the HTTP `Authorization` header.
 
 This ensures that only properly formatted Bearer tokens are processed by the filter.
 
-With this setup, the `AuthenticationTokenFilter` acts as a gatekeeper for protected routes, authenticating users based on JWT tokens and integrating seamlessly into the Spring Security filter chain.
+***
 
 ````java
 package com.example.filter;
@@ -768,6 +756,8 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
   }
 }
 ````
+
+***
 
 ---
 

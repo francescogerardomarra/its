@@ -1110,28 +1110,28 @@ public class SecurityConfig {
 
 The `LoginController` is a Spring REST controller that handles login requests, supporting **Basic Authentication** for user login and subsequently generating a **JWT token** for authenticated requests. It serves as the endpoint for obtaining a JWT token after authenticating a user through Basic Authentication.
 
-### 1. **`@RestController` Annotation**:
+### **`@RestController` Annotation**:
 
 The `@RestController` annotation marks this class as a **Spring MVC controller** that handles HTTP requests and returns responses directly (usually in the form of JSON or other serialized objects). This is a specialized version of `@Controller` and `@ResponseBody` combined, which ensures that data returned from each method is written directly to the HTTP response body.
 
 - **Automatic Response Body Handling**:
     - Methods in this class do not need the `@ResponseBody` annotation as the `@RestController` ensures that the return value will be directly sent as the HTTP response.
 
-### 2. **`@RequestMapping("/shop/login")` Annotation**:
+### **`@RequestMapping("/shop/login")` Annotation**:
 
 The `@RequestMapping` annotation specifies the **URL path** that this controller will handle. In this case, all methods in this controller will be associated with the `/shop/login` endpoint.
 
 - **Endpoint Binding**:
     - The `LoginController` class is responsible for handling requests made to `/shop/login`. It specifically manages POST requests to authenticate users and provide JWT tokens.
 
-### 3. **Field Declaration for `AdminTokenProvider`**:
+### **Field Declaration for `AdminTokenProvider`**:
 
 The class has a field of type `AdminTokenProvider`, which is used to generate the JWT token after the user has been authenticated.
 
 - **Role of `AdminTokenProvider`**:
     - `AdminTokenProvider` is a service that contains the logic for generating a secure JWT token after user authentication. This token is required for subsequent requests that need to be authenticated.
 
-### 4. **Constructor-Based Dependency Injection (`@Autowired`)**:
+### **Constructor-Based Dependency Injection (`@Autowired`)**:
 
 - **`@Autowired` Annotation**:
     - The constructor of the `LoginController` is annotated with `@Autowired`, which allows Spring to inject the required `AdminTokenProvider` bean into the controller.
@@ -1140,7 +1140,7 @@ The class has a field of type `AdminTokenProvider`, which is used to generate th
 - **Token Provider Injection**:
     - The `tokenProvider` is injected into the controller and used within the `login()` method to generate the JWT token. This allows the controller to delegate the token generation logic to the `AdminTokenProvider`.
 
-### 5. **`login()` Method**:
+### **`login()` Method**:
 
 This method handles POST requests made to `/shop/login`, performing the following tasks:
 
@@ -1158,7 +1158,7 @@ This method handles POST requests made to `/shop/login`, performing the followin
 - **ResponseEntity**:
     - The response is wrapped in a `ResponseEntity` object, which allows setting HTTP status codes and headers. In this case, the response is returned with a status code of `200 OK` along with the token in the response body.
 
-### 6. **Flow Explanation**:
+### **Flow Explanation**:
 
 - **Request Flow**:
     1. A client sends a **POST request** to `/shop/login` with **Basic Authentication** credentials (username and password).
@@ -1169,7 +1169,7 @@ This method handles POST requests made to `/shop/login`, performing the followin
     4. The `login()` method then uses the `AdminTokenProvider` to generate a **JWT token**.
     5. The generated JWT token is sent back to the client with the **"Bearer"** prefix as a response. The client can then use this token to authenticate future requests by including it in the `Authorization` header (e.g. `Authorization: Bearer <JWT-TOKEN>`).
 
-### 7. **`AdminTokenProvider` Class**:
+### **`AdminTokenProvider` Class**:
 
 The `AdminTokenProvider` is a service or component responsible for the actual generation of JWT tokens. It typically uses a **JWT library** to encode the token, with the following general process:
 
@@ -1182,7 +1182,7 @@ The `AdminTokenProvider` is a service or component responsible for the actual ge
 - **Role in Authentication**:
     - The generated token allows the client to authenticate subsequent requests to protected endpoints by including the JWT in the `Authorization` header.
 
-### 8. **How This Fits in the Spring Security Configuration**:
+### **How This Fits in the Spring Security Configuration**:
 
 While the `LoginController` is not directly tied to the security configuration class, it works seamlessly with the overall **Spring Security setup** by utilizing **Basic Authentication** for the login process and relying on **JWT tokens** for subsequent authentication.
 
@@ -1193,11 +1193,61 @@ While the `LoginController` is not directly tied to the security configuration c
     - Once authenticated, the `login()` method in the controller generates a JWT token using the `AdminTokenProvider`.
     - This JWT token is used in future requests to authenticate the user against protected endpoints (e.g. `/shop/items`, `/shop/users`), where the **JWT Authentication filter** in `SecurityConfig` comes into play.
 
-### 9. **Conclusion**:
+````java
+package com.example.controller;
 
-The `LoginController` provides a clean and simple way to authenticate users using **Basic Authentication** and subsequently generate a **JWT token** for future authenticated requests. The flow involves authentication by Spring Security, token generation using the `AdminTokenProvider`, and returning the token to the client, which can then be used for subsequent requests.
+import com.example.security.jwt.AdminTokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-This controller fits into the broader **Spring Security** framework by allowing the secure generation of authentication tokens and providing a clear separation between authentication and authorization responsibilities.
+/**
+ * Controller responsible for handling login requests.
+ * This controller supports Basic Authentication to authenticate users and then generates a JWT token for further requests.
+ *
+ * Flow:
+ * 1. The user hits the /shop/login endpoint with Basic Authentication credentials (username and password).
+ * 2. If authentication is successful, the system generates a JWT token using the AdminTokenProvider.
+ * 3. The generated JWT token is returned to the user with the "Bearer" prefix, which can be used for authenticated requests.
+ */
+@RestController
+@RequestMapping("/shop/login")
+public class LoginController {
+
+    // AdminTokenProvider used for generating JWT tokens
+    private final AdminTokenProvider tokenProvider;
+
+    /**
+     * Constructor-based dependency injection to provide the AdminTokenProvider.
+     *
+     * @param tokenProvider The AdminTokenProvider to generate JWT tokens.
+     */
+    @Autowired
+    public LoginController(AdminTokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
+    }
+
+    /**
+     * Login endpoint to authenticate the user via Basic Authentication.
+     * Once authenticated, this method will generate a JWT token and return it to the client.
+     *
+     * @return ResponseEntity containing the JWT token as a Bearer token.
+     *         The token can then be used for subsequent authenticated requests.
+     */
+    @PostMapping
+    public ResponseEntity<?> login() {
+        // Generate the JWT token using the AdminTokenProvider
+        // The AdminTokenProvider encapsulates the logic of creating a secure JWT token for the admin.
+        String token = tokenProvider.generateToken();
+
+        // Return the generated JWT token to the client as a Bearer token.
+        // The "Bearer " prefix indicates that this token is for authentication purposes.
+        return ResponseEntity.ok().body("Bearer " + token);
+    }
+}
+````
 
 ---
 

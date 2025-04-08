@@ -1869,9 +1869,8 @@ These tokens are **not stored in cookies** but are usually exchanged using:
 - the **HTTP body**;
 - **custom HTTP headers** (e.g. `X-CSRF-Token` or `X-XSRF-Token`).
 
-The server validates these tokens to ensure that the request originates from the legitimate user and not from a malicious website.
+The server validates these tokens to ensure that the request originates from the legitimate user and not from a malicious website. By requiring the client to programmatically include the token in the request body or custom headers (e.g. `X-CSRF-Token` or `X-XSRF-Token`), the server ensures that the request is intentional and legitimate.
 
-By requiring the client to programmatically include the token in the request body or custom headers (e.g. `X-CSRF-Token` or `X-XSRF-Token`), the server ensures that the request is intentional and legitimate.
 Anti-CSRF tokens are **not stored in cookies** to prevent attackers from exploiting the token via **cross-site scripting (XSS)** attacks and to protect against **Cross-Site Request Forgery (CSRF)** attacks.
 
 Anti-CSRF tokens provide an **additional layer of protection** by ensuring that requests made to the server must contain a valid token that matches what the server expects.

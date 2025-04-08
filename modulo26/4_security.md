@@ -1819,36 +1819,32 @@ That said, **CSRF** can still be a problem in stateless applications under certa
 
 In summary:
 
-- **Cross-Site Request Forgery (CSRF)**:
-  - An attack where an attacker tricks an authenticated user into performing an unwanted action on a web application.
-  - Exploits the trust a web application has in the user's browser.
-
-- **Main vulnerability in Stateful, Session-based applications**:
-    - CSRF is a concern for applications that maintain session data and identify users based on session IDs stored in cookies.
-    - Browsers automatically send cookies with each request to the same domain.
-    - Attackers can trick the user into making a malicious request.
-    - The browser automatically sends the session cookie, making the request appear legitimate to the server.
-
-- **CSRF and Stateless Applications (e.g. JWT-based)**:
-    - Stateless applications using JWT for authentication are less vulnerable to CSRF.
-    - Tokens are typically passed in HTTP headers (e.g. `Authorization: Bearer <token>`), not stored in cookies.
-    - Since tokens are not automatically sent with requests by the browser, attackers cannot trigger requests that would include the token.
-
-- **Possible CSRF risks in Stateless Applications**:
-    - If JWT is stored in cookies (instead of HTTP headers), it can be vulnerable to CSRF attacks because cookies are automatically sent with cross-site requests.
-    - If JWTs are stored insecurely (e.g. in `localStorage` or `sessionStorage`), they can be exposed via Cross-Site Scripting (XSS) attacks.
-    - Attackers could potentially steal the token and use it in malicious requests, similar to CSRF attacks.
+- CSRF is an attack where an attacker tricks an authenticated user into performing an unwanted action on a web application.
+- Exploits the trust a web application has in the user's browser.
+- CSRF is a concern for applications that maintain session data and identify users based on session IDs stored in cookies.
+- Browsers automatically send cookies with each request to the same domain.
+- Attackers can trick the user into making a malicious request.
+- The browser automatically sends the session cookie, making the request appear legitimate to the server.
+- Stateless applications using JWT for authentication are less vulnerable to CSRF.
+- Tokens are typically passed in HTTP headers (e.g. `Authorization: Bearer <token>`), not stored in cookies.
+- Since tokens are not automatically sent with requests by the browser, attackers cannot trigger requests that would include the token.
+- If JWT is stored in cookies (instead of HTTP headers), it can be vulnerable to CSRF attacks because cookies are automatically sent with cross-site requests.
+- If JWTs are stored insecurely (e.g. in `localStorage` or `sessionStorage`), they can be exposed via Cross-Site Scripting (XSS) attacks.
+- Attackers could potentially steal the token and use it in malicious requests, similar to CSRF attacks.
 
 #### Unfolding
 1. User Login and Session Cookies:
    - The user logs into a web application and is authenticated.
-   - The server issues a session cookie (e.g. `JSESSIONID`), which identifies the user's session.
+   - The server issues a session cookie (e.g. `JSESSIONID`), which identifies the user's authentication.
    - The browser automatically includes this session cookie with every request to the server.
 
 2. Attacker's Malicious Website:
-   - The attacker creates a malicious website that tricks the user into visiting it while logged into the vulnerable site.
-   - The attacker injects JavaScript into the malicious website that automatically sends a state-changing request to the vulnerable web application.
-   - The malicious site sends a state-changing request (e.g. POST, PUT, DELETE) to the vulnerable web application. The browser includes the session cookie with the request, making it seem legitimate.
+   - The attacker creates a malicious website and tricks the user into visiting it while they are logged into the vulnerable web application.
+   - Once the user visits the malicious site, an HTML page is rendered, and embedded JavaScript executes automatically in the browser.
+   - The JavaScript sends a state-changing request (e.g., POST, PUT, DELETE) to the vulnerable web application without the user’s knowledge.
+   - The request includes the session cookie automatically, as the user is authenticated on the vulnerable site.
+   - Because the request includes the session cookie, the web application treats it as a legitimate request from the authenticated user.
+   - The malicious action is processed by the web application, even though it originated from the attacker's site.
 
 3. Outcome:
    - The attacker successfully performs actions that the user didn’t intend by exploiting the user’s session.

@@ -791,12 +791,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http
-            .authorizeRequests()
-                .antMatchers("/public/**").permitAll()
-                .anyRequest().authenticated()
-            .and()
-            .formLogin(); // Enable Form-based Authentication with default login page
+      http
+          .authorizeRequests()
+              .antMatchers("/public/**").permitAll() // Allow unauthenticated access to /public/**
+              .anyRequest().authenticated() // All other requests require authentication
+          .and()
+          .formLogin()
+              .permitAll(); // Explicitly allow unauthenticated access to the login page
   }
 
   @Bean
@@ -1097,8 +1098,10 @@ protected void configure(HttpSecurity http) throws Exception {
         .authorizeRequests()
             .antMatchers("/public/**").permitAll()  // Allow public access to specific URLs
             .anyRequest().authenticated()          // Require authentication for all other requests
-            .and()
-        .formLogin()                               // Enable form-based authentication
+        .and()
+        .formLogin()
+            .permitAll()                          // Explicitly allow unauthenticated access to the login page
+        .and()
         .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);  // Create a session if required
 }
@@ -1464,10 +1467,11 @@ In Spring Security, when using `SessionCreationPolicy.IF_REQUIRED` along with **
 protected void configure(HttpSecurity http) throws Exception {
     http
         .authorizeRequests()
-            .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to /session-expired
+            .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to /public/** and /session-expired
             .anyRequest().authenticated() // All other requests require authentication
         .and()
-        .formLogin() // Use form-based login, which creates a session upon successful authentication
+        .formLogin()
+            .permitAll() // Explicitly allow unauthenticated access to the login page
         .and()
         .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only if required (will happen after form login)
@@ -1533,26 +1537,25 @@ In summary:
 This ensures a robust and secure session handling mechanism for stateful web applications.
 
 ### Logout
-
 Logout functionality allows users to safely terminate their session and ensure that session data is properly cleared upon logout.
 
-In this configuration, we handle user logout behavior, session invalidation, and cookie deletion, while ensuring a session is always created (`SessionCreationPolicy.ALWAYS`) even with inherently stateless mechanisms like HTTP Basic Authentication.
+In this configuration, we handle user logout behavior, session invalidation, and cookie deletion, while using a form-based authentication (which will require an authentication-related session by default) without specifying a custom login page.
 
-For example, after a user logs out, they will be redirected to a custom login page (to be exposed under a custom controller) with a `logout` parameter, and their session will be invalidated.
+After a user logs out, they are redirected to the default Spring Security login page with a `logout` parameter, and their session is invalidated.
 
 ```java
 @Override
 protected void configure(HttpSecurity http) throws Exception {
     http
         .authorizeRequests()
-            .antMatchers("/public/**", "/session-expired", "/login").permitAll() // Allow unauthenticated access to public pages, login and session-expired
+            .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to public pages and session-expired
             .anyRequest().authenticated() // All other requests require authentication
         .and()
-        .httpBasic() // Use Basic authentication
+        .formLogin() 
+            .permitAll() // Use default Spring Security login page
         .and()
         .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.ALWAYS) // Always create a session, even for Basic Auth
-            .sessionTimeout(Duration.ofMinutes(30)) // Set inactivity timeout to 30 minutes
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only when needed
             .invalidSessionUrl("/session-expired") // Redirect if session is invalid due to inactivity
             .maximumSessions(1) // Limit concurrent sessions per user
             .expiredUrl("/session-expired") // Redirect if session expires
@@ -1567,40 +1570,37 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-- **`sessionCreationPolicy(SessionCreationPolicy.ALWAYS)`**
-    - Forces the creation of a session for every request, even if the authentication method (e.g. Basic Auth) is stateless.
-    - Ensures session management features like logout and session invalidation are consistently available.
+- **`sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)`**
+  - Creates a session **only when needed** (e.g., when a user authenticates).
+  - More efficient compared to always creating sessions.
+  - Fits naturally with `formLogin`, where session usage is expected.
+
+- **`formLogin().permitAll()`**
+  - Uses Spring Security's **default login page**.
+  - Permits all users to access the login page.
 
 - **`logoutUrl("/logout")`**
-    - Defines the endpoint (`/logout`) to initiate the logout process.
+  - Defines the endpoint (`/logout`) that triggers the logout process.
 
 - **`logoutSuccessUrl("/login?logout")`**
-    - After successful logout, users are redirected to the login page with a `logout` indicator, allowing the application to display a logout success message.
+  - After logout, users are redirected to the default login page with a `logout` indicator for displaying logout success messages.
 
 - **`invalidateHttpSession(true)`**
-    - Ensures the HTTP session is invalidated when the user logs out.
-    - Clears all session attributes, providing a clean logout.
+  - Forces session invalidation at logout.
+  - Removes all session attributes for security.
 
 - **`clearAuthentication(true)`**
-    - Clears the `Authentication` object from the security context.
-    - Fully removes the user's authentication state.
+  - Clears the user's authentication from the security context.
 
 - **`deleteCookies("JSESSIONID")`**
-    - Deletes the `JSESSIONID` cookie, preventing session reuse and reducing security risks like session fixation.
+  - Deletes the session cookie (`JSESSIONID`) to prevent session reuse and mitigate session fixation attacks.
 
-- **`permitAll()`**
-    - Ensures that the logout endpoint is accessible without authentication, allowing users to initiate logout regardless of their session state.
+- **`permitAll()` (on logout and login)**
+  - Allows unauthenticated access to login and logout endpoints.
+  - Important so users can log out even if their session is already expired.
 
-- **`antMatchers("/public/**", "/session-expired", "/login").permitAll()`**
-    - Allows public access to important pages related to session and login management.
-
-In summary:
-- **Using `SessionCreationPolicy.ALWAYS` guarantees session creation** even with stateless auth like Basic.
-- **Logout fully clears session and authentication information.**
-- **Deleted cookies prevent any residual session identification.**
-- **Redirection to `/login?logout` provides a clear and user-friendly post-logout experience.**
-
-This ensures a robust, secure, and consistent logout mechanism across different authentication methods.
+- **`antMatchers("/public/**", "/session-expired").permitAll()`**
+  - Allows access to public resources and session expiration handling without authentication.
 
 ### Length
 When the server sends a `JSESSIONID` cookie without setting a `max-age` or `expiry` time, it becomes a **non-persistent cookie**:
@@ -1779,27 +1779,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .addFilterBefore(sessionExpirationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
-                .antMatchers("/public/**", "/session-expired", "/login").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to /public/** and /session-expired
+                .anyRequest().authenticated() // All other requests require authentication
             .and()
             .formLogin()
+                .permitAll() // Explicitly allow unauthenticated access to the login page
             .and()
             .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .invalidSessionUrl("/session-expired")
-                .maximumSessions(1)
-                .expiredUrl("/session-expired")
-            .and()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only if required (will happen after form login)
+                .invalidSessionUrl("/session-expired") // Redirect to /session-expired if the session is invalid due to inactivity
+                .maximumSessions(1) // Limit to 1 concurrent session per user
+                .expiredUrl("/session-expired") // Redirect to /session-expired if the session expires
             .and()
             .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll();
+                .logoutUrl("/logout") // URL for logging out
+                .logoutSuccessUrl("/login?logout") // Redirect to /login?logout on successful logout
+                .invalidateHttpSession(true) // Invalidate the session on logout
+                .clearAuthentication(true) // Clear authentication data
+                .deleteCookies("JSESSIONID") // Delete session cookies
+                .permitAll(); // Allow unauthenticated access to logout
     }
-  
+    
     // more code here
 }
 ```
@@ -1913,7 +1913,6 @@ Content-Length: 150
 
 Subsequent authenticated requests may include the Anti-CSRF token as a custom header:
 
-
 ```http
 GET /protected-resource HTTP/1.1
 Host: example.com
@@ -1921,78 +1920,224 @@ Cookie: JSESSIONID=abcd1234
 X-CSRF-Token: abc123xyz456
 ```
 
-### Anti-CSRF in Spring Security
-In a stateful application, such as one using Spring Security with session management, authentication-related data is tied to an active session. This session is crucial for tracking user state across multiple requests. However, this introduces the risk of Cross-Site Request Forgery (CSRF) attacks, where a malicious actor can trick an authenticated user into performing unintended actions.
+Given that **_CSRF_** is a concern in **_stateful session-based_** applications, in **_Spring Security_** it becomes more relevant to discuss **_CSRF protection_** in the context of **_form-based authentication_**, rather than **_basic authentication_**, because the former requires authentication-related sessions.
 
-#### Default Token Exchange
-By default, Spring Security provides protection against CSRF attacks to ensure that state-changing requests (like POST, PUT, and DELETE) are valid and come from the authenticated user. CSRF protection involves the use of an anti-CSRF token, which is generated per session and included in state-changing requests.
+By default, Spring Security provides protection against CSRF attacks if and only if:
 
-When a session is active, Spring Security checks whether the request contains the correct CSRF token, which ensures that the request is indeed initiated by the user and not an attacker.
+- a **state-changing requests** is performed:
 
-Spring Security automatically manages session creation and CSRF protection. The anti-CSRF token is generated for each session, and the session's validity is checked during state-changing requests.
+| **HTTP Method** | **Requires CSRF Token?** | **Explanation**                                                                                                                                    |
+|-----------------|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **POST**        | **Yes**                  | CSRF protection is required to prevent an attacker from submitting a form or making a request on behalf of the user.                               |
+| **PUT**         | **Yes**                  | PUT requests are state-changing and therefore require a CSRF token to protect against unauthorized updates.                                        |
+| **DELETE**      | **Yes**                  | DELETE requests are also state-changing and require a CSRF token to prevent unauthorized deletions.                                                |
+| **PATCH**       | **Yes**                  | PATCH requests modify resources, so CSRF protection is necessary to avoid malicious changes.                                                       |
+| **GET**         | **No**                   | GET requests are considered safe (they do not modify state), so CSRF protection is not needed for GET requests under normal CSRF protection rules. |
 
-```java
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .addFilterBefore(new SessionExpirationFilter(), UsernamePasswordAuthenticationFilter.class)  // Add SessionExpirationFilter before authentication filter
-            .authorizeRequests()
-                .antMatchers("/public/**", "/session-expired", "/login").permitAll()  // Allow unauthenticated access to /public/**, /session-expired, and /login
-                .anyRequest().authenticated()  // All other requests require authentication
-            .and()
-            .httpBasic()
-            .and()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // Create session only if required
-                .sessionTimeout(Duration.ofMinutes(30))  // Set session timeout (inactivity timeout) to 30 minutes
-                .invalidSessionUrl("/session-expired")  // Redirect if session is invalid due to inactivity
-                .maximumSessions(1)  // Optional: Limit concurrent sessions per user
-                .expiredUrl("/session-expired")  // Redirect if session expires
-            .and()
-            .logout()
-                .logoutUrl("/logout")  // URL that triggers the logout process
-                .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
-                .invalidateHttpSession(true)  // Invalidate the session when logging out
-                .clearAuthentication(true)  // Clear authentication data on logout
-                .deleteCookies("JSESSIONID")  // Delete session cookies (e.g. JSESSIONID)
-                .permitAll();  // Allow all users to access the logout URL
-    }
-```
+- the `SessionCreationPolicy` requires a session:
 
-In this configuration, CSRF protection is enabled by default. The anti-CSRF token is linked to the user's session. When a state-changing request (such as a POST, PUT, or DELETE) is made, the anti-CSRF token must be validated to ensure the request is legitimate.
+| **SessionCreationPolicy** | **CSRF Protection** | **Explanation**                                                                                                                                                          |
+|---------------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`ALWAYS`**              | **Enabled**         | CSRF protection is enabled because a session is created and maintained by default. This is typical for traditional web applications that use cookies for authentication. |
+| **`IF_REQUIRED`**         | **Enabled**         | CSRF protection is enabled because sessions are created when required. This is also common in traditional web apps with session-based authentication.                    |
+| **`NEVER`**               | **Disabled**        | No session is created, so CSRF protection is unnecessary. Typically used for stateless APIs or applications that use JWT tokens for authentication.                      |
+| **`STATELESS`**           | **Disabled**        | No session is created, and stateless authentication (like JWT) is used, so CSRF protection is not needed. Common in API-based or microservices architectures.            |
 
-For **HTML forms**, Spring Security automatically handles the CSRF token for you. When your application returns an HTML form in a response, Spring Security will inject the CSRF token into the form as a hidden field. This means that you don’t need to manually add the token to the form.
 
-Whenever a form is submitted (for example, a POST request), the CSRF token that was automatically added to the form will be sent back to the server. Spring Security will then validate this token to ensure the request is legitimate and originates from the authenticated user.
+CSRF protection involves the use of an anti-CSRF token, which is generated per session and must be included in state-changing requests.
 
-This automatic handling is done seamlessly by Spring Security, and you don’t have to worry about adding the token yourself. All state-changing requests (like POST, PUT, DELETE) will have the CSRF token included, as it’s automatically injected into the form by the security framework when the page is served.
+If you want to turn on CSRF protection by force, you can add `.csrf().enable()` to your security filter chain.
 
-```html
-<form method="POST" action="/submit">
-    <input type="hidden" name="_csrf" value="your-csrf-token-here" />
-    <button type="submit">Submit</button>
-</form>
-```
+So the following:
 
-For **REST APIs with JSON responses**, Spring Security automatically handles the CSRF token by including it in the HTTP response headers. When a state-changing request (e.g. POST, PUT, DELETE) is made, Spring Security will include the CSRF token in the `X-CSRF-TOKEN` HTTP header in the response.
-
-The client is expected to send this token back with any state-changing requests in the `X-CSRF-TOKEN` header. Spring Security will then validate this token to ensure the request is legitimate and originates from the authenticated user.
-
-This behavior is automatic, and developers do not need to manually include the CSRF token in each request. Spring Security ensures that any state-changing requests that require CSRF protection are validated by including the token in the response headers and expecting it to be returned in the request headers.
-
-```http
-HTTP/1.1 200 OK
-X-CSRF-TOKEN: your-csrf-token-here
-Content-Type: application/json
-{
-"message": "Request successful"
+````java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .authorizeRequests()
+            .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to public pages and session-expired
+            .anyRequest().authenticated() // All other requests require authentication
+        .and()
+        .formLogin() 
+            .permitAll() // Use default Spring Security login page
+        .and()
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only when needed
+            .invalidSessionUrl("/session-expired") // Redirect if session is invalid due to inactivity
+            .maximumSessions(1) // Limit concurrent sessions per user
+            .expiredUrl("/session-expired") // Redirect if session expires
+        .and()
+        .logout()
+            .logoutUrl("/logout") // URL to trigger logout
+            .logoutSuccessUrl("/login?logout") // Redirect after successful logout
+            .invalidateHttpSession(true) // Invalidate the session on logout
+            .clearAuthentication(true) // Clear authentication data
+            .deleteCookies("JSESSIONID") // Delete the session cookie
+            .permitAll(); // Allow access to logout for all
 }
-```
+````
+
+is equivalent to:
+
+````java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .csrf() // Enable CSRF protection explicitly
+            .and() // Continue the configuration chain
+        .authorizeRequests()
+            .antMatchers("/public/**", "/session-expired").permitAll() // Allow unauthenticated access to public pages and session-expired
+            .anyRequest().authenticated() // All other requests require authentication
+        .and()
+        .formLogin()
+            .permitAll() // Use default Spring Security login page
+        .and()
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session only when needed
+            .invalidSessionUrl("/session-expired") // Redirect if session is invalid due to inactivity
+            .maximumSessions(1) // Limit concurrent sessions per user
+            .expiredUrl("/session-expired") // Redirect if session expires
+        .and()
+        .logout()
+            .logoutUrl("/logout") // URL to trigger logout
+            .logoutSuccessUrl("/login?logout") // Redirect after successful logout
+            .invalidateHttpSession(true) // Invalidate the session on logout
+            .clearAuthentication(true) // Clear authentication data
+            .deleteCookies("JSESSIONID") // Delete the session cookie
+            .permitAll(); // Allow access to logout for all
+}
+````
+
+Using the above configuration, in the following example:
+
+- **Three HTTP requests and responses** are exchanged, starting with a **GET request** to access a protected resource, followed by a **POST request** to the login page, and finally, a request to access the protected resource again.
+- The first request is a **GET request** to the protected resource (/protected-resource), which redirects the user to the login page (/login) as they are not authenticated. At this point, the server creates an initial session for future redirection and sets a simple session cookie (JSESSIONID=abcd1234).
+- The second request is a **GET request** to the login page (/login). The browser sends the JSESSIONID=abcd1234 cookie along with the request to maintain the session, though it's not authenticated yet. The login page is served with a form for the user to input their credentials, including a CSRF token embedded as a hidden input.
+- The user submits their credentials (e.g. username=user, password=password) via the login form along with the CSRF token. This triggers a **POST request** to the server to authenticate the user.
+- The server processes the credentials and the CSRF token, and upon successful authentication, responds with a **302 redirect** back to the originally requested protected resource (/protected-resource). The server also issues a new session cookie (JSESSIONID=abcd5678; HttpOnly; Secure) to replace the initial one, which now contains the authenticated user’s session details.
+- The third request sends the **new session cookie** (JSESSIONID=abcd5678) along with the request to the protected resource, confirming the user is authenticated. The server grants access to the protected resource and responds with the requested content.
+- Additionally, a **state-changing POST request** is made to the protected resource with a valid CSRF token, which succeeds.
+- Finally, another **state-changing POST request** is attempted without including the CSRF token, which fails with a 403 Forbidden response.
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+````
+
+````http
+HTTP/1.1 302 Found
+Location: /login
+Set-Cookie: JSESSIONID=abcd1234; Path=/
+````
+
+***
+
+````plaintext
+GET /login HTTP/1.1
+Host: example.com
+Cookie: JSESSIONID=abcd1234
+````
+
+````html
+<!-- HTML Form for login with CSRF token -->
+<form method="POST" action="/login">
+    <input type="hidden" name="csrfToken" value="csrf-token-xyz">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+    <button type="submit">Login</button>
+</form>
+````
+
+***
+
+````plaintext
+POST /login HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 73
+Cookie: JSESSIONID=abcd1234
+
+username=user&password=password&csrfToken=csrf-token-xyz
+````
+
+````http
+HTTP/1.1 302 Found
+Location: /protected-resource
+Set-Cookie: JSESSIONID=abcd5678; Path=/; HttpOnly; Secure; SameSite=Strict
+````
+
+***
+
+````plaintext
+GET /protected-resource HTTP/1.1
+Host: example.com
+Cookie: JSESSIONID=abcd5678
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{
+"message": "Access granted"
+}
+````
+
+***
+
+````plaintext
+POST /protected-resource HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Cookie: JSESSIONID=abcd5678
+
+action=updateProfile&csrfToken=csrf-token-xyz
+````
+
+````http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 32
+
+{
+"message": "Profile updated"
+}
+````
+
+***
+
+````plaintext
+POST /protected-resource HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Cookie: JSESSIONID=abcd5678
+
+action=updateProfile
+````
+
+````http
+HTTP/1.1 403 Forbidden
+Content-Type: application/json
+Content-Length: 40
+
+{
+"error": "CSRF token missing or invalid"
+}
+````
+
+***
 
 #### Customisation
-To explicitly enable CSRF protection in Spring Security, you can configure it within your `HttpSecurity` configuration. By default, CSRF protection is enabled when session management is in use. However, you can explicitly configure it for additional customization.
+If a session is required, CSRF protection is enabled by default in Spring Security for state-changing requests.
 
-Here’s how you can enable CSRF protection:
+For additional customization, you can configure the policy.
+
+For example, if you want to exchange the token as a cookie (insecure):
 
 ```java
         ...........
@@ -2009,63 +2154,37 @@ Here’s how you can enable CSRF protection:
 }
 ```
 
-- **Customizing Token Storage:** The `.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())` stores the CSRF token in a cookie rather than in the session. The cookie is marked with the `HttpOnly` flag set to `false`, meaning it can be accessed by JavaScript running in the browser. This approach is often used for single-page applications (SPAs) or situations where the CSRF token needs to be shared across multiple requests.
-- **Important:** Storing the CSRF token in cookies exposes you to XSS (Cross-Site Scripting) risks, as malicious scripts can potentially steal tokens from the cookie. As a result, this customization is generally not recommended unless you have additional security measures in place, such as Content Security Policy (CSP) and XSS protection. It's safer to stick to the default behavior of storing the CSRF token in the session.
+- The `.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())` stores the CSRF token in a cookie rather than in the session. The cookie is marked with the `HttpOnly` flag set to `false`, meaning it can be accessed by JavaScript running in the browser. This approach is often used for single-page applications (SPAs) or situations where the CSRF token needs to be shared across multiple requests.
+- Storing the CSRF token in cookies exposes you to XSS (Cross-Site Scripting) risks, as malicious scripts can potentially steal tokens from the cookie. As a result, this customization is generally not recommended unless you have additional security measures in place, such as Content Security Policy (CSP) and XSS protection. It's safer to stick to the default behavior of storing the CSRF token in the session.
 
 #### Disable
-In cases where you're working with a stateless application (e.g. using JWT or token-based authentication), you might want to disable CSRF protection since sessions are not used and thus no anti-CSRF token is needed.
+In stateless applications, such as those using **JWT** or other **token-based authentication** methods, no session is maintained for tracking user state and CSRF tokens are not required.
 
-In stateless applications, such as those using **JWT** or other **token-based authentication** methods, you may want to disable **CSRF protection**. This is because, in a stateless application, no session is maintained for tracking user state, and CSRF tokens are not required.
-
-When you configure **SessionCreationPolicy** to `STATELESS`, Spring Security will not create or manage sessions. Since CSRF protection is designed to work with sessions (using an anti-CSRF token stored in the session), it becomes unnecessary in stateless applications. Therefore, you can disable CSRF protection explicitly using the `csrf().disable()` method.
+So if you set **SessionCreationPolicy** to `STATELESS`, Spring Security will disable CSRF protection by default
 
 Disabling CSRF protection is appropriate in scenarios such as:
+
 - The application is stateless, meaning it does not rely on sessions.
 - Authentication is handled via tokens (e.g. JWT) passed in headers or other parts of the request.
 - CSRF protection is irrelevant because there is no session to secure.
 
-To disable CSRF protection, simply use the `csrf().disable()` method in your Spring Security configuration. By doing so, Spring Security will skip CSRF checks for all incoming requests, which is essential for applications that do not use sessions for tracking user state.
+If you want to disable CSRF protection explicitly, use the `csrf().disable()` method:
 
-This approach ensures that requests can be authenticated based on tokens, without the need for session-based protections. However, ensure that your token management (e.g. validating JWT tokens on every request) is secure, as CSRF protection will not be in place.
-
-```java
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .addFilterBefore(new SessionExpirationFilter(), UsernamePasswordAuthenticationFilter.class)  // Add SessionExpirationFilter before authentication filter
-            .authorizeRequests()
-                .antMatchers("/public/**", "/session-expired", "/login").permitAll()  // Allow unauthenticated access to /public/**, /session-expired, and /login
-                .anyRequest().authenticated()  // All other requests require authentication
+````java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        .csrf().disable()  // Explicitly disable CSRF protection
+        .authorizeRequests()
+            .antMatchers("/public/**").permitAll()
+            .anyRequest().authenticated()
             .and()
-            .httpBasic()
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // Create session only if required
-                .sessionTimeout(Duration.ofMinutes(30))  // Set session timeout (inactivity timeout) to 30 minutes
-                .invalidSessionUrl("/session-expired")  // Redirect if session is invalid due to inactivity
-                .maximumSessions(1)  // Optional: Limit concurrent sessions per user
-                .expiredUrl("/session-expired")  // Redirect if session expires
-            .and()
-            .csrf().disable()
-            .logout()
-                .logoutUrl("/logout")  // URL that triggers the logout process
-                .logoutSuccessUrl("/login?logout")  // Redirect URL after successful logout
-                .invalidateHttpSession(true)  // Invalidate the session when logging out
-                .clearAuthentication(true)  // Clear authentication data on logout
-                .deleteCookies("JSESSIONID")  // Delete session cookies (e.g. JSESSIONID)
-                .permitAll();  // Allow all users to access the logout URL
-    }
-```
-
-#### Final considerations
-- **Session Expiration:** When the session expires (due to inactivity, for example), the anti-CSRF token tied to that session is also invalidated. If the user tries to make a state-changing request after their session expires, the request will be rejected with a `403 Forbidden` response, as the CSRF token is no longer valid.
-- **Logout:** When the user logs out, the session is invalidated. This also invalidates the anti-CSRF token. If the user attempts to submit a request after logging out, it will be rejected because the session and the associated anti-CSRF token no longer exist.
-- **Avoid Storing CSRF Tokens in Cookies:** The anti-CSRF token should never be stored in cookies. If malicious JavaScript (e.g. via XSS) can access the cookie, the attacker may steal the token and bypass CSRF protection.
-- **Using HTTP Headers for CSRF Tokens:** It's safer to include the anti-CSRF token in HTTP headers (`X-CSRF-TOKEN`) for AJAX requests or in form fields for traditional form submissions. This ensures the token is not exposed to JavaScript, reducing the risk of XSS.
-- You should disable CSRF protection in cases where:
-  - The application is stateless (using JWT or OAuth2 tokens).
-  - There's no session management, and token handling is done client-side.
-- For traditional web applications, where sessions are used, CSRF protection should remain enabled.
+        .httpBasic();
+}
+````
 
 ---
 

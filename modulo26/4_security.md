@@ -1950,7 +1950,9 @@ In form-based authentication, the security mechanism generates the **CSRF token*
 
 After the user submits the login form, the **CSRF token** is expected to be present in the request body as part of the form data (typically under the name `csrfToken`). For any subsequent state-changing POST requests (such as profile updates), the server expects the **CSRF token** to be included in the request body, and it must match the token associated with the user's session. If the token is missing or invalid, the server will reject the request with a **403 Forbidden** response.
 
-If you want to turn on CSRF protection by force, you can add `.csrf().enable()` to your security filter chain. So the following:
+If you want to turn on CSRF protection by force, you can add `.csrf().enable()` to your security filter chain.
+
+So the following:
 
 ````java
 @Override

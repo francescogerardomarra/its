@@ -1860,118 +1860,75 @@ Set-Cookie: jsessionid=abc123; SameSite=Strict; Path=/; HttpOnly; Secure
 ```
 
 #### Anti-CSRF token
-Anti-CSRF tokens are **unique, randomly generated tokens** that are associated with a user's session.
+Anti-CSRF tokens are **unique, randomly generated tokens** that are associated with an authentication-related session.
 
-These tokens are **not stored in cookies** but are usually exchanged:
-- within the **HTTP body**;
+Cookies are automatically sent with every request, which could lead to potential token theft or manipulation.
+
+These tokens are **not stored in cookies** but are usually exchanged using:
+
+- the **HTTP body**;
 - **custom HTTP headers** (e.g. `X-CSRF-Token` or `X-XSRF-Token`).
 
 The server validates these tokens to ensure that the request originates from the legitimate user and not from a malicious website.
 
-The primary goal of Anti-CSRF tokens is to protect against **Cross-Site Request Forgery (CSRF)** attacks.
-
-Anti-CSRF tokens are **not stored in cookies** to prevent attackers from exploiting the token via **cross-site scripting (XSS)** attacks. Cookies are automatically sent with every request, which could lead to potential token theft or manipulation. By requiring the client to programmatically include the token in the request body or custom headers (e.g. `X-CSRF-Token` or `X-XSRF-Token`), the server ensures that the request is intentional and legitimate.
+By requiring the client to programmatically include the token in the request body or custom headers (e.g. `X-CSRF-Token` or `X-XSRF-Token`), the server ensures that the request is intentional and legitimate.
+Anti-CSRF tokens are **not stored in cookies** to prevent attackers from exploiting the token via **cross-site scripting (XSS)** attacks and to protect against **Cross-Site Request Forgery (CSRF)** attacks.
 
 Anti-CSRF tokens provide an **additional layer of protection** by ensuring that requests made to the server must contain a valid token that matches what the server expects.
-
-- Even if an attacker manages to **bypass the SameSite cookie restrictions** (for example, by tricking the user into making a request via a **malicious link**), the request will still be **rejected**.
-- This happens because the attacker does not have access to the **correct CSRF token**, which is required to make a valid request.
+Even if an attacker manages to **bypass the SameSite cookie restrictions** (for example, by tricking the user into making a request via a **malicious link**), the request will still be **rejected**.
+This happens because the attacker does not have access to the **correct CSRF token**, which is required to make a valid request.
 
 Thus, Anti-CSRF tokens work alongside `SameSite` cookie settings, ensuring that **only legitimate requests** are processed, even in cases where `SameSite` protections are insufficient.
 
-**As a Custom Header:**
+In the following example, after successful authentication, an authentication-related cookie is issued to the client and an **_Anti-CSRF token_** (`abc123xyz456`) is included in a custom header (**_X-CSRF-Token_**), which will be used by the client for subsequent requests to prevent CSRF attacks:
 
-1. **Token Generation**:
-   - Upon session creation, the server generates a unique Anti-CSRF token and associates it with the user session (stored server-side).
-   - The server sends the token to the client, typically as part of the initial HTTP response in a custom response header (e.g. `X-CSRF-Token` or `X-XSRF-Token`).
-
-2. **Response example with anti-CSRF token**:
-   - **Content-Type: application/json**: Specifies that the response body contains JSON data, ensuring proper handling and parsing.
-   - **Cache-Control: no-cache**: Instructs the browser or intermediary caches that the response should not be cached, preventing potential attacks using stale tokens.
-   - **Pragma: no-cache**: An older HTTP/1.0 header similar to `Cache-Control: no-cache`, included for backward compatibility.
-
-```http
+````http
 HTTP/1.1 200 OK
-Content-Type: application/json
-Cache-Control: no-cache
-Pragma: no-cache
-X-CSRF-Token: abc123xyz456  // The Anti-CSRF token sent to the client
+Date: Mon, 08 Apr 2025 10:00:00 GMT
+Server: Apache/2.4.41 (Unix)
+Content-Type: text/html; charset=UTF-8
+Set-Cookie: JSESSIONID=1234567890abcdef; Path=/; HttpOnly; Secure; SameSite=Strict
+X-CSRF-Token: abc123xyz456
+Content-Length: 1024
 
-{
-    "status": "success",
-    "message": "CSRF token generated successfully"
-}
-```
+<html>
+  <head><title>Welcome</title></head>
+  <body>
+    <h1>Welcome, JohnDoe!</h1>
+    <form action="/submit-form" method="POST">
+      <!-- form contents here -->
+    </form>
+  </body>
+</html>
+````
 
-3. **Client storage**
-   - The token is then stored client-side for future use.
-   - The client is responsible for programmatically including the token in each request that requires authentication.
-   - The token is added to the `X-CSRF-Token` header for API requests.
+Alternatively, the **_Anti-CSRF token_** (`abc123xyz456`) can be included in the response body:
 
-4. **Request example with anti-CSRF token**:
-
-```http
-POST /protected-resource HTTP/1.1
-Host: example.com
-Content-Type: application/json
-X-CSRF-Token: abc123xyz456  // The CSRF token sent in the header
-
-{
-    "someData": "example"
-}
-```
-
-5. **Token Validation**:
-   - When the server receives the request, it verifies that the Anti-CSRF token provided by the client in the `X-CSRF-Token` header matches the one stored for the current session.
-   - If the token in the request does not match the server-side token, the server will reject the request as it may have originated from a malicious source.
-   - If the tokens match, the request is considered legitimate, and the server processes it.
-
-**Within the HTTP Body:**
-
-1. **Token Generation**:
-    - Upon session creation, the server generates a unique Anti-CSRF token and associates it with the user session (usually stored server-side).
-    - The server sends the token to the client, typically as part of the **response body** (instead of a custom header).
-
-2. **Response example with Anti-CSRF token in the body**:
-    - **Content-Type: application/json**: Specifies that the response body contains JSON data, ensuring proper handling and parsing.
-    - **Cache-Control: no-cache**: Instructs the browser or intermediary caches not to cache the response, preventing attacks using stale tokens.
-    - **Pragma: no-cache**: Similar to `Cache-Control: no-cache` for backward compatibility with HTTP/1.0.
-
-```http
+````http
 HTTP/1.1 200 OK
+Date: Mon, 08 Apr 2025 10:00:00 GMT
+Server: Apache/2.4.41 (Unix)
 Content-Type: application/json
-Cache-Control: no-cache
-Pragma: no-cache
+Set-Cookie: JSESSIONID=1234567890abcdef; Path=/; HttpOnly; Secure; SameSite=Strict
+Content-Length: 150
 
 {
-    "status": "success",
-    "message": "CSRF token generated successfully",
-    "csrfToken": "abc123xyz456"
+  "message": "Welcome, JohnDoe!",
+  "csrfToken": "abc123xyz456"
 }
-```
+````
 
-3. **Client storage**:
-    - The client stores the token locally (e.g. in memory) for future use.
-    - The client is responsible for programmatically including the token in each request that requires authentication.
-    - The token is typically added to the `X-CSRF-Token` header for API requests.
+subsequent authenticated requests will usually include the Anti-CSRF token is a custom header:
 
-4. **Request example with Anti-CSRF token**:
 
 ```http
-POST /protected-resource HTTP/1.1
+GET /protected-resource HTTP/1.1
 Host: example.com
-Content-Type: application/json
-X-CSRF-Token: abc123xyz456  // The CSRF token sent in the request header
-
-{
-    "someData": "example"
-}
+Cookie: JSESSIONID=abcd1234
+X-CSRF-Token: abc123xyz456
 ```
 
-5. **Token Validation**:
-    - When the server receives the request, it checks that the Anti-CSRF token in the `X-CSRF-Token` header matches the token associated with the current session.
-    - If the token in the request doesn't match the server-side token, the server rejects the request as potentially originating from a malicious source (e.g. a CSRF attack).
-    - If the tokens match, the server considers the request legitimate and processes it accordingly, allowing the requested action to proceed (e.g. updating a resource, submitting a form).
+however this is an implementation choice.
 
 ### Anti-CSRF in Spring Security
 In a stateful application, such as one using Spring Security with session management, authentication-related data is tied to an active session. This session is crucial for tracking user state across multiple requests. However, this introduces the risk of Cross-Site Request Forgery (CSRF) attacks, where a malicious actor can trick an authenticated user into performing unintended actions.

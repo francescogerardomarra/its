@@ -1322,11 +1322,13 @@ To verify the token’s claims:
 - go to [jwt.io](https://jwt.io)
 - copy and paste the secret used to sign the JWT in the corresponding area:
   ````bash
-  This is a secure jwt key that is beared on a Sha256 media that is long inouh the certain security standard, and is expected to be authorized.
+  VGhpcyBpcyBhIHNlY3VyZSBqZXN0IGtleSB0aGF0IGlzIGJlYXJlZCBvbiBhIFNoYTI1NiBtZWRpYSB0aGF0IGlzIGxvbmcgaW5vdWdoIHRoZSBjZXJ0YWluIHNlY3VyaXR5IHN0YW5kYXJkLCBhbmQgaXMgZXhwbGVjdGVkIHRvIGJlIGF1dGhvcml6ZWQuIFRoaXMga2V5IHdpbGwgYmUgc2lnbmVkIHdpdGggc2lnbmVkYXR1cmUgYWxnb3JpdGhtcyBzbyBpdCBpcyBhIHN0cm9uZyBzZWNyZXQuCg==
   ````
 - copy and  paste the Bearer token e.g. `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+- check the claims and signature verification
 
 Expected claims:
+
 ```json
 {
   "sub": "admin_sub",

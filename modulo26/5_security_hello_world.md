@@ -5,6 +5,7 @@ We'll enhance an already built Spring Boot REST web service by integrating **JWT
 We will build on a previously implemented Spring Boot 3.4.4 project using **Java 21**, introducing a robust and scalable authentication flow. The process will include utilizing **Basic Authentication** for the login and generating a **JWT token** that needs to be included in the `Authorization` header as a `Bearer` token when accessing protected resources.
 
 The key steps for securing the admin-only endpoints are as follows:
+
 1. An admin will send a **POST request** to `/shop/login` using **Basic Authentication**.
 2. If the credentials are valid, a **JWT token** will be generated and returned.
 3. The generated JWT token must be included as a `Bearer` token in the `Authorization` header to access protected endpoints such as `/shop/items` and `/shop/users`.
@@ -12,8 +13,9 @@ The key steps for securing the admin-only endpoints are as follows:
 ---
 
 ## pom.xml
+To enhance an already built Spring Boot REST web service by integrating **JWT authentication**, we will use Spring Security 6.x (with Spring Boot 3.x and Java 17+).
 
-To enhance an already built Spring Boot REST web service by integrating **JWT authentication**, we need to add the following dependencies to the `pom.xml`. Each of these plays a crucial role in enabling secure authentication and authorization using JSON Web Tokens (JWTs).
+We need to add the following dependencies to the `pom.xml`. Each of these plays a crucial role in enabling secure authentication and authorization using JSON Web Tokens (JWTs).
 
 **spring-boot-starter-security**
 ```xml
@@ -232,12 +234,9 @@ admin.jwt.claim.expiration.ms=600000
 After integrating JWT authentication, the project directory structure is updated with the addition of new classes. Here’s a breakdown of the key changes:
 
 - **LoginController.java**: This new controller is added under `com.example.controller` to handle the login process using Basic Authentication. It is responsible for authenticating the admin and generating the JWT token.
-
-- **Security-related classes**: A new package `com.example.security` is introduced, which contains the following classes:
-    - **AdminUserConfig.java**: This class defines configurations specific to the admin user, ensuring proper access control and security settings.
-    - **SecurityConfig.java**: This configuration class handles the overall security settings for the application, including JWT authentication and authorization mechanisms.
-    - **AdminTokenProvider.java**: Responsible for generating and validating JWT tokens specifically for admin users.
-    - **AuthenticationTokenFilter.java**: This filter intercepts incoming requests to check for a valid JWT token in the request headers, ensuring protected endpoints are only accessible with valid tokens.
+- **SecurityConfig.java**: This configuration class handles the overall security settings for the application, including JWT authentication and authorization mechanisms.
+- **AdminTokenProvider.java**: Responsible for generating and validating JWT tokens specifically for admin users.
+- **AuthenticationTokenFilter.java**: This filter intercepts incoming requests to check for a valid JWT token in the request headers, ensuring protected endpoints are only accessible with valid tokens.
 
 These new classes are part of the security mechanism that enforces JWT authentication for certain endpoints, enabling admin-only access.
 
@@ -263,6 +262,8 @@ These new classes are part of the security mechanism that enforces JWT authentic
     │   │           │   │   └── OrderItemDTO.java
     │   │           │   └── user
     │   │           │       └── UserDTO.java
+    │   │           ├── filter
+    │   │           │   └── AuthenticationTokenFilter.java
     │   │           ├── model
     │   │           │   ├── enums
     │   │           │   │   └── OrderStatus.java
@@ -304,15 +305,9 @@ These new classes are part of the security mechanism that enforces JWT authentic
     │   │           │           └── UserResponse.java
     │   │           ├── security
     │   │           │   ├── config
-    │   │           │   │   ├── admin
-    │   │           │   │   │   └── AdminUserConfig.java
-    │   │           │   │   └── chain
-    │   │           │   │       └── SecurityConfig.java
+    │   │           │   │   └── SecurityConfig.java
     │   │           │   └── jwt
-    │   │           │       ├── provider
-    │   │           │       │   └── AdminTokenProvider.java
-    │   │           │       └── filter
-    │   │           │           └── AuthenticationTokenFilter.java
+    │   │           │       └── AdminTokenProvider.java
     │   │           ├── service
     │   │           │   ├── ItemService.java
     │   │           │   ├── OrderItemService.java

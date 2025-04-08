@@ -422,7 +422,7 @@ public boolean validateToken(String token) {
 
 This validation is fundamental to the security of any endpoint protected by JWT-based authentication.
 
-***
+---
 
 ````java
 package com.example.security.jwt;
@@ -540,8 +540,6 @@ public class AdminTokenProvider {
   }
 }
 ````
-
-***
 
 ---
 
@@ -756,8 +754,6 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
   }
 }
 ````
-
-***
 
 ---
 

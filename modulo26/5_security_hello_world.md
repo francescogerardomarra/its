@@ -421,7 +421,7 @@ This validation is fundamental to the security of any endpoint protected by JWT-
 The `AdminTokenProvider` is thus a reusable, secure, and configurable utility for JWT management, facilitating both token generation during login and token verification during request filtering.
 
 ````java
-package com.example.security.jwt.provider;
+package com.example.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -444,110 +444,110 @@ import java.util.Date;
  * <p>
  * Flow:
  * 1. The JWT token is generated with various claims (subject, role, permissions) and signed with a secret key.
- * 2. The generated token can be returned to the user (e.g. after a successful login).
+ * 2. The generated token can be returned to the user (e.g., after a successful login).
  * 3. When the token is sent back to the server, it can be validated to ensure the user is authenticated and authorized.
  * 4. Claims from the token can be extracted and used to make authorization decisions.
  */
 @Component
 public class AdminTokenProvider {
 
-    // Injected properties for secret key and various claims.
-    @Value("${jwt.secret}")
-    private String secretKeyString;
+  // Injected properties for secret key and various claims.
+  @Value("${jwt.secret}")
+  private String secretKeyString;
 
-    @Value("${admin.jwt.claim.sub}")
-    private String subject;  // The subject for the JWT comes from properties file.
+  @Value("${admin.jwt.claim.sub}")
+  private String subject;  // The subject for the JWT comes from properties file.
 
-    @Value("${admin.jwt.claim.role}")
-    private String role;  // The role claim comes from properties file.
+  @Value("${admin.jwt.claim.role}")
+  private String role;  // The role claim comes from properties file.
 
-    @Value("${admin.jwt.claim.permission}")
-    private String permissions;  // Permissions are specified in the properties file.
+  @Value("${admin.jwt.claim.permission}")
+  private String permissions;  // Permissions are specified in the properties file.
 
-    @Value("${admin.jwt.claim.expiration.ms}")
-    private long expirationTime;  // Token expiration time is specified in the properties file.
+  @Value("${admin.jwt.claim.expiration.ms}")
+  private long expirationTime;  // Token expiration time is specified in the properties file.
 
+  /**
+   * Generates a JWT token with the subject, role, permissions, and expiration time.
+   * <p>
+   * This method uses the JJWT library to create a JWT token, adds claims (such as subject, role, and permissions),
+   * sets the issued and expiration times, and signs the token with the secret key.
+   *
+   * @return The generated JWT token as a string.
+   */
+  public String generateToken() {
     /**
-     * Generates a JWT token with the subject, role, permissions, and expiration time.
-     * <p>
-     * This method uses the JJWT library to create a JWT token, adds claims (such as subject, role, and permissions),
-     * sets the issued and expiration times, and signs the token with the secret key.
+     * Initializes the secret key from the provided secret string in the application properties.
+     * This secret key is used to sign the JWT token with the HS512 algorithm.
      *
-     * @return The generated JWT token as a string.
+     * The secret key is passed to the `SecretKeySpec` constructor to create a `Key` object
+     * which will be used to sign the JWT token.
      */
-    public String generateToken() {
-        /**
-         * Initializes the secret key from the provided secret string in the application properties.
-         * This secret key is used to sign the JWT token with the HS512 algorithm.
-         *
-         * The secret key is passed to the `SecretKeySpec` constructor to create a `Key` object
-         * which will be used to sign the JWT token.
-         */
-        Key secretKey = new SecretKeySpec(secretKeyString.getBytes(), SignatureAlgorithm.HS512.getJcaName());
+    Key secretKey = new SecretKeySpec(secretKeyString.getBytes(), SignatureAlgorithm.HS512.getJcaName());
 
-        return Jwts.builder()
-                .setSubject(subject)  // Set the subject for the JWT token (admin identity).
-                .claim("role", role)  // Add the user's role to the claims.
-                .claim("permissions", permissions)  // Add the user's permissions to the claims.
-                .setIssuedAt(new Date())  // Set the current date/time as the token issue date.
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))  // Set the token expiration time.
-                .signWith(secretKey, SignatureAlgorithm.HS512)  // Sign the token with the secret key using HS512 algorithm.
-                .compact();  // Return the JWT token as a string.
-    }
+    return Jwts.builder()
+            .setSubject(subject)  // Set the subject for the JWT token (admin identity).
+            .claim("role", role)  // Add the user's role to the claims.
+            .claim("permissions", permissions)  // Add the user's permissions to the claims.
+            .setIssuedAt(new Date())  // Set the current date/time as the token issue date.
+            .setExpiration(new Date(System.currentTimeMillis() + expirationTime))  // Set the token expiration time.
+            .signWith(secretKey, SignatureAlgorithm.HS512)  // Sign the token with the secret key using HS512 algorithm.
+            .compact();  // Return the JWT token as a string.
+  }
 
+  /**
+   * Extracts and parses the claims from the provided JWT token.
+   * <p>
+   * The JWT token is parsed using the secret key, and the claims are returned in the form of a `Claims` object.
+   * The claims can include subject, role, permissions, and expiration date, which are used for authorization checks.
+   *
+   * @param token The JWT token from which the claims will be extracted.
+   * @return The claims extracted from the JWT token.
+   */
+  public Claims getClaims(String token) {
     /**
-     * Extracts and parses the claims from the provided JWT token.
-     * <p>
-     * The JWT token is parsed using the secret key, and the claims are returned in the form of a `Claims` object.
-     * The claims can include subject, role, permissions, and expiration date, which are used for authorization checks.
+     * Initializes the secret key from the provided secret string in the application properties.
+     * This secret key is used to sign the JWT token with the HS512 algorithm.
      *
-     * @param token The JWT token from which the claims will be extracted.
-     * @return The claims extracted from the JWT token.
+     * The secret key is passed to the `SecretKeySpec` constructor to create a `Key` object.
      */
-    public Claims getClaims(String token) {
-        /**
-         * Initializes the secret key from the provided secret string in the application properties.
-         * This secret key is used to sign the JWT token with the HS512 algorithm.
-         *
-         * The secret key is passed to the `SecretKeySpec` constructor to create a `Key` object.
-         */
-        Key secretKey = new SecretKeySpec(secretKeyString.getBytes(), SignatureAlgorithm.HS512.getJcaName());
+    Key secretKey = new SecretKeySpec(secretKeyString.getBytes(), SignatureAlgorithm.HS512.getJcaName());
 
-        // Parse the JWT token and extract the claims using the secret key.
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)  // Set the secret key to validate the JWT signature.
-                .build()
-                .parseClaimsJws(token)  // Parse the JWT and extract claims.
-                .getBody();  // Return the claims body (excluding the header and signature).
+    // Parse the JWT token and extract the claims using the secret key.
+    return Jwts.parserBuilder()
+            .setSigningKey(secretKey)  // Set the secret key to validate the JWT signature.
+            .build()
+            .parseClaimsJws(token)  // Parse the JWT and extract claims.
+            .getBody();  // Return the claims body (excluding the header and signature).
+  }
+
+  /**
+   * Validates the provided JWT token.
+   * <p>
+   * This method validates the token by checking if the signature is correct and if the token has expired.
+   * If the token is valid, it returns `true`; otherwise, it returns `false`.
+   *
+   * @param token The JWT token to validate.
+   * @return `true` if the token is valid, `false` if the token is invalid or expired.
+   */
+  public boolean validateToken(String token) {
+    try {
+      // Extract claims from the token to check validity.
+      Claims claims = getClaims(token);
+
+      // Check if the token has expired by comparing the expiration date with the current time.
+      Date expirationDate = claims.getExpiration();
+      if (expirationDate.before(new Date())) {
+        throw new JwtException("Token has expired");  // Token has expired, throw an exception.
+      }
+
+      // Token is valid if not expired and signature is correct.
+      return true;
+    } catch (JwtException e) {
+      // Return false if the token is invalid (e.g., incorrect signature, expired).
+      return false;
     }
-
-    /**
-     * Validates the provided JWT token.
-     * <p>
-     * This method validates the token by checking if the signature is correct and if the token has expired.
-     * If the token is valid, it returns `true`; otherwise, it returns `false`.
-     *
-     * @param token The JWT token to validate.
-     * @return `true` if the token is valid, `false` if the token is invalid or expired.
-     */
-    public boolean validateToken(String token) {
-        try {
-            // Extract claims from the token to check validity.
-            Claims claims = getClaims(token);
-
-            // Check if the token has expired by comparing the expiration date with the current time.
-            Date expirationDate = claims.getExpiration();
-            if (expirationDate.before(new Date())) {
-                throw new JwtException("Token has expired");  // Token has expired, throw an exception.
-            }
-
-            // Token is valid if not expired and signature is correct.
-            return true;
-        } catch (JwtException e) {
-            // Return false if the token is invalid (e.g. incorrect signature, expired).
-            return false;
-        }
-    }
+  }
 }
 ````
 
@@ -558,26 +558,11 @@ The `AuthenticationTokenFilter` is a custom filter that is responsible for extra
 
 This is the definition of a custom filter that will later be registered with Spring Security to apply JWT authentication.
 
-In Spring Security, using `HttpSecurity`, you can register a custom filter and integrate it into the security filter chain. This registration will happen in the `SecurityConfig` class, where the filter will be added to the security filter chain to ensure that custom authentication logic, such as JWT token validation, is applied. By doing so, the custom filter ensures that only authenticated requests are allowed to access protected resources.
+In Spring Security, you can register a custom filter and integrate it into the security filter chain. This registration will happen in the `SecurityConfig` class, where the filter will be added to the security filter chain to ensure that custom authentication logic, such as JWT token validation, is applied. By doing so, the custom filter ensures that only authenticated requests are allowed to access protected resources.
 
 This filter is implemented by extending Spring's `OncePerRequestFilter`, ensuring it runs once per request. It extracts the JWT token from the `Authorization` header, validates it using the `AdminTokenProvider`, and sets the authenticated user's details in the `SecurityContext`. This setup is commonly used in stateless authentication where no session is maintained.
 
-The `AuthenticationTokenFilter` bean will be registered within the `SecurityConfig` class via the `HttpSecurity` configuration. It will be added to the Spring Security filter chain before the `UsernamePasswordAuthenticationFilter` to ensure JWTs are processed before any standard authentication mechanisms. Here's how it is registered:
-
-```java
-public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
-    http
-            .authorizeHttpRequests(authz -> authz
-                    .requestMatchers("/shop/users", "/shop/items").authenticated()
-                    .anyRequest().permitAll()
-            )
-            .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .csrf(AbstractHttpConfigurer::disable);
-
-    return http.build();
-}
-```
+The `AuthenticationTokenFilter` bean will be registered within the `SecurityConfig` class and will be added to the Spring Security filter chain before the `UsernamePasswordAuthenticationFilter` to ensure JWTs are processed before any standard authentication mechanisms. Here's how it is registered:
 
 ##### Annotations
 
@@ -672,9 +657,9 @@ This ensures that only properly formatted Bearer tokens are processed by the fil
 With this setup, the `AuthenticationTokenFilter` acts as a gatekeeper for protected routes, authenticating users based on JWT tokens and integrating seamlessly into the Spring Security filter chain.
 
 ````java
-package com.example.security.jwt.filter;
+package com.example.filter;
 
-import com.example.security.jwt.provider.AdminTokenProvider;
+import com.example.security.jwt.AdminTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -704,79 +689,79 @@ import java.io.IOException;
 @Component
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
-    // AdminTokenProvider is used to validate the JWT token and extract claims from it.
-    private final AdminTokenProvider adminTokenProvider;
+  // AdminTokenProvider is used to validate the JWT token and extract claims from it.
+  private final AdminTokenProvider adminTokenProvider;
 
-    /**
-     * Constructor for injecting the AdminTokenProvider.
-     *
-     * @param adminTokenProvider The AdminTokenProvider used for validating and processing the JWT token.
-     */
-    @Autowired
-    public AuthenticationTokenFilter(AdminTokenProvider adminTokenProvider) {
-        this.adminTokenProvider = adminTokenProvider;
+  /**
+   * Constructor for injecting the AdminTokenProvider.
+   *
+   * @param adminTokenProvider The AdminTokenProvider used for validating and processing the JWT token.
+   */
+  @Autowired
+  public AuthenticationTokenFilter(AdminTokenProvider adminTokenProvider) {
+    this.adminTokenProvider = adminTokenProvider;
+  }
+
+  /**
+   * This method is invoked for every HTTP request that passes through the filter chain.
+   * It extracts the JWT token from the request, validates it, and sets the authentication in the SecurityContext
+   * if the token is valid.
+   *
+   * @param request The HttpServletRequest, which contains the incoming request details.
+   * @param response The HttpServletResponse, which is used to send the response to the client.
+   * @param filterChain The FilterChain, which allows further filtering of the request.
+   *
+   * @throws ServletException If a servlet-specific error occurs.
+   * @throws IOException If an input/output error occurs.
+   */
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+          throws ServletException, IOException {
+    // Extract the token from the request's Authorization header
+    String token = getTokenFromRequest(request);
+
+    // If the token is not null and valid, authenticate the user
+    if (token != null && adminTokenProvider.validateToken(token)) {
+      // Get claims from the JWT token
+      var claims = adminTokenProvider.getClaims(token);
+
+      // Extract the username from the claims
+      String username = claims.getSubject();
+
+      // Create an authentication token with the username (null credentials as we use JWT for authentication)
+      UsernamePasswordAuthenticationToken authentication =
+              new UsernamePasswordAuthenticationToken(username, null, null);
+
+      // Set the authentication in the SecurityContext, marking the user as authenticated
+      SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    /**
-     * This method is invoked for every HTTP request that passes through the filter chain.
-     * It extracts the JWT token from the request, validates it, and sets the authentication in the SecurityContext
-     * if the token is valid.
-     *
-     * @param request The HttpServletRequest, which contains the incoming request details.
-     * @param response The HttpServletResponse, which is used to send the response to the client.
-     * @param filterChain The FilterChain, which allows further filtering of the request.
-     *
-     * @throws ServletException If a servlet-specific error occurs.
-     * @throws IOException If an input/output error occurs.
-     */
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        // Extract the token from the request's Authorization header
-        String token = getTokenFromRequest(request);
+    // Continue with the filter chain
+    filterChain.doFilter(request, response);
+  }
 
-        // If the token is not null and valid, authenticate the user
-        if (token != null && adminTokenProvider.validateToken(token)) {
-            // Get claims from the JWT token
-            var claims = adminTokenProvider.getClaims(token);
+  /**
+   * Extracts the JWT token from the Authorization header of the HTTP request.
+   *
+   * The token should be sent with the "Bearer " prefix in the Authorization header.
+   * This method checks for that prefix and returns the actual token.
+   *
+   * @param request The HttpServletRequest object from which the token is extracted.
+   * @return The JWT token as a string, or null if the token is not present or improperly formatted.
+   */
+  private String getTokenFromRequest(HttpServletRequest request) {
+    // Get the Authorization header
+    String bearerToken = request.getHeader("Authorization");
 
-            // Extract the username from the claims
-            String username = claims.getSubject();
-
-            // Create an authentication token with the username (null credentials as we use JWT for authentication)
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(username, null, null);
-
-            // Set the authentication in the SecurityContext, marking the user as authenticated
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-
-        // Continue with the filter chain
-        filterChain.doFilter(request, response);
+    // Check if the header contains a valid Bearer token
+    if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+      // Extract the token by removing the "Bearer " prefix
+      return bearerToken.substring(7);  // Return the token without the "Bearer " prefix
     }
 
-    /**
-     * Extracts the JWT token from the Authorization header of the HTTP request.
-     *
-     * The token should be sent with the "Bearer " prefix in the Authorization header.
-     * This method checks for that prefix and returns the actual token.
-     *
-     * @param request The HttpServletRequest object from which the token is extracted.
-     * @return The JWT token as a string, or null if the token is not present or improperly formatted.
-     */
-    private String getTokenFromRequest(HttpServletRequest request) {
-        // Get the Authorization header
-        String bearerToken = request.getHeader("Authorization");
-
-        // Check if the header contains a valid Bearer token
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            // Extract the token by removing the "Bearer " prefix
-            return bearerToken.substring(7);  // Return the token without the "Bearer " prefix
-        }
-
-        // Return null if the token is missing or improperly formatted
-        return null;
-    }
+    // Return null if the token is missing or improperly formatted
+    return null;
+  }
 }
 ````
 

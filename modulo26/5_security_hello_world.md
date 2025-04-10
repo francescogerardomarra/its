@@ -550,7 +550,11 @@ This is the definition of a custom filter that will later be registered with Spr
 
 In Spring Security, you can register a custom filter and integrate it into the security filter chain. This registration will happen in the `SecurityConfig` class, where the filter will be added to the security filter chain to ensure that custom authentication logic, such as JWT token validation, is applied. By doing so, the custom filter ensures that only authenticated requests are allowed to access protected resources.
 
-This filter is implemented by extending Spring's `OncePerRequestFilter`, ensuring it runs once per request. It extracts the JWT token from the `Authorization` header, validates it using the `AdminTokenProvider`, and sets the authenticated user's details in the `SecurityContext`. This setup is commonly used in stateless authentication where no session is maintained.
+This filter is implemented by extending Spring's `OncePerRequestFilter`, ensuring it runs once per request. It extracts the JWT token from the `Authorization` header, validates it using the `AdminTokenProvider`, and sets the authenticated user's details in the `SecurityContext`.
+
+`UsernamePasswordAuthenticationToken` is created using the username from the token. This token is then set into the `SecurityContext` using `SecurityContextHolder.getContext().setAuthentication(authentication);`. By setting the authentication token into the `SecurityContext`, Spring Security marks the request as authenticated.
+
+This setup is commonly used in stateless authentication where no session is maintained.
 
 The `AuthenticationTokenFilter` bean will be registered within the `SecurityConfig` class and will be added to the Spring Security filter chain before the `UsernamePasswordAuthenticationFilter` to ensure JWTs are processed before any standard authentication mechanisms. Here's how it is registered:
 
@@ -595,31 +599,33 @@ protected void doFilterInternal(HttpServletRequest request, HttpServletResponse 
 This is the core method of the filter and is executed for every HTTP request.
 
 - **Extract the JWT from the `Authorization` Header**:
-    - The filter begins by checking the incoming HTTP request for the `Authorization` header, which typically contains the JWT (JSON Web Token).
-    - The JWT is usually passed in the format `Bearer <token>`. If the header exists and is correctly formatted, the filter extracts the token for further validation.
+  - The filter begins by checking the incoming HTTP request for the `Authorization` header, which typically contains the JWT (JSON Web Token).
+  - The JWT is usually passed in the format `Bearer <token>`. If the header exists and is correctly formatted, the filter extracts the token for further validation.
 
 - **Validate the Token and Retrieve Claims**:
-    - If the token is present, the filter validates it. This involves checking its signature, expiration, and other claims to ensure it is a legitimate and valid JWT.
-    - Once validated, it retrieves the claims contained within the token, including the username or any other custom claims that were embedded when the token was generated.
+  - If the token is present, the filter validates it. This involves checking its signature, expiration, and other claims to ensure it is a legitimate and valid JWT.
+  - Once validated, it retrieves the claims contained within the token, including the username or any other custom claims that were embedded when the token was generated.
 
 - **Extract the Username and Create Authentication Object**:
-    - After retrieving the claims, the filter extracts the username (or other identifying information) from the token.
-    - This username is used to create a `UsernamePasswordAuthenticationToken` object, which represents the authenticated user. This object encapsulates the user's identity and any granted authorities (roles or permissions).
+  - After retrieving the claims, the filter extracts the username (or other identifying information) from the token.
+  - This username is used to create a `UsernamePasswordAuthenticationToken` object, which represents the authenticated user. This object encapsulates the user's identity and any granted authorities (roles or permissions).
+  - The token is created with `null` for credentials (since JWTs do not require a password) and `null` for authorities (as roles may not be set here, but can be extracted from the token if needed).
 
 - **Set Authentication Object into the `SecurityContext`**:
-    - The `UsernamePasswordAuthenticationToken` object is then set into Spring Security's `SecurityContext`.
-    - This step is crucial because the `SecurityContext` stores the authentication details for the current request, making it available to the rest of the Spring Security system.
-    - This allows Spring Security to recognize that the user is authenticated and apply any necessary security rules or authorization checks.
-    - **Authentication and Authorization**:
-        - If the `SecurityContext` is not populated with the `UsernamePasswordAuthenticationToken`, Spring Security cannot authorize access to secure resources.
-        - Without a valid authentication object in the `SecurityContext`, the user will be treated as unauthenticated, and any attempt to access protected endpoints will likely result in access being denied (e.g. returning a **401 Unauthorized** response).
+  - The `UsernamePasswordAuthenticationToken` object is then set into Spring Security's `SecurityContext`.
+  - This step is crucial because the `SecurityContext` stores the authentication details for the current request, making it available to the rest of the Spring Security system.
+  - This allows Spring Security to recognize that the user is authenticated and apply any necessary security rules or authorization checks.
+
+- **Authentication and Authorization**:
+  - If the `SecurityContext` is not populated with the `UsernamePasswordAuthenticationToken`, Spring Security cannot authorize access to secure resources.
+  - Without a valid authentication object in the `SecurityContext`, the user will be treated as unauthenticated, and any attempt to access protected endpoints will likely result in access being denied (e.g., returning a **401 Unauthorized** response).
 
 - **Proceed with the Filter Chain**:
-    - After setting the authentication object, the filter proceeds with the filter chain, passing the request along to the next filter or handler.
-    - The downstream components will now be able to access the `SecurityContext` and retrieve the user's authentication details, ensuring that all security checks are properly applied.
-    - **Downstream Filters**:
-        - Any subsequent filters or components that rely on the `SecurityContext` to check the user's roles, permissions, or any other security-related information will fail to retrieve any valid user data if the authentication object is not set.
-        - This can lead to security breaches, where unauthorized users gain access to sensitive resources, or it could result in denial of service if access is mistakenly blocked for legitimate users.
+  - After setting the authentication object, the filter proceeds with the filter chain, passing the request along to the next filter or handler.
+  - The downstream components will now be able to access the `SecurityContext` and retrieve the user's authentication details, ensuring that all security checks are properly applied.
+  - **Downstream Filters**:
+      - Any subsequent filters or components that rely on the `SecurityContext` to check the user's roles, permissions, or any other security-related information will fail to retrieve any valid user data if the authentication object is not set.
+      - This can lead to security breaches, where unauthorized users gain access to sensitive resources, or it could result in denial of service if access is mistakenly blocked for legitimate users.
 
 ### `getTokenFromRequest()` Method
 
@@ -718,12 +724,22 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
       // Extract the username from the claims
       String username = claims.getSubject();
 
-      // Create an authentication token with the username (null credentials as we use JWT for authentication)
+      // Create an authentication token with the username extracted from the JWT claims. 
+      // The second parameter is set to null because, in JWT-based authentication, 
+      // the password is not needed. Instead, the token itself serves as proof of authentication. 
+      // The third parameter is also set to null as no authorities (roles or permissions) are 
+      // provided in this example. If roles were included in the JWT claims, they could be added 
+      // here as a collection of granted authorities (e.g., `new SimpleGrantedAuthority("ROLE_USER")`).
       UsernamePasswordAuthenticationToken authentication =
               new UsernamePasswordAuthenticationToken(username, null, null);
 
-      // Set the authentication in the SecurityContext, marking the user as authenticated
+      // Set the authentication token into the SecurityContext. This step marks the user as authenticated 
+      // for the duration of the current request. By doing this, Spring Security can check the 
+      // SecurityContext throughout the request processing pipeline to verify that the user 
+      // is authenticated and authorized to access protected resources. Without this, 
+      // Spring Security will consider the request unauthenticated and deny access to secured endpoints.
       SecurityContextHolder.getContext().setAuthentication(authentication);
+
     }
 
     // Continue with the filter chain

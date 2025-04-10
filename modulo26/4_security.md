@@ -1241,7 +1241,7 @@ Authorization: Basic dXNlcjpwYXNzd29yZA==
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 31
-Set-Cookie: JSESSIONID=abcd1234
+Set-Cookie: JSESSIONID=abcd1234; Path=/; Secure; HttpOnly; SameSite=Strict
 
 {
 "message": "Access granted"

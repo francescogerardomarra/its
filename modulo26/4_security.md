@@ -878,7 +878,7 @@ Cookie: JSESSIONID=abcd1234
 POST /login HTTP/1.1
 Host: example.com
 Content-Type: application/x-www-form-urlencoded
-Content-Length: 43
+Content-Length: 31
 Cookie: JSESSIONID=abcd1234
 
 username=user&password=password
@@ -901,7 +901,7 @@ Cookie: JSESSIONID=newSessionId1234
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 29
 
 {
 "message": "Access granted"
@@ -1040,7 +1040,7 @@ Authorization: Basic dXNlcjpwYXNzd29yZA==
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 29
 
 {
 "message": "Access granted"
@@ -1058,7 +1058,7 @@ Authorization: Basic dXNlcjpwYXNzd29yZA==
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 29
 
 {
 "message": "Access granted"
@@ -1076,7 +1076,7 @@ Authorization: Basic dXNlcjpwYXNzd29yZA==
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 29
 
 {
 "message": "Access granted"
@@ -1164,7 +1164,7 @@ Cookie: JSESSIONID=abcd1234
 POST /login HTTP/1.1
 Host: example.com
 Content-Type: application/x-www-form-urlencoded
-Content-Length: 43
+Content-Length: 31
 Cookie: JSESSIONID=abcd1234
 
 username=user&password=password
@@ -1187,7 +1187,7 @@ Cookie: JSESSIONID=abcd5678
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 31
 
 {
 "message": "Access granted"
@@ -1240,7 +1240,7 @@ Authorization: Basic dXNlcjpwYXNzd29yZA==
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 31
 Set-Cookie: JSESSIONID=abcd1234
 
 {
@@ -1259,7 +1259,7 @@ Cookie: JSESSIONID=abcd1234
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 31
 
 {
 "message": "Access granted"
@@ -1277,7 +1277,7 @@ Cookie: JSESSIONID=abcd1234
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 31
 
 {
 "message": "Access granted"
@@ -1330,7 +1330,7 @@ Authorization: Basic dXNlcjpwYXNzd29yZA==
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 31
 
 {
 "message": "Access granted"
@@ -1360,7 +1360,7 @@ Cookie: JSESSIONID=abcd1234
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 31
 
 {
 "message": "Access granted"
@@ -1419,7 +1419,7 @@ Authorization: Basic dXNlcjpwYXNzd29yZA==
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 31
 
 {
 "message": "Access granted"
@@ -1888,7 +1888,7 @@ Server: Apache/2.4.41 (Unix)
 Content-Type: text/html; charset=UTF-8
 Set-Cookie: JSESSIONID=1234567890abcdef; Path=/; HttpOnly; Secure; SameSite=Strict
 X-CSRF-Token: abc123xyz456
-Content-Length: 1024
+Content-Length: 37
 
 {
   "message": "Welcome, JohnDoe!"
@@ -1903,7 +1903,7 @@ Date: Mon, 08 Apr 2025 10:00:00 GMT
 Server: Apache/2.4.41 (Unix)
 Content-Type: application/json
 Set-Cookie: JSESSIONID=1234567890abcdef; Path=/; HttpOnly; Secure; SameSite=Strict
-Content-Length: 150
+Content-Length: 76
 
 {
   "message": "Welcome, JohnDoe!",
@@ -2103,7 +2103,7 @@ Cookie: JSESSIONID=abcd5678
 ````http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 20
+Content-Length: 33
 
 {
 "message": "Access granted"
@@ -2145,7 +2145,7 @@ action=updateProfile
 ````http
 HTTP/1.1 403 Forbidden
 Content-Type: application/json
-Content-Length: 40
+Content-Length: 44
 
 {
 "error": "CSRF token missing or invalid"

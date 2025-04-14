@@ -11,7 +11,7 @@ Logging is the process of recording information about a program's execution. Log
 
 In short, robust logging is the backbone of system observability, aiding in both reactive problem-solving and proactive system improvements.
 
-## Logging, Monitoring, and Tracing
+## Logging, Monitoring, Tracing
 
 | Aspect          | Logging                              | Monitoring                                 | Tracing                                      |
 |-----------------|--------------------------------------|--------------------------------------------|----------------------------------------------|

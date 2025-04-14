@@ -234,11 +234,11 @@ Consider a scenario where a user submits an API request to place an order.
 
 The request is handled by multiple services:
 
-- the front-end service
-- the payment service
-- the inventory service
+1. the front-end service
+2. the payment service
+3. the inventory service
 
-**User submits order request:**
+**1) User submits order request:**
 
 - The API receives the order request and generates a Request ID `REQ-98765`.
 - This Request ID is logged and passed along to the next service.
@@ -252,7 +252,7 @@ The request is handled by multiple services:
 }
 ```
 
-**Payment Service Processes Payment:**
+**2) Payment Service Processes Payment:**
 
 - The payment service receives the request with the same Request ID `REQ-98765` and starts processing the payment. The Request ID is passed through to ensure continuity in tracking across different services.
 
@@ -265,7 +265,7 @@ The request is handled by multiple services:
 }
 ```
 
-**Inventory Service Checks Stock:**
+**3) Inventory Service Checks Stock:**
 
 - After the payment is processed successfully, the inventory service checks the availability of the ordered products. The same Request ID `REQ-98765` is used to maintain traceability.
 

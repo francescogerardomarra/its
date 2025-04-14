@@ -230,7 +230,13 @@ Request IDs help uniquely identify individual operations or transactions within 
 - A distinct identifier for each incoming request.
 - Useful for tracking retries, partial failures, and load balancing decisions.
 
-Consider a scenario where a user submits an API request to place an order. The request is handled by multiple services: the front-end service, the payment service, and the inventory service.
+Consider a scenario where a user submits an API request to place an order.
+
+The request is handled by multiple services:
+
+- the front-end service
+- the payment service
+- the inventory service
 
 **User submits order request:**
 

@@ -230,8 +230,6 @@ Request IDs help uniquely identify individual operations or transactions within 
 - A distinct identifier for each incoming request.
 - Useful for tracking retries, partial failures, and load balancing decisions.
 
-**Example of Request ID in Action**
-
 Consider a scenario where a user submits an API request to place an order. The request is handled by multiple services: the front-end service, the payment service, and the inventory service.
 
 **User submits order request:**
@@ -288,7 +286,7 @@ Consider a scenario where a user submits an API request to place an order. The r
 ```
 
 ## Log Rotation
-In any system, logs are crucial for auditing, debugging, and monitoring. However, without proper management, log files can grow uncontrollably, leading to disk space exhaustion, degraded performance, and difficulty in parsing relevant information. This guide provides a deep dive into **Log Rotation and Retention**, covering **size-based and time-based rotation**, **archiving**, and **deletion/compression strategies**. The audience for this material is technical, presupposing familiarity with filesystem operations, scripting, and basic system administration principles.
+In any system, logs are crucial for auditing, debugging, and monitoring. However, without proper management, log files can grow uncontrollably, leading to disk space exhaustion, degraded performance, and difficulty in parsing relevant information.
 
 **Log Rotation** refers to the practice of splitting logs into multiple files based on certain criteria (size or time) to manage their growth and ensure efficient storage and retrieval.
 
@@ -327,7 +325,7 @@ To conserve storage, old logs must be either deleted or compressed after a reten
 
 **Archiving** involves packaging rotated logs for storage, often with compression to save space.
 
-- **Compression**: Reduce file size.
+- Use compression to reduce file size.
 - Delete logs older than a certain number of days (e.g. 90 days).
 - Compress logs after a certain period (e.g. compress logs older than 7 days).
 - Archive frequently accessed logs separately.
@@ -337,14 +335,14 @@ To conserve storage, old logs must be either deleted or compressed after a reten
 - Automate deletion/compression.
 - Monitor disk space usage.
 - Log the deletion/compression actions for auditing.
-
-Proper naming conventions simplify log management 
-
-- Easy chronological sorting.
-- Facilitates batch operations.
-- **Incremental Numbers**: `logfile.1`, `logfile.2`, etc.
-- **Timestamps**: `logfile-YYYYMMDD.log`
-- **Combination**: `logfile-YYYYMMDD-001.log`
+- Use proper naming conventions when archiving:
+  - **Incremental Numbers**: `logfile.1`, `logfile.2`, etc.
+  - **Timestamps**: `logfile-YYYYMMDD.log`
+  - **Combination**: `logfile-YYYYMMDD-001.log`
+- Proper naming conventions:
+  - simplify log management
+  - easy chronological sorting.
+  - facilitates batch operations.
 
 ## Appenders
 An appender is a component responsible for delivering log messages to their final destination.
@@ -378,6 +376,8 @@ Instead of writing directly, **log events are placed into a queue and processed 
 - **Non-blocking:** Logging does not pause the main application.
 - **Queue:** A buffer that holds log events temporarily.
 - **Worker Thread:** Processes events from the queue and sends them to the base appender.
+
+**Summary**
 
 | Feature       | Asynchronous Appender            | Rolling Appender              |
 |---------------|----------------------------------|-------------------------------|

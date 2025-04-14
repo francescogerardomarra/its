@@ -618,7 +618,7 @@ This is the core method of the filter and is executed for every HTTP request.
 
 - **Authentication and Authorization**:
   - If the `SecurityContext` is not populated with the `UsernamePasswordAuthenticationToken`, Spring Security cannot authorize access to secure resources.
-  - Without a valid authentication object in the `SecurityContext`, the user will be treated as unauthenticated, and any attempt to access protected endpoints will likely result in access being denied (e.g., returning a **401 Unauthorized** response).
+  - Without a valid authentication object in the `SecurityContext`, the user will be treated as unauthenticated, and any attempt to access protected endpoints will likely result in access being denied (e.g. returning a **401 Unauthorized** response).
 
 - **Proceed with the Filter Chain**:
   - After setting the authentication object, the filter proceeds with the filter chain, passing the request along to the next filter or handler.
@@ -729,7 +729,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
       // the password is not needed. Instead, the token itself serves as proof of authentication. 
       // The third parameter is also set to null as no authorities (roles or permissions) are 
       // provided in this example. If roles were included in the JWT claims, they could be added 
-      // here as a collection of granted authorities (e.g., `new SimpleGrantedAuthority("ROLE_USER")`).
+      // here as a collection of granted authorities (e.g. `new SimpleGrantedAuthority("ROLE_USER")`).
       UsernamePasswordAuthenticationToken authentication =
               new UsernamePasswordAuthenticationToken(username, null, null);
 
@@ -1050,7 +1050,7 @@ public class SecurityConfig {
     /**
      * Bean configuration for `PasswordEncoder`.
      * This bean is used to securely encode and verify user passwords during authentication processes.
-     * It is typically used when creating users (e.g., during registration) and when validating passwords during login.
+     * It is typically used when creating users (e.g. during registration) and when validating passwords during login.
      * <p>
      * In this case, we use `BCryptPasswordEncoder`, a widely used hashing algorithm, to securely hash passwords.
      * BCrypt is designed to be computationally expensive, which makes it resistant to brute force and rainbow table attacks.

@@ -393,7 +393,6 @@ Instead of writing directly, **log events are placed into a queue and processed 
 | Key Challenge | Queue management                 | File naming and thread safety |
 
 ## Log Security
-
 Logging is not only a tool for observability and debugging, but also a potential vector for information leakage, compliance violations, and malicious tampering. To maintain operational integrity and trust, logs must be treated as security-critical assets. This chapter outlines key security and compliance concerns related to logs, along with strategies to mitigate risks.
 
 Logs often contain data that may fall under regulatory frameworks such as GDPR, HIPAA, or PCI-DSS. Ensuring compliance requires strict control over what is logged, how long logs are retained, who can access them, and how they are stored and transmitted. Security policies should treat logs as sensitive data, enforce access controls, and audit all interactions with log data.
@@ -435,7 +434,6 @@ Logs must be free of sensitive data that could pose risks if exposed. This inclu
 Logs should never contain secrets or tokens in plain text. Even short-lived credentials can be exploited if exposed in logs.
 
 ## Log tampering
-
 Logs are only as trustworthy as their resistance to tampering. Whether for internal investigation or legal evidence, it must be possible to prove that logs have not been altered.
 
 **Immutability** ensures that once a log entry is created, it cannot be changed or deleted without detection.
@@ -455,8 +453,9 @@ Logs are only as trustworthy as their resistance to tampering. Whether for inter
 Logs that can be rewritten or silently deleted lose their value for audits, investigations, and post-mortem analysis. Immutability ensures logs can be trusted.
 
 ## Logging for Audit Trails
+Audit trails are a specialized use of logging focused on traceability, accountability, and compliance.
 
-Audit trails are a specialized use of logging focused on traceability, accountability, and compliance. Unlike diagnostic logs, audit logs are not about understanding how the system works. They are about recording *who did what, when, and why*. Effective audit logging ensures that all significant actions are traceable, verifiable, and tamper-evident.
+Unlike diagnostic logs, audit logs are not about understanding how the system works. They are about recording *who did what, when, and why*. Effective audit logging ensures that all significant actions are traceable, verifiable, and tamper-evident.
 
 Audit logs support operational integrity, security investigations, and compliance enforcement. They are essential for answering critical questions during incidents, such as:
 

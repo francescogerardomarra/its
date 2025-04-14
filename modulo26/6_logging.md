@@ -1,6 +1,5 @@
 # Logging
 
-## Basics
 Logging is the process of recording information about a program's execution. Logs provide visibility into the inner workings of software systems by capturing key events, errors, transactions, and system behaviors in textual format, typically outputted to files, consoles, or centralized systems.
 
 - **Troubleshooting and Debugging**: Quickly identify and diagnose issues.
@@ -12,7 +11,7 @@ Logging is the process of recording information about a program's execution. Log
 
 In short, robust logging is the backbone of system observability, aiding in both reactive problem-solving and proactive system improvements.
 
-### Logging, Monitoring, and Tracing
+## Logging, Monitoring, and Tracing
 
 | Aspect          | Logging                              | Monitoring                                 | Tracing                                      |
 |-----------------|--------------------------------------|--------------------------------------------|----------------------------------------------|
@@ -24,10 +23,7 @@ In short, robust logging is the backbone of system observability, aiding in both
 
 While logging captures **"what happened"**, monitoring answers **"how are things overall"**, and tracing addresses **"how did this specific request perform"**.
 
-### Log Levels
-Differentiate the severity or importance of the events being logged. Helps filter noise vs. actionable events.
-
-### Log Messages
+## Log Messages
 Human-readable (and sometimes machine-parsable) strings describing an event. Typically include a timestamp, log level, message text, and contextual data (e.g. user ID, session ID).
 
 Example:
@@ -35,8 +31,9 @@ Example:
 2025-04-11 12:00:00 INFO User 'jdoe' successfully logged in from IP 192.168.1.10
 ```
 
-### Log Files
-Storage medium for logs. Commonly stored in:
+## Log Storage
+Commonly stored in:
+
 - Local disks
 - Cloud storage buckets
 - Centralized log management platforms
@@ -45,7 +42,8 @@ Best practices:
 - Consistent naming conventions
 - Include application name, environment, and date
 
-### Log Levels
+## Log Levels
+Differentiate the severity or importance of the events being logged. Helps filter noise vs. actionable events.
 
 Effective logging requires knowing *what* to log and at *what severity*.
 
@@ -109,7 +107,7 @@ ERROR Failed to connect to database: timeout after 5 retries.
 FATAL Kernel panic - not syncing: Attempted to kill init!
 ```
 
-### Log Formatting
+## Log Formatting
 
 Logging is crucial for monitoring, debugging, and tracing applications. Good logging practices help reduce the time needed to troubleshoot issues and improve system observability. In this lesson, we'll cover:
 
@@ -158,7 +156,7 @@ Advantages:
 Disadvantages:
 - Slightly more complex to implement.
 
-### Log entry
+## Log entry
 Regardless of format, every log entry should typically contain:
 
 | Field     | Purpose                                     |
@@ -187,7 +185,7 @@ Regardless of format, every log entry should typically contain:
 }
 ```
 
-### Correlation IDs
+## Correlation IDs
 
 In distributed or microservices architectures, tracing a request across multiple services is essential for debugging and monitoring. Correlation IDs make this possible.
 
@@ -225,7 +223,7 @@ To generate a Correlation ID:
 - If a Correlation ID is already present (e.g. from an API Gateway), reuse it.
 - Otherwise, generate a new one.
 
-### Request IDs
+## Request IDs
 
 Request IDs help uniquely identify individual operations or transactions within services, providing an additional layer of traceability.
 
@@ -289,8 +287,7 @@ Consider a scenario where a user submits an API request to place an order. The r
 }
 ```
 
-
-### Log Rotation
+## Log Rotation
 In any system, logs are crucial for auditing, debugging, and monitoring. However, without proper management, log files can grow uncontrollably, leading to disk space exhaustion, degraded performance, and difficulty in parsing relevant information. This guide provides a deep dive into **Log Rotation and Retention**, covering **size-based and time-based rotation**, **archiving**, and **deletion/compression strategies**. The audience for this material is technical, presupposing familiarity with filesystem operations, scripting, and basic system administration principles.
 
 **Log Rotation** refers to the practice of splitting logs into multiple files based on certain criteria (size or time) to manage their growth and ensure efficient storage and retrieval.
@@ -323,7 +320,7 @@ Rotate logs at regular time intervals, irrespective of their size.
 - Use system schedulers to trigger rotations.
 - Timestamp log archives for clarity (e.g. `logfile-YYYYMMDD.log`).
 
-### Log retention
+## Log retention
 Having a log retention policy means to keep logs for a predefined period, archive, or delete older logs.
 
 To conserve storage, old logs must be either deleted or compressed after a retention period.
@@ -349,7 +346,7 @@ Proper naming conventions simplify log management
 - **Timestamps**: `logfile-YYYYMMDD.log`
 - **Combination**: `logfile-YYYYMMDD-001.log`
 
-### Appenders
+## Appenders
 An appender is a component responsible for delivering log messages to their final destination.
 
 It separates the concerns of *what* is logged from *where* and *how* it is stored or displayed.
@@ -389,7 +386,7 @@ Instead of writing directly, **log events are placed into a queue and processed 
 | Main Benefit  | Performance improvement          | Disk space control            |
 | Key Challenge | Queue management                 | File naming and thread safety |
 
-### Log Security
+## Log Security
 
 Logging is not only a tool for observability and debugging, but also a potential vector for information leakage, compliance violations, and malicious tampering. To maintain operational integrity and trust, logs must be treated as security-critical assets. This chapter outlines key security and compliance concerns related to logs, along with strategies to mitigate risks.
 
@@ -431,7 +428,7 @@ Logs must be free of sensitive data that could pose risks if exposed. This inclu
 
 Logs should never contain secrets or tokens in plain text. Even short-lived credentials can be exploited if exposed in logs.
 
-### Log tampering
+## Log tampering
 
 Logs are only as trustworthy as their resistance to tampering. Whether for internal investigation or legal evidence, it must be possible to prove that logs have not been altered.
 
@@ -451,7 +448,7 @@ Logs are only as trustworthy as their resistance to tampering. Whether for inter
 
 Logs that can be rewritten or silently deleted lose their value for audits, investigations, and post-mortem analysis. Immutability ensures logs can be trusted.
 
-### Logging for Audit Trails
+## Logging for Audit Trails
 
 Audit trails are a specialized use of logging focused on traceability, accountability, and compliance. Unlike diagnostic logs, audit logs are not about understanding how the system works. They are about recording *who did what, when, and why*. Effective audit logging ensures that all significant actions are traceable, verifiable, and tamper-evident.
 
@@ -513,7 +510,7 @@ Audit logs must be stored securely for a defined period based on legal and opera
 
 Audit logging is not about verbosity. Rather, it’s about **precision**. Well-crafted audit logs are your first and last line of accountability. They prove what happened, how, and by whom. If you can't trust your audit trail, you can't trust your system.
 
-### Wrap-up scenario
+## Wrap-up scenario
 A web service processes incoming API requests and logs various internal and external events. Logging is not only for observability and debugging; it also supports security auditing, compliance, and post-incident investigations.
 
 - **Actions:**
@@ -545,7 +542,7 @@ A web service processes incoming API requests and logs various internal and exte
   - **Operational Logs** (INFO, DEBUG, WARN, ERROR): Used for monitoring and diagnostics. Rotation and retention tuned for performance and volume.
   - **Audit Logs** (AUDIT): Stored separately, in tamper-resistant form, with longer retention and tighter access controls.
 
-### Best Practices
+## Best Practices
 - **Consistency**: Follow a standard log format across services to maintain structure and readability.
 
 - **Structured Logging**: Use JSON or key-value pairs for better machine parsing and ease of integration with log aggregation and SIEM systems.

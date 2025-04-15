@@ -37,7 +37,7 @@
   - Implementing Asynchronous Logging in Logback/Log4j2
   - Performance Benefits of Asynchronous Logging
 - [3.2. Custom Handlers and Formatters](#32-custom-handlers-and-formatters)
-  - Writing Custom Log Handlers (e.g., for database logging)
+  - Writing Custom Log Handlers (e.g.  for database logging)
   - Creating Custom Log Formatters
 
 ---
@@ -47,7 +47,7 @@
   - Using `logback.xml` for Configuration
   - Using `logging.properties` for Configuration
 - [4.2. Profile-based Logging Configuration](#42-profile-based-logging-configuration)
-  - Profile-specific Log Configurations (e.g., `application-dev.properties`)
+  - Profile-specific Log Configurations (e.g.  `application-dev.properties`)
 
 ---
 
@@ -67,8 +67,8 @@
 
 ## 7. **Logging in Java Enterprise (Optional but Useful)**
 - [7.1. Logging in Java EE and Other Frameworks](#71-logging-in-java-ee-and-other-frameworks)
-  - Logging in Java EE (e.g., EJB logging)
-  - Container-specific Logging (e.g., JBoss/WildFly)
+  - Logging in Java EE (e.g.  EJB logging)
+  - Container-specific Logging (e.g.  JBoss/WildFly)
 
 ---
 
@@ -96,7 +96,7 @@ When considering logging in **Spring Boot**, several enhancements and abstractio
 ## 1. **Logging Abstraction with SLF4J**
 
 - **Plain Java**: Uses `java.util.logging` (JUL) or frameworks like Log4j, Logback directly.
-- **Spring Boot**: Uses **SLF4J** (`org.slf4j.Logger`) as the unified logging API, which abstracts the underlying logging framework. This allows you to swap the logging framework easily (e.g., between Logback, Log4j2, or JUL) without changing the code.
+- **Spring Boot**: Uses **SLF4J** (`org.slf4j.Logger`) as the unified logging API, which abstracts the underlying logging framework. This allows you to swap the logging framework easily (e.g.  between Logback, Log4j2, or JUL) without changing the code.
 
   - Example:
     ```java
@@ -107,7 +107,7 @@ When considering logging in **Spring Boot**, several enhancements and abstractio
 
 ## 2. **Logback as Default Backend**
 
-- **Plain Java**: You need to manually configure and set up a logging framework (e.g., Log4j, Logback).
+- **Plain Java**: You need to manually configure and set up a logging framework (e.g.  Log4j, Logback).
 - **Spring Boot**: By default, Spring Boot uses **Logback** as the logging backend for SLF4J.
 
   - **Logback** offers advanced features like asynchronous logging, automatic log rotation, and configurable log levels.
@@ -120,7 +120,7 @@ When considering logging in **Spring Boot**, several enhancements and abstractio
 - **Plain Java**: Requires manual configuration of handlers, formatters, and log levels.
 - **Spring Boot**: Automatically configures logging:
   - Console and file logging are enabled by default.
-  - Log levels are set automatically based on profiles (e.g., `application.properties` or `application.yml`).
+  - Log levels are set automatically based on profiles (e.g.  `application.properties` or `application.yml`).
   - Supports runtime adjustments using Spring Boot Actuator.
 
   Example of configuring log levels in `application.properties`:
@@ -134,7 +134,7 @@ When considering logging in **Spring Boot**, several enhancements and abstractio
 ## 4. **Profile-Specific Logging Configuration**
 
 - **Plain Java**: No built-in concept of profiles.
-- **Spring Boot**: Supports **profile-specific logging configurations**. This allows you to have different logging setups based on the environment (e.g., `dev`, `prod`).
+- **Spring Boot**: Supports **profile-specific logging configurations**. This allows you to have different logging setups based on the environment (e.g.  `dev`, `prod`).
   - Profile-specific files: `logback-spring.xml` or `application-{profile}.properties`
   - Log levels, file locations, and appenders can vary across environments.
 
@@ -167,7 +167,7 @@ When considering logging in **Spring Boot**, several enhancements and abstractio
 
 ## 7. **Integration with Other Frameworks**
 
-- **Plain Java**: You need to manually set up bridges for other logging frameworks (e.g., `java.util.logging`, `Commons Logging`, etc.).
+- **Plain Java**: You need to manually set up bridges for other logging frameworks (e.g.  `java.util.logging`, `Commons Logging`, etc.).
 - **Spring Boot**: Automatically bridges other logging frameworks to **SLF4J**, so any existing logging libraries (like `java.util.logging`, `Log4j`, etc.) will work seamlessly with SLF4J and Logback without needing additional configuration.
 
   - It can bridge JUL (Java Util Logging) and `commons-logging` to SLF4J automatically.
@@ -200,7 +200,7 @@ When considering logging in **Spring Boot**, several enhancements and abstractio
 
 - **Plain Java**: You need to manually log different parts of your application, including Spring components.
 - **Spring Boot**: Spring Boot automatically configures logging for key components such as:
-  - Embedded web server (e.g., Tomcat, Jetty)
+  - Embedded web server (e.g.  Tomcat, Jetty)
   - Bean initialization and lifecycle events
   - Auto-configuration reports
   - Spring Data/JPA logs
@@ -233,7 +233,7 @@ When considering logging in **Spring Boot**, several enhancements and abstractio
 | Colorized Console Output       | Not available by default     | **Enabled** (if supported)  |
 | Profile-Specific Logging       | No built-in concept          | **Profile-based logging**   |
 | Runtime Log Level Changes      | Requires code changes        | **Dynamic runtime changes** with Actuator |
-| Integration with Other Frameworks | Requires manual bridging    | **Automatic bridging** (e.g., JUL, Commons Logging) |
+| Integration with Other Frameworks | Requires manual bridging    | **Automatic bridging** (e.g.  JUL, Commons Logging) |
 | Customizing Log Format         | Hand-configured              | Easily configurable via `application.properties` or `logback-spring.xml` |
 
 ---

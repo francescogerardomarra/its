@@ -178,7 +178,7 @@ Regardless of format, every log entry should contain key information to ensure i
 | Field       | Purpose                                                                 |
 |-------------|-------------------------------------------------------------------------|
 | Timestamp   | When the event occurred                                                 |
-| Log Level   | Severity of the event (e.g., INFO, DEBUG, WARN, ERROR)                  |
+| Log Level   | Severity of the event (e.g.  INFO, DEBUG, WARN, ERROR)                  |
 | Message     | Description of what happened                                            |
 | Context     | Metadata such as `userId`, `sessionId`, `ipAddress`, `correlationId`    |
 | Class       | The class or module where the log originated                            |
@@ -229,7 +229,7 @@ This structured format significantly enhances how logs are consumed and leverage
 - **Filter** logs by severity, service, user, or request identifiers.
 - **Search** for specific errors or behaviors tied to a `correlation_id`.
 - **Visualize** request paths, error rates, and system health in dashboards.
-- **Trigger alerts** when specific conditions are met (e.g., repeated timeouts, high error rates, slow response times).
+- **Trigger alerts** when specific conditions are met (e.g.  repeated timeouts, high error rates, slow response times).
 
 Structured logging is foundational for modern observability stacks, enabling seamless integration with platforms like:
 
@@ -692,7 +692,7 @@ A web service processes incoming API requests and logs various internal and exte
 
 - **Sensitive Data Hygiene**: Never log sensitive information such as passwords, authentication tokens, personally identifiable information (PII), or credit card numbers. Use sanitization and allowlisting techniques.
 
-- **Audit-Specific Logging**: Separate audit logs from operational logs, ensuring all actions related to security (e.g., user access, role changes, data modifications) are logged with clear identifiers, timestamps, and relevant context (who, what, when, where).
+- **Audit-Specific Logging**: Separate audit logs from operational logs, ensuring all actions related to security (e.g.  user access, role changes, data modifications) are logged with clear identifiers, timestamps, and relevant context (who, what, when, where).
 
 - **Integrity Verification**: Apply cryptographic techniques like hashing, signing, or chain-linking logs to detect tampering and maintain the integrity of audit logs. This ensures logs are tamper-evident and trustworthy.
 
@@ -722,7 +722,7 @@ A web service processes incoming API requests and logs various internal and exte
 
 - **Log Aggregation**: Centralize logs from multiple systems for easier querying, analysis, and correlation. This enables faster identification of issues across distributed architectures.
 
-- **Compliance Tagging**: Include metadata tags in logs to indicate sensitive or regulated data (e.g., `confidential`, `regulated`) to support compliance requirements and avoid inadvertent exposure.
+- **Compliance Tagging**: Include metadata tags in logs to indicate sensitive or regulated data (e.g.  `confidential`, `regulated`) to support compliance requirements and avoid inadvertent exposure.
 
 - **Graceful Shutdown and Error Handling**: Ensure logs are not lost during application shutdowns, crashes, or unexpected restarts by flushing logs safely and handling errors appropriately.
 

@@ -404,7 +404,7 @@ Rotate logs at regular time intervals, irrespective of their size.
 - Use system schedulers to trigger rotations.
 - Timestamp log archives for clarity (e.g. `logfile-YYYYMMDD.log`).
 
-## Log retention
+## Log Retention
 Having a log retention policy means to keep logs for a predefined period, archive, or delete older logs.
 
 To conserve storage, old logs must be either deleted or compressed after a retention period.
@@ -473,12 +473,25 @@ Instead of writing directly, **log events are placed into a queue and processed 
 | Key Challenge | Queue management                 | File naming and thread safety |
 
 ## Log Security
-Logging is not only a tool for observability and debugging, but also a potential vector for information leakage, compliance violations, and malicious tampering. To maintain operational integrity and trust, logs must be treated as security-critical assets. This chapter outlines key security and compliance concerns related to logs, along with strategies to mitigate risks.
+Logging is not only a tool for **observability** and **debugging**, but also a potential vector for **information leakage**, **compliance violations**, and **malicious tampering**. To maintain **operational integrity** and **trust**, logs must be treated as **security-critical assets**. This chapter outlines key **security** and **compliance concerns** related to logs, along with strategies to mitigate risks.
 
-Logs often contain data that may fall under regulatory frameworks such as GDPR, HIPAA, or PCI-DSS. Ensuring compliance requires strict control over what is logged, how long logs are retained, who can access them, and how they are stored and transmitted. Security policies should treat logs as sensitive data, enforce access controls, and audit all interactions with log data.
+Logs often contain data that may fall under regulatory frameworks such as **GDPR**, **HIPAA**, or **PCI-DSS**. Ensuring compliance requires strict control over the following:
 
-Key concerns include access control, retention policies, auditability, and data locality and sovereignty. Access control involves restricting who can view, write, or modify logs. Retention policies define how long logs should be kept to comply with legal and operational requirements. Auditability ensures all access and changes to logs are themselves logged and auditable. Data locality and sovereignty require storing logs in jurisdictions aligned with legal obligations.
+- What is logged
+- How long logs are retained
+- Who can access them
+- How they are stored and transmitted
 
+**Security policies** should treat logs as sensitive data, enforce **access controls**, and audit all interactions with log data.
+
+Key Concerns are:
+
+- **Access Control**: Involves restricting who can view, write, or modify logs.
+- **Retention Policies**: Define how long logs should be kept to comply with legal and operational requirements.
+- **Auditability**: Ensures all access and changes to logs are themselves logged and auditable.
+- **Data Locality and Sovereignty**: Requires storing logs in jurisdictions aligned with legal obligations.
+
+## Log Sanitization
 **Log sanitization** is an essential practice in maintaining security and compliance. Log sanitization refers to the process of removing or obfuscating sensitive data in logs to prevent it from being exposed. This includes ensuring that personally identifiable information (PII), passwords, authentication tokens, and any other sensitive data are not stored in plaintext in the logs.
 
 Log sanitization is critical for several reasons. First, it helps organizations comply with regulations such as GDPR, HIPAA, and PCI-DSS, which mandate the protection of sensitive data. Second, it helps mitigate the security risks posed by malicious actors who may gain unauthorized access to logs. Lastly, it ensures user privacy is protected by preventing unnecessary exposure of sensitive personal or financial data.

@@ -541,8 +541,6 @@ It’s important to note that **redaction**, like other sanitization techniques,
 
 Finally, **secure storage and transmission** of logs are critical aspects of log security. Even when logs are properly sanitized, storing them in an insecure manner or transmitting them over unsecured channels can still lead to data breaches. Logs should be **encrypted both in transit and at rest**, ensuring that sensitive information remains protected from unauthorized access during storage and transfer.
 
-In summary, by applying techniques such as **tokenization**, **masking**, **allowlisting**, **anonymization**, **redaction**, and **encryption**, organizations can significantly reduce the risk of exposing sensitive information through logs. It's essential to align these practices with **regulatory compliance requirements** and **industry best practices** to maintain both security and privacy.
-
 ## Log tampering
 Logs are only as trustworthy as their resistance to tampering. Whether for internal investigation or legal evidence, it must be possible to prove that logs have not been altered.
 

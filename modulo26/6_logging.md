@@ -106,6 +106,24 @@ ERROR Failed to connect to database: timeout after 5 retries.
 FATAL Kernel panic - not syncing: Attempted to kill init!
 ```
 
+## Log Level Hierarchy
+Log levels are organized in a hierarchy, where each level encompasses the severity of all levels above it. This allows you to control the verbosity of logs, ensuring that only the necessary information is captured based on your needs.
+
+- **TRACE**: The most detailed level, showing all events, including internal states and very fine-grained information.
+- **DEBUG**: Logs useful information for debugging, including events relevant to development and troubleshooting.
+- **INFO**: General operational messages that indicate normal but significant events within the system.
+- **WARN**: Events that are unexpected or suboptimal but do not affect the overall system functionality.
+- **ERROR**: Critical issues that affect the system's operation and need attention.
+- **FATAL/CRITICAL**: The most severe issues that cause the system to fail or crash.
+
+When you set the logging level, all logs of the chosen level and above will be recorded. For example:
+
+- **If the log level is set to `INFO`**, it will log `INFO`, `WARN`, `ERROR`, and `FATAL` events, but exclude `DEBUG` and `TRACE` messages.
+- **If the log level is set to `DEBUG`**, it will log `DEBUG`, `INFO`, `WARN`, `ERROR`, and `FATAL` messages, but exclude `TRACE` messages.
+- **If the log level is set to `ERROR`**, only `ERROR` and `FATAL` messages will be logged, filtering out all lower-level logs such as `INFO`, `DEBUG`, and `TRACE`.
+
+This hierarchy ensures that the logging system can be fine-tuned based on the operational needs, allowing you to manage the balance between capturing detailed information and avoiding unnecessary noise in your logs.
+
 ## Log Formatting
 Logging is crucial for monitoring, debugging, and tracing applications. Good logging practices help reduce the time needed to troubleshoot issues and improve system observability. In this lesson, we'll cover:
 

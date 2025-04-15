@@ -12,7 +12,6 @@ Logging is the process of recording information about a program's execution. Log
 In short, robust logging is the backbone of system observability, aiding in both reactive problem-solving and proactive system improvements.
 
 ## Logging, Monitoring, Tracing
-
 | Aspect          | Logging                              | Monitoring                                 | Tracing                                      |
 |-----------------|--------------------------------------|--------------------------------------------|----------------------------------------------|
 | **Purpose**     | Record discrete events               | Measure system health                      | Track a single request's flow across systems |
@@ -108,7 +107,6 @@ FATAL Kernel panic - not syncing: Attempted to kill init!
 ```
 
 ## Log Formatting
-
 Logging is crucial for monitoring, debugging, and tracing applications. Good logging practices help reduce the time needed to troubleshoot issues and improve system observability. In this lesson, we'll cover:
 
 - Plain Text vs Structured Logging
@@ -222,7 +220,6 @@ Structured logging is foundational for modern observability stacks, enabling sea
 - **Datadog**, **New Relic**, **Splunk**, or **CloudWatch** for unified monitoring and alerting
 
 ## Correlation IDs
-
 In distributed or microservices architectures, tracing a request across multiple services is essential for debugging and monitoring. Correlation IDs make this possible.
 
 - A unique identifier assigned to each request.
@@ -462,41 +459,89 @@ Logging is not only a tool for observability and debugging, but also a potential
 
 Logs often contain data that may fall under regulatory frameworks such as GDPR, HIPAA, or PCI-DSS. Ensuring compliance requires strict control over what is logged, how long logs are retained, who can access them, and how they are stored and transmitted. Security policies should treat logs as sensitive data, enforce access controls, and audit all interactions with log data.
 
-Key concerns:
-- **Access control**: Restrict who can view, write, or modify logs.
-- **Retention policies**: Define how long logs should be kept to comply with legal and operational requirements.
-- **Auditability**: Ensure all access and changes to logs are themselves logged and auditable.
-- **Data locality and sovereignty**: Store logs in jurisdictions aligned with legal obligations.
+Key concerns include access control, retention policies, auditability, and data locality and sovereignty. Access control involves restricting who can view, write, or modify logs. Retention policies define how long logs should be kept to comply with legal and operational requirements. Auditability ensures all access and changes to logs are themselves logged and auditable. Data locality and sovereignty require storing logs in jurisdictions aligned with legal obligations.
 
-> ✅ Example (Compliant Access Log):
-> ```
-> 2025-04-13T14:20:44Z INFO User login: user_id=48927, method=oauth2, ip=192.0.2.45
-> ```
+**Log sanitization** is an essential practice in maintaining security and compliance. Log sanitization refers to the process of removing or obfuscating sensitive data in logs to prevent it from being exposed. This includes ensuring that personally identifiable information (PII), passwords, authentication tokens, and any other sensitive data are not stored in plaintext in the logs.
 
-> ❌ Example (Non-compliant Log):
-> ```
-> 2025-04-13T14:20:44Z INFO User login: email=john.doe@example.com, ssn=123-45-6789
-> ```
+Log sanitization is critical for several reasons. First, it helps organizations comply with regulations such as GDPR, HIPAA, and PCI-DSS, which mandate the protection of sensitive data. Second, it helps mitigate the security risks posed by malicious actors who may gain unauthorized access to logs. Lastly, it ensures user privacy is protected by preventing unnecessary exposure of sensitive personal or financial data.
 
-The first example respects privacy and compliance by logging a user identifier and authentication method. The second example exposes personal and sensitive data.
+There are several techniques for sanitizing logs.
 
-Logs must be free of sensitive data that could pose risks if exposed. This includes passwords, authentication tokens, personally identifiable information (PII), financial data, and health records. Redaction involves identifying and sanitizing such information before it is written to logs.
+One common method is **pattern-based** redaction, where sensitive data, such as email addresses, credit card numbers, and session tokens, are automatically identified and redacted using regular expressions or similar techniques. For example:
 
-- **Pattern-based filtering**: Use pattern recognition to identify data formats like email addresses, credit card numbers, or tokens.
-- **Allowlisting**: Only log fields that are explicitly known to be safe.
-- **Anonymization**: Replace identifiable information with non-reversible identifiers where analysis is needed but identity is not.
+```plaintext
+[2025-04-11T14:30:00] INFO User login attempt: email=[REDACTED], password=[REDACTED]
+```
 
-> ❌ Example (Sensitive Data Leaked in Log):
-> ```
-> 2025-04-13T14:45:00Z DEBUG Password reset request: email=alice@example.com, token=9f2e1b8a...
-> ```
+Another technique involves **allowlisting**, which ensures that only predefined, safe fields are logged. Any data that is not on the allowlist is either excluded or sanitized before it is logged. This approach helps limit the risk of inadvertently exposing sensitive information. For example, in a login event, you might choose to log the user ID and timestamp, but exclude the user's email or IP address:
 
-> ✅ Example (Redacted Log):
-> ```
-> 2025-04-13T14:45:00Z DEBUG Password reset request for user_id=18230, token=[REDACTED]
-> ```
+```json
+{
+  "timestamp": "2025-04-11T14:30:00Z",
+  "level": "INFO",
+  "userId": "user_12345"
+}
+```
 
-Logs should never contain secrets or tokens in plain text. Even short-lived credentials can be exploited if exposed in logs.
+This ensures that only non-sensitive information is stored in the logs, minimizing the exposure of PII or other confidential data. The allowlist approach works best when the specific data needed for analysis is well-defined and limited to non-sensitive identifiers.
+
+**Anonymization** is another important technique. This method replaces personally identifiable information with non-reversible identifiers, such as hashed values or random tokens, when that information is not needed for further processing. For example, instead of logging a user's actual name or email address, you could log a hashed version of the user ID, ensuring that the data can still be analyzed without exposing any sensitive information. Here's an example:
+
+```json
+{
+  "timestamp": "2025-04-13T14:20:44Z",
+  "event": "user_login",
+  "userId": "b8eaa9f1b84f8d2c9f2a16bce639b33f"
+}
+```
+
+In this example, the user’s actual name or email address is replaced with a hashed identifier, ensuring that even if the logs are accessed, no personally identifiable information (PII) is exposed.
+
+**Tokenization** is another method used to protect sensitive data in logs. It replaces sensitive information with a non-sensitive token, which can only be mapped back to the original data in a secure, isolated environment. For instance, instead of logging a full credit card number, you could store a token that represents it, like this:
+
+```json
+{
+  "timestamp": "2025-04-13T14:22:01Z",
+  "event": "payment_processed",
+  "userId": "user_48927",
+  "paymentToken": "txn_4f8c8b84767b4a8b9d19ac8bcba7d774"
+}
+```
+
+In this example, the token `txn_4f8c8b84767b4a8b9d19ac8bcba7d774` is stored in place of sensitive payment data, ensuring that the real payment details are not exposed in the logs. Only authorized systems with access to the tokenization mapping can retrieve the actual payment data.
+
+Another technique for protecting sensitive information in logs is **masking**, where only part of the sensitive data is exposed, and the rest is replaced with characters such as `x` or `*`. This method is especially useful when only a small portion of the data is necessary for reference, such as the last few digits of a credit card number or a social security number. For example:
+
+```json
+{
+  "timestamp": "2025-04-13T14:26:00Z",
+  "event": "payment_failed",
+  "userId": "user_48927",
+  "cardNumber": "xxxx-xxxx-xxxx-1234"
+}
+```
+
+In this example, only the last four digits of the credit card number are exposed in the logs, while the rest is masked. This ensures that sensitive data like full card numbers are not visible, minimizing the risk of data breaches.
+
+One additional method for securing sensitive information is **log redaction**. This involves removing or completely omitting sensitive data from logs before it is written or transmitted. For instance, if a log contains a user’s address or phone number, it can be redacted to prevent exposure.
+
+```json
+{
+  "timestamp": "2025-04-13T14:30:00Z",
+  "event": "user_profile_update",
+  "userId": "user_48291",
+  "address": "[REDACTED]",
+  "phone": "[REDACTED]"
+}
+```
+
+In this example, both the user's address and phone number are **redacted**, ensuring that sensitive data is excluded from the logs. **Redaction** is particularly useful when sensitive information should never be logged in any form, regardless of the context.
+
+It’s important to note that **redaction**, like other sanitization techniques, should be applied **before** logs are stored or transmitted. This means that the sensitive data is **removed or masked early** in the logging process, ensuring that even if logs are intercepted or accessed by unauthorized users, no sensitive information is exposed.
+
+Finally, **secure storage and transmission** of logs are critical aspects of log security. Even when logs are properly sanitized, storing them in an insecure manner or transmitting them over unsecured channels can still lead to data breaches. Logs should be **encrypted both in transit and at rest**, ensuring that sensitive information remains protected from unauthorized access during storage and transfer.
+
+In summary, by applying techniques such as **tokenization**, **masking**, **allowlisting**, **anonymization**, **redaction**, and **encryption**, organizations can significantly reduce the risk of exposing sensitive information through logs. It's essential to align these practices with **regulatory compliance requirements** and **industry best practices** to maintain both security and privacy.
 
 ## Log tampering
 Logs are only as trustworthy as their resistance to tampering. Whether for internal investigation or legal evidence, it must be possible to prove that logs have not been altered.

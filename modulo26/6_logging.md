@@ -173,7 +173,7 @@ Disadvantages:
 - Slightly more complex to implement.
 
 ## Log Entry
-Regardless of format, every log entry should contain key information to ensure it's actionable, searchable, and useful for debugging. In modern distributed systems, this goes beyond just time and message—capturing execution context is equally important.
+Regardless of format, every log entry should contain key information to ensure it's actionable, searchable, and useful for debugging. In modern distributed systems, this goes beyond just time and message. Capturing execution context is equally important.
 
 | Field       | Purpose                                                                 |
 |-------------|-------------------------------------------------------------------------|

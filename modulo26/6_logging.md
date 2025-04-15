@@ -156,23 +156,40 @@ Advantages:
 Disadvantages:
 - Slightly more complex to implement.
 
-## Log entry
-Regardless of format, every log entry should typically contain:
+## Log Entry
+Regardless of format, every log entry should contain key information to ensure it's actionable, searchable, and useful for debugging. In modern distributed systems, this goes beyond just time and message—capturing execution context is equally important.
 
-| Field     | Purpose                                     |
-|-----------|---------------------------------------------|
-| Timestamp | When the event occurred                     |
-| Log Level | Severity (INFO, DEBUG, WARN, ERROR)         |
-| Message   | Description of the event                    |
-| Context   | Metadata like userId, sessionId, IP address |
+| Field       | Purpose                                                                 |
+|-------------|-------------------------------------------------------------------------|
+| Timestamp   | When the event occurred                                                 |
+| Log Level   | Severity of the event (e.g., INFO, DEBUG, WARN, ERROR)                  |
+| Message     | Description of what happened                                            |
+| Context     | Metadata such as `userId`, `sessionId`, `ipAddress`, `correlationId`    |
+| Class       | The class or module where the log originated                            |
+| LOC         | Line of code where the log was emitted                                  |
+| Thread ID   | Identifier for the thread handling the operation                        |
 
-**Plain Text Example:**
+These additional fields (`class`, `LOC`, `threadId`) greatly improve traceability, especially in concurrent environments or during complex workflows.
+
+**Plain Text Example**
 
 ```
-[2025-04-11 14:05:00] ERROR Database connection failed: error=TimeoutException retryCount=3
+[2025-04-11 14:05:00] [ERROR] [Thread-12] [UserService.java:87] Database connection failed: error=TimeoutException retryCount=3 userId=84213 correlationId=CORR-12345 requestId=REQ-44822
 ```
 
-**Structured Example:**
+In this example:
+
+- **Timestamp**: Indicates when the log was generated.
+- **Log Level**: Shows this is an `ERROR` log.
+- **Thread-12**: Identifies the thread handling the operation.
+- **UserService.java:87**: Pinpoints the exact class and line where the error was logged.
+- **Message**: Describes the error and includes helpful context such as `error type`, `retry count`, and user/session identifiers.
+- **Correlation ID**: Links this event to a broader transaction across services.
+- **Request ID**: Tracks the specific request within this service.
+
+**Structured Log Example**
+
+Structured logs allow for easier querying and filtering in log aggregation tools.
 
 ```json
 {
@@ -181,9 +198,28 @@ Regardless of format, every log entry should typically contain:
   "message": "Database connection failed",
   "error": "TimeoutException",
   "retryCount": 3,
-  "service": "UserService"
+  "userId": "84213",
+  "correlation_id": "CORR-12345",
+  "request_id": "REQ-44822",
+  "service": "UserService",
+  "class": "com.example.user.UserService",
+  "line": 87,
+  "thread_id": "Thread-12"
 }
 ```
+
+This structured format significantly enhances how logs are consumed and leveraged by automated systems. Because each field is clearly defined and machine-readable, it becomes much easier to:
+
+- **Filter** logs by severity, service, user, or request identifiers.
+- **Search** for specific errors or behaviors tied to a `correlation_id`.
+- **Visualize** request paths, error rates, and system health in dashboards.
+- **Trigger alerts** when specific conditions are met (e.g., repeated timeouts, high error rates, slow response times).
+
+Structured logging is foundational for modern observability stacks, enabling seamless integration with platforms like:
+
+- **Elasticsearch + Kibana (ELK Stack)** for search and visualization
+- **Grafana Loki** for log aggregation and dashboards
+- **Datadog**, **New Relic**, **Splunk**, or **CloudWatch** for unified monitoring and alerting
 
 ## Correlation IDs
 

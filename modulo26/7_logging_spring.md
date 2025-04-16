@@ -601,8 +601,6 @@ which will result in:
 ### Write Permissions
 When **file logging** is introduced, ensure your Spring Boot application has **write permissions** to the directory where logs or other files will be stored.
 
-In a **Linux environment**, the app runs under the **current Linux user** who starts the process, regardless of how it's launched:
-
 - If run via `java -jar` from the terminal, it uses your current shell user (e.g. `ubuntu`)
 - If launched from IntelliJ, it uses the logged-in user's account
 - If started as a systemd service, it may use a specific service account like `springapp`

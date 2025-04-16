@@ -635,8 +635,8 @@ sudo chmod 755 /opt/myapp/logs
 ## Coding example
 Spring Boot comes with built-in logging support via SLF4J and Logback. In most cases, **you do not need to add any extra Maven dependencies** because `spring-boot-starter` includes `spring-boot-starter-logging` by default. This makes it easy to get started with logging without worrying about configuration setup.
 
-### 1. No Extra Dependencies Required
-By default, Spring Boot includes SLF4J and Logback:
+That is, the following:
+
 ```xml
 <!-- No need to include manually -->
 <dependency>
@@ -645,48 +645,93 @@ By default, Spring Boot includes SLF4J and Logback:
 </dependency>
 ```
 
-### 2. Logging Configuration in `application.properties`
+will include SLF4J and Logback and no extra dependencies are required.
+
+Then for configuring basic behaviour of **console-logging** and **file-logging**, you can have the following `application.properties`:
+
 ```properties
 # Global logging level
 logging.level.root=INFO
 
-# Logging level for your specific package
+# Per-package logging level
 logging.level.com.example.loggingdemo=DEBUG
 
-# Format for console output
+# Console logging
 logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n
 
 # File logging
 logging.file.name=logs/app.log
-logging.file.max-size=10MB
-logging.file.total-size-cap=100MB
-logging.logback.rollingpolicy.max-history=10
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
 ```
 
-### 3. Controller with Logging
+Configuration Review:
+
+- **Global logging level:** INFO  
+  The default level for logging will be INFO.
+
+- **Per-package logging level:** DEBUG  
+  For the package `com.example.loggingdemo`, the level will be DEBUG, so debug-level logs will also be shown for this package.
+
+- **Console logging pattern:**  
+  `yyyy-MM-dd HH:mm:ss - %logger{36} - %msg%n`  
+  This will log the timestamp, logger name, and message to the console.
+
+- **File logging pattern:**  
+  `yyyy-MM-dd HH:mm:ss.SSS [%thread] %-5level %logger{36} - %msg%n`  
+  This will log the same details as the console log but with thread information and a more detailed timestamp format.
+
+Let's consider the following `@Controller` and `@Service`:
+
 ```java
 package com.example.loggingdemo.controller;
 
+import com.example.loggingdemo.service.SampleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
+@RequestMapping("/api")
 public class SampleController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SampleController.class);
+  private static final Logger logger = LoggerFactory.getLogger(SampleController.class);
+  private final SampleService sampleService;
 
-    @GetMapping("/greet")
-    public String greet() {
-        logger.info("Handling /greet request");
-        logger.debug("Returning greeting message");
-        return "Hello from the controller!";
-    }
+  public SampleController(SampleService sampleService) {
+    this.sampleService = sampleService;
+  }
+
+  /**
+   * Initializes user data using a POST request with a JSON body like:
+   * {
+   *     "1": "Alice",
+   *     "2": "Bob"
+   * }
+   */
+  @PostMapping("/init-users")
+  public String initializeUsers(@RequestBody Map<Integer, String> users) {
+    logger.info("Initializing users via /init-users endpoint");
+    sampleService.initializeUsers(users);
+    logger.debug("User data: {}", users);
+    return "Users initialized successfully.";
+  }
+
+  /**
+   * Returns a greeting for the given user ID.
+   * Example: GET /api/greet/1
+   */
+  @GetMapping("/greet/{userId}")
+  public String greetUser(@PathVariable int userId) {
+    logger.info("Received /greet request for user ID: {}", userId);
+    String greeting = sampleService.getUserGreeting(userId);
+    logger.debug("Greeting response: {}", greeting);
+    return greeting;
+  }
 }
 ```
 
-### 4. Service with Logging
 ```java
 package com.example.loggingdemo.service;
 
@@ -694,32 +739,117 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class SampleService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SampleService.class);
+  private static final Logger logger = LoggerFactory.getLogger(SampleService.class);
 
-    public String getServiceMessage() {
-        logger.info("Executing service logic");
-        logger.debug("Returning service message");
-        return "Hello from the service!";
+  private final Map<Integer, String> users = new HashMap<>();
+
+  public void initializeUsers(Map<Integer, String> initialUsers) {
+    logger.info("Initializing user data with {} entries", initialUsers.size());
+
+    users.clear();
+    users.putAll(initialUsers);
+
+    logger.debug("User data initialized: {}", users);
+  }
+
+  public String getUserGreeting(int userId) {
+    logger.info("Fetching greeting for user ID: {}", userId);
+
+    String username = users.get(userId);
+    if (username == null) {
+      logger.warn("User not found for ID: {}", userId);
+      return "User not found!";
     }
+
+    logger.debug("User found: {}", username);
+    return String.format("Hello, %s! Welcome back.", username);
+  }
 }
 ```
 
-### 5. Profile-specific Configuration (e.g. `application-dev.properties`)
-```properties
-# Enable debug-level logging in development
-logging.level.root=DEBUG
-logging.level.com.example.loggingdemo=TRACE
+### Flow 1: POST /api/init-users with user data
+Request:
+
+```bash
+curl -X POST http://localhost:8080/api/init-users -H "Content-Type: application/json" -d '{"1": "Alice", "2": "Bob"}'
 ```
 
-This setup demonstrates typical use of logging in a Spring Boot application using built-in dependencies and property-based configuration only. It includes logging in both a controller and a service, package-specific and profile-specific level tuning, and console/file output control.
+Console-logging:
+
+```bash
+2025-04-16 12:34:56 - com.example.loggingdemo.controller.SampleController - Initializing users via /init-users endpoint
+2025-04-16 12:34:56 - com.example.loggingdemo.controller.SampleController - User data: {1=Alice, 2=Bob}
+2025-04-16 12:34:56 - com.example.loggingdemo.service.SampleService - Initializing user data with 2 entries
+2025-04-16 12:34:56 - com.example.loggingdemo.service.SampleService - User data initialized: {1=Alice, 2=Bob}
+```
+
+File-logging:
+
+```bash
+2025-04-16 12:34:56.789 [http-nio-8080-exec-1] INFO  com.example.loggingdemo.controller.SampleController - Initializing users via /init-users endpoint
+2025-04-16 12:34:56.789 [http-nio-8080-exec-1] DEBUG com.example.loggingdemo.controller.SampleController - User data: {1=Alice, 2=Bob}
+2025-04-16 12:34:56.789 [http-nio-8080-exec-1] INFO  com.example.loggingdemo.service.SampleService - Initializing user data with 2 entries
+2025-04-16 12:34:56.789 [http-nio-8080-exec-1] DEBUG com.example.loggingdemo.service.SampleService - User data initialized: {1=Alice, 2=Bob}
+```
+
+### Flow 2: GET /api/greet/{userId} with existing user
+Now, let’s greet an existing user (e.g., `userId=1`).
+
+Request:
+
+```bash
+curl http://localhost:8080/api/greet/1
+```
+
+Console-logging:
+```bash
+2025-04-16 12:35:15 - com.example.loggingdemo.controller.SampleController - Received /greet request for user ID: 1
+2025-04-16 12:35:15 - com.example.loggingdemo.service.SampleService - Fetching greeting for user ID: 1
+2025-04-16 12:35:15 - com.example.loggingdemo.service.SampleService - User found: Alice
+2025-04-16 12:35:15 - com.example.loggingdemo.controller.SampleController - Greeting response: Hello, Alice! Welcome back.
+```
+
+File-logging:
+```bash
+2025-04-16 12:35:15.123 [http-nio-8080-exec-2] INFO  com.example.loggingdemo.controller.SampleController - Received /greet request for user ID: 1
+2025-04-16 12:35:15.123 [http-nio-8080-exec-2] INFO  com.example.loggingdemo.service.SampleService - Fetching greeting for user ID: 1
+2025-04-16 12:35:15.123 [http-nio-8080-exec-2] DEBUG com.example.loggingdemo.service.SampleService - User found: Alice
+2025-04-16 12:35:15.123 [http-nio-8080-exec-2] DEBUG com.example.loggingdemo.controller.SampleController - Greeting response: Hello, Alice! Welcome back.
+```
+
+### Flow 3: GET /api/greet/{userId} with non-existent user
+Now, let's attempt to greet a non-existent user (e.g., `userId=999`).
+
+Request:
+
+```bash
+curl http://localhost:8080/api/greet/999
+```
+
+Console-logging:
+```bash
+2025-04-16 12:35:30 - com.example.loggingdemo.controller.SampleController - Received /greet request for user ID: 999
+2025-04-16 12:35:30 - com.example.loggingdemo.service.SampleService - Fetching greeting for user ID: 999
+2025-04-16 12:35:30 - com.example.loggingdemo.service.SampleService - User not found for ID: 999
+2025-04-16 12:35:30 - com.example.loggingdemo.controller.SampleController - Greeting response: User not found!
+```
+
+File-logging:
+```bash
+2025-04-16 12:35:30.456 [http-nio-8080-exec-3] INFO  com.example.loggingdemo.controller.SampleController - Received /greet request for user ID: 999
+2025-04-16 12:35:30.456 [http-nio-8080-exec-3] INFO  com.example.loggingdemo.service.SampleService - Fetching greeting for user ID: 999
+2025-04-16 12:35:30.456 [http-nio-8080-exec-3] WARN  com.example.loggingdemo.service.SampleService - User not found for ID: 999
+2025-04-16 12:35:30.456 [http-nio-8080-exec-3] DEBUG com.example.loggingdemo.controller.SampleController - Greeting response: User not found!
+```
 
 
 
-
-NEXT
 
 Appenders
 Log file rotation (max file size, daily rollovers)

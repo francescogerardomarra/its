@@ -618,7 +618,7 @@ Otherwise, logging (and potentially other file operations) will fail, possibly t
 java.io.FileNotFoundException: /opt/myapp/logs/app.log (Permission denied)
 ```
 
-To enable logging to `/opt/myapp/logs/app.log` for a user like `ubuntu` you need to set proper permissions like this:
+For example, to enable logging to `/opt/myapp/logs/app.log` if run via `java -jar` from the terminal with a shell user like `ubuntu`, you need to set proper permissions like this:
 
 ```bash
 # 1. Confirm your current Linux user; use this username when setting ownership with `chown`

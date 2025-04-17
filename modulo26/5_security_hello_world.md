@@ -1,18 +1,25 @@
 # Security Hello World
+We will enhance the existing Spring Boot REST JPA web service by integrating **JWT authentication**.
 
-We'll enhance an already built Spring Boot REST JPA web service by integrating **JWT authentication**.
+More precisely, we will build on a previously implemented Spring Boot 3.4.4 project using **Java 21**, introducing a robust and scalable authentication flow. This will include utilizing **Basic Authentication** for login and generating a **JWT token** that needs to be included in the `Authorization` header as a `Bearer` token when accessing protected resources.
 
-Our goal is to secure specific endpoints while keeping others publicly accessible. Specifically, we’ll secure the endpoints `/shop/items` and `/shop/users`, allowing **admin-only** access using **JWT-based stateless authentication**.
+Our goal is to secure specific endpoints while keeping others publicly accessible.
 
-We will build on a previously implemented Spring Boot 3.4.4 project using **Java 21**, introducing a robust and scalable authentication flow. The process will include utilizing **Basic Authentication** for the login and generating a **JWT token** that needs to be included in the `Authorization` header as a `Bearer` token when accessing protected resources.
+Specifically, we’ll secure the endpoints as follows:
+
+- `/shop/users/**` --> access restricted to **admin-only** using **JWT-based stateless authentication**
+- `/shop/items/**` --> access restricted to **admin-only** using **JWT-based stateless authentication**
+  - exception made for **GET requests to /shop/items/<ITEM_ID>** which will remain publicly accessible without requiring authentication.
+- other endpoints will remain public
 
 The key steps for securing the admin-only endpoints are as follows:
 
 1. An admin will send a **POST request** to `/shop/login` using **Basic Authentication**.
 2. If the credentials are valid, a **JWT token** will be generated and returned.
-3. The generated JWT token must be included as a `Bearer` token in the `Authorization` header to access protected endpoints such as `/shop/items` and `/shop/users`.
+3. The generated JWT token must be included as a `Bearer` token in the `Authorization` header to access protected endpoints such as `/shop/items/**` and `/shop/users/**`.
 4. The JWT token will expire after **10 minutes** (`admin.jwt.claim.expiration.ms=600000`).
 5. Once the JWT token expires, the admin will need to send another **POST request** to `/shop/login` with **Basic Authentication** to obtain a new JWT token.
+6. **GET requests** to `/shop/items/<ITEM_ID>` will remain publicly accessible and will not require authentication.
 
 ---
 
@@ -774,15 +781,16 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 ---
 
 ## SecurityConfig
-We want to implement the following behaviour:
+We want to implement the following behavior:
 
 - **1.** The filter chain should apply **Basic Authentication** for requests to `/shop/login` to authenticate the admin user.
 - **2.** Upon successful authentication, the filter chain should generate a **JWT token** and include it in the response body.
-- **3.** The filter chain should validate and process the **JWT token** on every request to protected endpoints (e.g. `/shop/items`, `/shop/users`).
+- **3.** The filter chain should validate and process the **JWT token** on every request to protected endpoints (e.g., `/shop/items/**`, `/shop/users/**`).
 - **4.** The JWT token should be passed in the `Authorization` header as a **Bearer token** for access to protected endpoints.
 - **5.** The **`AuthenticationTokenFilter`** should intercept requests to protected endpoints, extracting the JWT token from the `Authorization` header.
 - **6.** The **`AuthenticationTokenFilter`** should validate the JWT token by checking its **signature** and **expiration**. If the token is valid and not expired, the filter chain should allow access to the protected resources.
-- **7.** If the JWT token has expired, the filter should reject the request and respond with an appropriate error (e.g. HTTP status 401 Unauthorized). The admin will need to authenticate again by sending a new **POST request** to `/shop/login` using **Basic Authentication**.
+- **7.** If the JWT token has expired, the filter should reject the request and respond with an appropriate error (e.g., HTTP status 401 Unauthorized). The admin will need to authenticate again by sending a new **POST request** to `/shop/login` using **Basic Authentication**.
+- **8.** **GET requests to `/shop/items/<ITEM_ID>` will remain publicly accessible** and will not require JWT authentication.
 
 A security filter chain implementing such behaviour for our session-less application using **Spring Security 5.x** would be:
 
@@ -791,26 +799,28 @@ A security filter chain implementing such behaviour for our session-less applica
 @EnableWebSecurity  // Enables Spring Security's web security configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${admin.username}")
-    private String adminUsername;  // The admin username is fetched from the application's properties.
-  
-    @Value("${admin.password}")
-    private String adminPassword;  // The admin password is fetched from the application's properties.
-  
-    private final AuthenticationTokenFilter authenticationTokenFilter;
-    
-    @Autowired
-    public SecurityConfig(AuthenticationTokenFilter authenticationTokenFilter) {
-        this.authenticationTokenFilter = authenticationTokenFilter;
-    }
-    
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // Basic Authentication configuration
-        http
+  @Value("${admin.username}")
+  private String adminUsername;  // The admin username is fetched from the application's properties.
+
+  @Value("${admin.password}")
+  private String adminPassword;  // The admin password is fetched from the application's properties.
+
+  private final AuthenticationTokenFilter authenticationTokenFilter;
+
+  @Autowired
+  public SecurityConfig(AuthenticationTokenFilter authenticationTokenFilter) {
+    this.authenticationTokenFilter = authenticationTokenFilter;
+  }
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    // Basic Authentication configuration
+    http
             .authorizeRequests()
-                .antMatchers("/shop/login").authenticated() // Require authentication for login endpoint.
-                .anyRequest().permitAll() // Allow all other requests without authentication.
+            .antMatchers("/shop/login").authenticated() // Require authentication for login endpoint.
+            .antMatchers(HttpMethod.GET, "/shop/items/**").permitAll() // Allow GET requests to all /shop/items/** without authentication.
+            .antMatchers("/shop/items/**", "/shop/users/**").authenticated() // Protect these endpoints with JWT authentication.
+            .anyRequest().permitAll() // Allow all other requests without authentication.
             .and()
             .httpBasic() // Enable Basic Authentication.
             .and()
@@ -818,107 +828,49 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .csrf().disable(); // Disable CSRF as we are using stateless authentication.
 
-        // JWT Filter Chain for protected endpoints (after Basic Authentication)
-        http
-            .authorizeRequests()
-                .antMatchers("/shop/users", "/shop/items").authenticated() // Protect these endpoints with JWT authentication.
-                .anyRequest().permitAll() // Allow all other requests without authentication.
-            .and()
+    // JWT Filter Chain for protected endpoints (after Basic Authentication)
+    http
             .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class) // Add custom JWT filter.
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless session policy.
             .and()
             .csrf().disable(); // Disable CSRF as we're using stateless authentication.
-    }
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // Use BCrypt for password hashing. BCrypt is a strong algorithm for password encryption.
-        return new BCryptPasswordEncoder();
-    }
+  }
 
-    @Bean
-    public UserDetailsService adminUserDetailsService(PasswordEncoder passwordEncoder) {
-      // Create the admin user in memory with a username and encoded password.
-      return new InMemoryUserDetailsManager(
-              User.withUsername(adminUsername)  // Set the admin username.
-                      .password(passwordEncoder.encode(adminPassword))  // Encode the password before storing it.
-                      .build()  // Build and return the UserDetails object for the admin user.
-      );
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    // Use BCrypt for password hashing. BCrypt is a strong algorithm for password encryption.
+    return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public UserDetailsService adminUserDetailsService(PasswordEncoder passwordEncoder) {
+    // Create the admin user in memory with a username and encoded password.
+    return new InMemoryUserDetailsManager(
+            User.withUsername(adminUsername)  // Set the admin username.
+                    .password(passwordEncoder.encode(adminPassword))  // Encode the password before storing it.
+                    .build()  // Build and return the UserDetails object for the admin user.
+    );
+  }
 }
 ````
 
 If we want to migrate this code to **Spring Security 6.x**, the following observations hold:
 
-**Configuration Approach**
-
-- **Spring Security 5.x:**
-  - Security is configured by extending `WebSecurityConfigurerAdapter`.
-  - You override the `configure(HttpSecurity http)` method to set up security settings.
-  - Uses imperative style with chained method calls.
-
-- **Spring Security 6.x:**
-  - Security is configured using `SecurityFilterChain` beans.
-  - You define one or more `SecurityFilterChain` beans, each representing a specific configuration.
-  - Introduces the `Customizer` interface for declarative configuration.
-  - Configuration is more modular and flexible.
-
-**Defining Multiple Security Filter Chains**
-
-- **Spring Security 5.x:**
-  - All security rules are defined within the single `configure(HttpSecurity http)` method.
-  - Use path matchers (`antMatchers`) to handle different paths.
-
-- **Spring Security 6.x:**
-  - You can define multiple `SecurityFilterChain` beans, each with specific configuration.
-  - SecurityFilterChains are assigned an `@Order` annotation to control their priority.
-
-**CSRF Protection**
-
-- **Spring Security 5.x:**
-  - CSRF protection can be disabled globally within the `configure(HttpSecurity http)` method using `.csrf().disable()`.
-
-- **Spring Security 6.x:**
-  - CSRF protection can be disabled per `SecurityFilterChain` bean using `.csrf(AbstractHttpConfigurer::disable)`.
-
-**Custom Filters (e.g. JWT Filter)**
-
-- **Spring Security 5.x:**
-  - Custom filters are added inside the `configure(HttpSecurity http)` method using `.addFilterBefore()` or `.addFilterAfter()`.
-
-- **Spring Security 6.x:**
-  - Custom filters are added within the `SecurityFilterChain` beans using `.addFilterBefore()` or `.addFilterAfter()`.
-
-**Authentication Manager**
-
-- **Spring Security 5.x:**
-  - `WebSecurityConfigurerAdapter` provides an `AuthenticationManager` by default, so you do not need to explicitly define it.
-
-- **Spring Security 6.x:**
-  - Since `WebSecurityConfigurerAdapter` has been removed, you must explicitly define an `AuthenticationManager` bean when necessary.
-  - Use `http.getSharedObject(AuthenticationManager.class)` to retrieve the `AuthenticationManager` from `HttpSecurity`.
-
-  **What You Should Do:**
-  - If staying on **Spring Security 5.x**, you don't need to define an `AuthenticationManager` bean.
-  - If migrating to **Spring Security 6.x**, explicitly define an `AuthenticationManager` bean.
-
-**Security Filter Chain Customization**
-
-- **Spring Security 5.x:**
-  - Security configuration is more imperative, defined in a single method.
-  - Limited ability to define different rules for different parts of the application.
-
-- **Spring Security 6.x:**
-  - Configuration is declarative and modular with `SecurityFilterChain` beans.
-  - Easier to create multiple filter chains for different URL patterns or authentication mechanisms.
-
-**Session Creation Policy**
-
-- **Spring Security 5.x:**
-  - Session creation policy is set within the `configure(HttpSecurity http)` method.
-
-- **Spring Security 6.x:**
-  - Each `SecurityFilterChain` bean can independently manage its session creation policy.
+| **Aspect**                                   | **Spring Security 5.x**                                                                                                        | **Spring Security 6.x**                                                                                                |
+|----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| **Configuration Approach**                   | - Security is configured by extending `WebSecurityConfigurerAdapter`.                                                          | - Security is configured using `SecurityFilterChain` beans.                                                            |
+|                                              | - Override the `configure(HttpSecurity http)` method to set up security settings.                                              | - Define one or more `SecurityFilterChain` beans, each representing a specific configuration.                          |
+|                                              | - Uses imperative style with chained method calls.                                                                             | - Introduces the `Customizer` interface for declarative configuration.                                                 |
+|                                              |                                                                                                                                | - Configuration is more modular and flexible.                                                                          |
+| **Defining Multiple Security Filter Chains** | - All security rules are defined within the single `configure(HttpSecurity http)` method.                                      | - Define multiple `SecurityFilterChain` beans, each with specific configuration.                                       |
+|                                              | - Use path matchers (`antMatchers`) to handle different paths.                                                                 | - SecurityFilterChains are assigned an `@Order` annotation to control their priority.                                  |
+| **CSRF Protection**                          | - CSRF protection can be disabled globally within the `configure(HttpSecurity http)` method using `.csrf().disable()`.         | - CSRF protection can be disabled per `SecurityFilterChain` bean using `.csrf(AbstractHttpConfigurer::disable)`.       |
+| **Custom Filters (e.g. JWT Filter)**         | - Custom filters are added inside the `configure(HttpSecurity http)` method using `.addFilterBefore()` or `.addFilterAfter()`. | - Custom filters are added within the `SecurityFilterChain` beans using `.addFilterBefore()` or `.addFilterAfter()`.   |
+| **Authentication Manager**                   | - `WebSecurityConfigurerAdapter` provides an `AuthenticationManager` by default.                                               | - Since `WebSecurityConfigurerAdapter` has been removed, explicitly define an `AuthenticationManager` bean.            |
+|                                              | - No need to explicitly define an `AuthenticationManager`.                                                                     | - Use `http.getSharedObject(AuthenticationManager.class)` to retrieve the `AuthenticationManager` from `HttpSecurity`. |
+| **Security Filter Chain Customization**      | - Security configuration is more imperative, defined in a single method.                                                       | - Configuration is declarative and modular with `SecurityFilterChain` beans.                                           |
+|                                              | - Limited ability to define different rules for different parts of the application.                                            | - Easier to create multiple filter chains for different URL patterns or authentication mechanisms.                     |
+| **Session Creation Policy**                  | - Session creation policy is set within the `configure(HttpSecurity http)` method.                                             | - Each `SecurityFilterChain` bean can independently manage its session creation policy.                                |
 
 As result, the final `SecurityConfig` class follows:
 
@@ -1014,9 +966,10 @@ public class SecurityConfig {
 
     /**
      * Configures the second security filter chain for JWT Authentication.
-     * This filter chain applies to the `/shop/users` and `/shop/items` endpoints, which require a valid JWT.
+     * This filter chain applies to the `/shop/users` and `/shop/items/**` endpoints, which require a valid JWT.
      * <p>
-     * - Requests to `/shop/users` and `/shop/items` are protected and require JWT authentication.
+     * - Requests to `GET /shop/items/**` are publicly accessible without authentication.
+     * - Requests to `/shop/users` and all other non-GET requests to `/shop/items/**` are protected and require JWT authentication.
      * - Any other request that doesn't match these endpoints is allowed without authentication.
      * - The `TokenAuthenticationFilter` is added to process and validate the JWT token in the Authorization header.
      * <p>
@@ -1035,18 +988,29 @@ public class SecurityConfig {
     @Bean
     @Order(2)  // The second security chain with lower priority (higher order).
     public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/shop/users", "/shop/items").authenticated()  // Protect these endpoints with JWT authentication.
-                        .anyRequest().permitAll()  // Allow all other requests without authentication.
-                )
-                .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)  // Add the custom JWT filter before the default authentication filter.
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session policy.
-                .csrf(AbstractHttpConfigurer::disable);  // Disable CSRF as we're using stateless authentication.
-
-        return http.build();  // Build and return the configured filter chain.
+      http
+              .authorizeHttpRequests(authz -> authz
+                      // Allow GET requests to /shop/items/** to be publicly accessible
+                      .requestMatchers(HttpMethod.GET, "/shop/items/**").permitAll()
+  
+                      // Protect /shop/users and other non-GET requests to /shop/items/** with JWT authentication
+                      .requestMatchers("/shop/users", "/shop/items/**").authenticated()
+  
+                      // Allow all other requests without authentication
+                      .anyRequest().permitAll()
+              )
+              // Add the custom JWT filter before the default authentication filter
+              .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+  
+              // Stateless session policy to ensure no session is created
+              .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+  
+              // Disable CSRF as we're using stateless authentication
+              .csrf(AbstractHttpConfigurer::disable);
+  
+      return http.build();  // Build and return the configured filter chain.
     }
-
+    
     /**
      * Bean configuration for `PasswordEncoder`.
      * This bean is used to securely encode and verify user passwords during authentication processes.

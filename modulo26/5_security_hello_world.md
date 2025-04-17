@@ -883,6 +883,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -904,7 +905,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * <p>
  * The two chains are ordered to provide specific security configurations for different parts of the application:
  * - **Basic Authentication** for login (`/shop/login` endpoint).
- * - **JWT Authentication** for the remaining protected endpoints (`/shop/users`, `/shop/items`).
+ * - **JWT Authentication** for the protected endpoints (`/shop/users/**`, `/shop/items/**`).
  * <p>
  * Flow:
  * 1. Basic Authentication is applied to login requests, where users authenticate and receive a JWT token.
@@ -914,173 +915,173 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity  // Enables Spring Security's web security configuration
 public class SecurityConfig {
 
-    @Value("${admin.username}")
-    private String adminUsername;  // The admin username is fetched from the application's properties.
+  @Value("${admin.username}")
+  private String adminUsername;  // The admin username is fetched from the application's properties.
 
-    @Value("${admin.password}")
-    private String adminPassword;  // The admin password is fetched from the application's properties.
+  @Value("${admin.password}")
+  private String adminPassword;  // The admin password is fetched from the application's properties.
 
-    private final AuthenticationTokenFilter authenticationTokenFilter;
+  private final AuthenticationTokenFilter authenticationTokenFilter;
 
-    /**
-     * Constructor to inject the custom TokenAuthenticationFilter.
-     * This filter is responsible for validating JWT tokens in requests.
-     */
-    @Autowired
-    public SecurityConfig(AuthenticationTokenFilter authenticationTokenFilter) {
-        this.authenticationTokenFilter = authenticationTokenFilter;
-    }
+  /**
+   * Constructor to inject the custom TokenAuthenticationFilter.
+   * This filter is responsible for validating JWT tokens in requests.
+   */
+  @Autowired
+  public SecurityConfig(AuthenticationTokenFilter authenticationTokenFilter) {
+    this.authenticationTokenFilter = authenticationTokenFilter;
+  }
 
-    /**
-     * Configures the first security filter chain for Basic Authentication.
-     * This filter chain applies only to the `/shop/login` endpoint, allowing authentication via Basic Auth.
-     * <p>
-     * - Only the `/shop/login` endpoint is secured with Basic Authentication.
-     * - Once the user authenticates successfully, they will receive a JWT token to use for future requests.
-     * - The session is stateless, meaning no session is stored on the server.
-     * <p>
-     * The `AuthenticationManager` bean plays a critical role here by validating the user credentials during the Basic Authentication process.
-     * Spring Security uses the `AuthenticationManager` to authenticate the user based on the `Authorization` header sent with the request.
-     * The authentication process checks the provided username and password against the user details, ensuring that the requestor has valid credentials.
-     * <p>
-     * If authentication is successful, the user is granted access to the `/shop/login` endpoint, and a JWT token is issued for further requests.
-     *
-     * @param http The HttpSecurity object used to configure security settings.
-     * @return The configured SecurityFilterChain for Basic Authentication.
-     * @throws Exception if there are errors in configuring HTTP security.
-     */
-    @Bean
-    @Order(1)  // The first security chain with a higher priority (lower order).
-    public SecurityFilterChain basicAuthFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/shop/login")  // Apply this filter chain only to the /shop/login endpoint.
-                .authorizeHttpRequests(authz -> authz
-                        .anyRequest().authenticated()  // Require authentication for this endpoint.
-                )
-                .httpBasic(Customizer.withDefaults())  // Enable Basic Authentication.
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session policy.
-                .csrf(AbstractHttpConfigurer::disable);  // Disable CSRF as we are using stateless authentication.
+  /**
+   * Configures the first security filter chain for Basic Authentication.
+   * This filter chain applies only to the `/shop/login` endpoint, allowing authentication via Basic Auth.
+   * <p>
+   * - Only the `/shop/login` endpoint is secured with Basic Authentication.
+   * - Once the user authenticates successfully, they will receive a JWT token to use for future requests.
+   * - The session is stateless, meaning no session is stored on the server.
+   * <p>
+   * The `AuthenticationManager` bean plays a critical role here by validating the user credentials during the Basic Authentication process.
+   * Spring Security uses the `AuthenticationManager` to authenticate the user based on the `Authorization` header sent with the request.
+   * The authentication process checks the provided username and password against the user details, ensuring that the requestor has valid credentials.
+   * <p>
+   * If authentication is successful, the user is granted access to the `/shop/login` endpoint, and a JWT token is issued for further requests.
+   *
+   * @param http The HttpSecurity object used to configure security settings.
+   * @return The configured SecurityFilterChain for Basic Authentication.
+   * @throws Exception if there are errors in configuring HTTP security.
+   */
+  @Bean
+  @Order(1)  // The first security chain with a higher priority (lower order).
+  public SecurityFilterChain basicAuthFilterChain(HttpSecurity http) throws Exception {
+    http
+            .securityMatcher("/shop/login")  // Apply this filter chain only to the /shop/login endpoint.
+            .authorizeHttpRequests(authz -> authz
+                    .anyRequest().authenticated()  // Require authentication for this endpoint.
+            )
+            .httpBasic(Customizer.withDefaults())  // Enable Basic Authentication.
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session policy.
+            .csrf(AbstractHttpConfigurer::disable);  // Disable CSRF as we are using stateless authentication.
 
-        return http.build();  // Build and return the configured filter chain.
-    }
+    return http.build();  // Build and return the configured filter chain.
+  }
 
-    /**
-     * Configures the second security filter chain for JWT Authentication.
-     * This filter chain applies to the `/shop/users` and `/shop/items/**` endpoints, which require a valid JWT.
-     * <p>
-     * - Requests to `GET /shop/items/**` are publicly accessible without authentication.
-     * - Requests to `/shop/users` and all other non-GET requests to `/shop/items/**` are protected and require JWT authentication.
-     * - Any other request that doesn't match these endpoints is allowed without authentication.
-     * - The `TokenAuthenticationFilter` is added to process and validate the JWT token in the Authorization header.
-     * <p>
-     * The `AuthenticationManager` is implicitly involved in this filter chain as part of the overall authentication process.
-     * When a request is made to `/shop/users` or `/shop/items`, the `TokenAuthenticationFilter` extracts the JWT from the `Authorization` header
-     * and validates it. If the token is valid, the user is authenticated, and the request proceeds.
-     * If no valid token is provided or the token is invalid, the request will be rejected based on the configured security filters.
-     * <p>
-     * The `AuthenticationManager` is essential here for validating the user’s credentials once the token is parsed. It also helps in
-     * setting up the authentication context, ensuring the user is authorized to access these endpoints with the valid JWT.
-     *
-     * @param http The HttpSecurity object used to configure security settings.
-     * @return The configured SecurityFilterChain for JWT Authentication.
-     * @throws Exception if there are errors in configuring HTTP security.
-     */
-    @Bean
-    @Order(2)  // The second security chain with lower priority (higher order).
-    public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
-      http
-              .authorizeHttpRequests(authz -> authz
-                      // Allow GET requests to /shop/items/** to be publicly accessible
-                      .requestMatchers(HttpMethod.GET, "/shop/items/**").permitAll()
-  
-                      // Protect /shop/users and other non-GET requests to /shop/items/** with JWT authentication
-                      .requestMatchers("/shop/users", "/shop/items/**").authenticated()
-  
-                      // Allow all other requests without authentication
-                      .anyRequest().permitAll()
-              )
-              // Add the custom JWT filter before the default authentication filter
-              .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
-  
-              // Stateless session policy to ensure no session is created
-              .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-  
-              // Disable CSRF as we're using stateless authentication
-              .csrf(AbstractHttpConfigurer::disable);
-  
-      return http.build();  // Build and return the configured filter chain.
-    }
-    
-    /**
-     * Bean configuration for `PasswordEncoder`.
-     * This bean is used to securely encode and verify user passwords during authentication processes.
-     * It is typically used when creating users (e.g. during registration) and when validating passwords during login.
-     * <p>
-     * In this case, we use `BCryptPasswordEncoder`, a widely used hashing algorithm, to securely hash passwords.
-     * BCrypt is designed to be computationally expensive, which makes it resistant to brute force and rainbow table attacks.
-     * <p>
-     * The `PasswordEncoder` bean is used by Spring Security during authentication, particularly in conjunction with the
-     * `UserDetailsService`. It is essential for encoding passwords before storing them and validating them during the
-     * authentication process.
-     *
-     * @return A `BCryptPasswordEncoder` instance that Spring Security will use for encoding and verifying passwords.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // Use BCrypt for password hashing. BCrypt is a strong algorithm for password encryption.
-        return new BCryptPasswordEncoder();
-    }
+  /**
+   * Configures the second security filter chain for JWT Authentication.
+   * This filter chain applies to the `/shop/users/**` and `/shop/items/**` endpoints, which require a valid JWT.
+   * <p>
+   * - Requests to `GET /shop/items/**` are publicly accessible without authentication.
+   * - Requests to `/shop/users/**` and all other non-GET requests to `/shop/items/**` are protected and require JWT authentication.
+   * - Any other request that doesn't match these endpoints is allowed without authentication.
+   * - The `TokenAuthenticationFilter` is added to process and validate the JWT token in the Authorization header.
+   * <p>
+   * The `AuthenticationManager` is implicitly involved in this filter chain as part of the overall authentication process.
+   * When a request is made to `/shop/users/**` or `/shop/items/**`, the `TokenAuthenticationFilter` extracts the JWT from the `Authorization` header
+   * and validates it. If the token is valid, the user is authenticated, and the request proceeds.
+   * If no valid token is provided or the token is invalid, the request will be rejected based on the configured security filters.
+   * <p>
+   * The `AuthenticationManager` is essential here for validating the user’s credentials once the token is parsed. It also helps in
+   * setting up the authentication context, ensuring the user is authorized to access these endpoints with the valid JWT.
+   *
+   * @param http The HttpSecurity object used to configure security settings.
+   * @return The configured SecurityFilterChain for JWT Authentication.
+   * @throws Exception if there are errors in configuring HTTP security.
+   */
+  @Bean
+  @Order(2)  // The second security chain with lower priority (higher order).
+  public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
+    http
+            .authorizeHttpRequests(authz -> authz
+                    // Allow GET requests to /shop/items/** to be publicly accessible
+                    .requestMatchers(HttpMethod.GET, "/shop/items/**").permitAll()
 
-    /**
-     * Bean configuration for the `AuthenticationManager`.
-     * This bean is responsible for handling user authentication, validating their credentials.
-     * The `AuthenticationManager` is used for both Basic Authentication and JWT Authentication.
-     * <p>
-     * In Spring Security 6.x, since `WebSecurityConfigurerAdapter` has been removed, 
-     * you must explicitly define an `AuthenticationManager` bean to handle authentication.
-     * </p>
-     * <p>
-     * This configuration ensures that the `AuthenticationManager` is set up to support custom authentication flows, 
-     * including Basic Authentication and JWT, and integrates seamlessly with custom filters like `TokenAuthenticationFilter`.
-     * </p>
-     * <p>
-     * The `AuthenticationManager` is crucial in validating credentials: for Basic Authentication, it checks credentials in the 
-     * `Authorization` header, and for JWT Authentication, it validates the JWT token.
-     * </p>
-     *
-     * @param http The `HttpSecurity` object for configuring security settings, including authentication.
-     * @return The `AuthenticationManager` used for authenticating users throughout the application’s security filters.
-     * @throws Exception if issues occur during HTTP security configuration or `AuthenticationManager` initialization.
-     */
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        // Retrieve the shared AuthenticationManager from the HttpSecurity object to ensure it's correctly configured
-        // with the customized security settings and filters.
-        return http.getSharedObject(AuthenticationManager.class);
-    }
+                    // Protect /shop/users/** and other non-GET requests to /shop/items/** with JWT authentication
+                    .requestMatchers("/shop/users/**", "/shop/items/**").authenticated()
 
-    /**
-     * Bean configuration for the `UserDetailsService` used to load the admin user details.
-     * This bean is responsible for loading user-specific data, such as username and password, for authentication.
-     * We configure the `InMemoryUserDetailsManager` here for simplicity and to avoid needing a persistent storage solution.
-     * It provides a user repository that is kept in memory, which is useful for simple scenarios like testing or small apps.
-     * <p>
-     * The `UserDetailsService` interface is central to Spring Security's authentication process. In this case, we are using it
-     * to load the admin user from in-memory storage and apply password encoding with `PasswordEncoder` to securely store
-     * the password.
-     *
-     * @param passwordEncoder The `PasswordEncoder` bean used to encode the admin user's password before storing it.
-     * @return A `UserDetailsService` instance that Spring Security will use to load the admin user during authentication.
-     */
-    @Bean
-    public UserDetailsService adminUserDetailsService(PasswordEncoder passwordEncoder) {
-        // Create the admin user in memory with a username and encoded password.
-        return new InMemoryUserDetailsManager(
-                User.withUsername(adminUsername)  // Set the admin username.
-                        .password(passwordEncoder.encode(adminPassword))  // Encode the password before storing it.
-                        .build()  // Build and return the UserDetails object for the admin user.
-        );
-    }
+                    // Allow all other requests without authentication
+                    .anyRequest().permitAll()
+            )
+            // Add the custom JWT filter before the default authentication filter
+            .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+
+            // Stateless session policy to ensure no session is created
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+            // Disable CSRF as we're using stateless authentication
+            .csrf(AbstractHttpConfigurer::disable);
+
+    return http.build();  // Build and return the configured filter chain.
+  }
+
+  /**
+   * Bean configuration for `PasswordEncoder`.
+   * This bean is used to securely encode and verify user passwords during authentication processes.
+   * It is typically used when creating users (e.g. during registration) and when validating passwords during login.
+   * <p>
+   * In this case, we use `BCryptPasswordEncoder`, a widely used hashing algorithm, to securely hash passwords.
+   * BCrypt is designed to be computationally expensive, which makes it resistant to brute force and rainbow table attacks.
+   * <p>
+   * The `PasswordEncoder` bean is used by Spring Security during authentication, particularly in conjunction with the
+   * `UserDetailsService`. It is essential for encoding passwords before storing them and validating them during the
+   * authentication process.
+   *
+   * @return A `BCryptPasswordEncoder` instance that Spring Security will use for encoding and verifying passwords.
+   */
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    // Use BCrypt for password hashing. BCrypt is a strong algorithm for password encryption.
+    return new BCryptPasswordEncoder();
+  }
+
+  /**
+   * Bean configuration for the `AuthenticationManager`.
+   * This bean is responsible for handling user authentication, validating their credentials.
+   * The `AuthenticationManager` is used for both Basic Authentication and JWT Authentication.
+   * <p>
+   * In Spring Security 6.x, since `WebSecurityConfigurerAdapter` has been removed, 
+   * you must explicitly define an `AuthenticationManager` bean to handle authentication.
+   * </p>
+   * <p>
+   * This configuration ensures that the `AuthenticationManager` is set up to support custom authentication flows, 
+   * including Basic Authentication and JWT, and integrates seamlessly with custom filters like `TokenAuthenticationFilter`.
+   * </p>
+   * <p>
+   * The `AuthenticationManager` is crucial in validating credentials: for Basic Authentication, it checks credentials in the 
+   * `Authorization` header, and for JWT Authentication, it validates the JWT token.
+   * </p>
+   *
+   * @param http The `HttpSecurity` object for configuring security settings, including authentication.
+   * @return The `AuthenticationManager` used for authenticating users throughout the application’s security filters.
+   * @throws Exception if issues occur during HTTP security configuration or `AuthenticationManager` initialization.
+   */
+  @Bean
+  public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+    // Retrieve the shared AuthenticationManager from the HttpSecurity object to ensure it's correctly configured
+    // with the customized security settings and filters.
+    return http.getSharedObject(AuthenticationManager.class);
+  }
+
+  /**
+   * Bean configuration for the `UserDetailsService` used to load the admin user details.
+   * This bean is responsible for loading user-specific data, such as username and password, for authentication.
+   * We configure the `InMemoryUserDetailsManager` here for simplicity and to avoid needing a persistent storage solution.
+   * It provides a user repository that is kept in memory, which is useful for simple scenarios like testing or small apps.
+   * <p>
+   * The `UserDetailsService` interface is central to Spring Security's authentication process. In this case, we are using it
+   * to load the admin user from in-memory storage and apply password encoding with `PasswordEncoder` to securely store
+   * the password.
+   *
+   * @param passwordEncoder The `PasswordEncoder` bean used to encode the admin user's password before storing it.
+   * @return A `UserDetailsService` instance that Spring Security will use to load the admin user during authentication.
+   */
+  @Bean
+  public UserDetailsService adminUserDetailsService(PasswordEncoder passwordEncoder) {
+    // Create the admin user in memory with a username and encoded password.
+    return new InMemoryUserDetailsManager(
+            User.withUsername(adminUsername)  // Set the admin username.
+                    .password(passwordEncoder.encode(adminPassword))  // Encode the password before storing it.
+                    .build()  // Build and return the UserDetails object for the admin user.
+    );
+  }
 }
 ````
 
@@ -1171,7 +1172,7 @@ While the `LoginController` is not directly tied to the security configuration c
 
 - **JWT Token for Further Authentication**:
     - Once authenticated, the `login()` method in the controller generates a JWT token using the `AdminTokenProvider`.
-    - This JWT token is used in future requests to authenticate the user against protected endpoints (e.g. `/shop/items`, `/shop/users`), where the **JWT Authentication filter** in `SecurityConfig` comes into play.
+    - This JWT token is used in future requests to authenticate the user against protected endpoints (e.g. `/shop/items/**`, `/shop/users/**`), where the **JWT Authentication filter** in `SecurityConfig` comes into play.
 
 ````java
 package com.example.controller;
@@ -1343,10 +1344,9 @@ SELECT * FROM shop_schema.Item WHERE name = 'Smartphone';
 ```
 
 ### Retrieve an Item by ID
-Replace `<ID>` with a real `item_id` retrieved from the DB or earlier response.
+Replace `<ID>` with a real `item_id` retrieved from the DB or earlier response; `GET` requests to `/shop/items/**` do not require authentication: 
 ```bash
-curl -X GET http://localhost:8080/shop/items/<ID> \
-     -H "Authorization: Bearer <YOUR_TOKEN>"
+curl -X GET http://localhost:8080/shop/items/<ID>
 ```
 
 ### Update an Item

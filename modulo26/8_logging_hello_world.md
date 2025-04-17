@@ -52,6 +52,9 @@ First off, connect to the database using postgres cli:
 
 ```bash
 sudo -u postgres psql
+```
+
+```bash
 \c my_app_db
 ```
 

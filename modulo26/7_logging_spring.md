@@ -18,12 +18,7 @@ Spring Boot provides a powerful yet simple default logging configuration. Out of
   - It serves as the actual engine that performs the logging tasks, such as formatting log output, writing to files or consoles, and filtering messages based on severity levels.
   - SLF4J forwards calls like `logger.debug(String message)` or `logger.warn(String message, Throwable t)` to Logback’s implementation classes, where the message is processed and ultimately output according to configuration.
   - This backend implementation is transparent to the developer; they work with the facade (`Logger` interface), while Logback handles the real work.
-
-This setup provides:
-
-- A clean API (`org.slf4j.Logger`) for developers: you write `Logger logger = LoggerFactory.getLogger(MyClass.class)` and call methods like `logger.info(String message)`, abstracted from any implementation logic.
-- Structured, performant, and extensible logging behavior via Logback.
-- No configuration required to start using it; Spring Boot auto-configures everything to provide sensible defaults.
+  - No configuration required to start using it; Spring Boot auto-configures everything to provide sensible defaults.
 
 ### Getting Started
 When you create a Spring Boot project (e.g. using Spring Initializr or your favorite build tool), you don't need to add any logging dependencies manually as they come pre-configured!

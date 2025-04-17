@@ -510,8 +510,8 @@ As we said, by default, Spring Boot provides a ready-to-use **console logging** 
 - A default `Logger` is preconfigured and available for use; you can log at various levels: `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`.
 - You can control the log level:
   - **Globally** (for the entire application)
-  - **Per package**
-  - **Per class**
+  - **Per-package**
+  - **Per-class**
 - Log output is formatted with a default pattern that includes:
   - Timestamp
   - Log level
@@ -704,6 +704,7 @@ public class SampleController {
   private static final Logger logger = LoggerFactory.getLogger(SampleController.class);
   private final SampleService sampleService;
 
+  @Autowired
   public SampleController(SampleService sampleService) {
     this.sampleService = sampleService;
   }
@@ -789,18 +790,18 @@ Console-logging:
 
 ```bash
 2025-04-16 12:34:56 - com.example.loggingdemo.controller.SampleController - Initializing users via /init-users endpoint
-2025-04-16 12:34:56 - com.example.loggingdemo.controller.SampleController - User data: {1=Alice, 2=Bob}
 2025-04-16 12:34:56 - com.example.loggingdemo.service.SampleService - Initializing user data with 2 entries
 2025-04-16 12:34:56 - com.example.loggingdemo.service.SampleService - User data initialized: {1=Alice, 2=Bob}
+2025-04-16 12:34:56 - com.example.loggingdemo.controller.SampleController - User data: {1=Alice, 2=Bob}
 ```
 
 File-logging:
 
 ```bash
 2025-04-16 12:34:56.789 [http-nio-8080-exec-1] INFO  com.example.loggingdemo.controller.SampleController - Initializing users via /init-users endpoint
-2025-04-16 12:34:56.789 [http-nio-8080-exec-1] DEBUG com.example.loggingdemo.controller.SampleController - User data: {1=Alice, 2=Bob}
-2025-04-16 12:34:56.789 [http-nio-8080-exec-1] INFO  com.example.loggingdemo.service.SampleService - Initializing user data with 2 entries
-2025-04-16 12:34:56.789 [http-nio-8080-exec-1] DEBUG com.example.loggingdemo.service.SampleService - User data initialized: {1=Alice, 2=Bob}
+2025-04-16 12:34:56.790 [http-nio-8080-exec-1] INFO  com.example.loggingdemo.service.SampleService - Initializing user data with 2 entries
+2025-04-16 12:34:56.791 [http-nio-8080-exec-1] DEBUG com.example.loggingdemo.service.SampleService - User data initialized: {1=Alice, 2=Bob}
+2025-04-16 12:34:56.792 [http-nio-8080-exec-1] DEBUG com.example.loggingdemo.controller.SampleController - User data: {1=Alice, 2=Bob}
 ```
 
 ### Flow 2: GET /api/greet/{userId} with existing user
@@ -871,7 +872,7 @@ logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n
 - **Appender Used**: `FileAppender`
 - **Purpose**: Writes logs to a persistent file (e.g. logs/app.log).
 - **Synchronous?** ✅ Yes, by default. Log messages are written directly to disk, blocking the main thread.
-- **Rolling Support?** ❌ Not by default. Basic file logging just appends to the same file.
+- **Rolling Support?** ❌ Not by default but can be defined. Basic file logging just appends to the same file.
 - **Enabled By?** Setting `logging.file.name` or `logging.file.path` in `application.properties`.
 
 ```properties
@@ -936,7 +937,8 @@ A **Rolling Appender** is a type of file appender that **automatically rotates l
 
 Rolling behavior applies only to **file logging**, not to **console logging** (which is a live output stream and cannot be rotated like files).
 
-Starting from **Spring Boot 3.1**, limited support for **rolling file configuration** was introduced directly via `application.properties`.  
+Starting from **Spring Boot 3.1**, limited support for **rolling file configuration** was introduced directly via `application.properties`.
+
 This is available **only when using Spring Boot’s default Logback configuration**, and **only if you do not define your own `logback-spring.xml`**.
 
 Here it is an example of a rolling behaviour setup for file logging via `application.properties`
@@ -1101,8 +1103,3 @@ What this setup does:
   - **discardingThreshold**: Set to **0**, meaning log events will **never be discarded**, even if the queue is full. This ensures that all logs are written, but you can set a higher threshold to drop logs when under memory pressure.
   - **includeCallerData**: Set to **false** for improved performance by excluding caller data (like method names and line numbers), which would otherwise add overhead.
 - **Encoder**: The **encoder** defines the log output format, ensuring that logs are written in the desired pattern (`${LOG_PATTERN}`), which can be customized to suit specific needs.
-
-TO DO:
-
-Structured logging (e.g. JSON logs for use in ELK)
-Switching to Log4j2 (optional)

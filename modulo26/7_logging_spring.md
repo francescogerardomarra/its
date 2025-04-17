@@ -938,7 +938,9 @@ A **Rolling Appender** automatically rotates log files based on **time**, **size
 
 Rolling applies only to **file logging**, not to the console.
 
-Starting from **Spring Boot 3.1**, limited support for rolling file configuration was added via `application.properties`, *but only* if you **do not use a custom `logback-spring.xml`**.
+Starting from **Spring Boot 3.1**, limited support for rolling file configuration was added via `application.properties`.
+
+However, should you place logging configurations both in `application.properties` and `logback-spring.xml`, the latter prevails.
 
 An example of time-based rolling via properties:
 
@@ -970,7 +972,7 @@ logging.logback.rollingpolicy.max-file-size=10MB
 logging.logback.rollingpolicy.file-name-pattern=logs/app-%d{yyyy-MM-dd}.%i.log
 ```
 
-To achieve **size-based or hybrid rolling**, or to enable other advanced logging features, define a custom `logback-spring.xml` file.
+To achieve **size-based or hybrid rolling**, or to enable other advanced logging features, define a custom `logback-spring.xml` file as follows:
 
 ```xml
 <configuration>
@@ -996,6 +998,8 @@ To achieve **size-based or hybrid rolling**, or to enable other advanced logging
 ```
 
 This setup gives you full control and makes proper use of `%i` and `maxFileSize`.
+
+Spring Boot will automatically pick up `logback-spring.xml` on startup if it exists in `src/main/resources`.
 
 Assuming the app runs on April 16th, 2025:
 
@@ -1041,18 +1045,13 @@ Summing up:
 | Dynamic behaviors           | ❌               | ✅         |
 
 ## Asynchronous Rolling File Appender
-To achieve **both rolling and asynchronous logging**, you need to define a custom configuration using `logback-spring.xml`.
-
 Spring Boot does **not** support asynchronous logging or complex rolling policies via `application.properties`. These features must be configured using Logback’s native XML syntax.
 
-- **Asynchronous Logging** (`AsyncAppender`): Improves performance by logging in a separate thread to avoid blocking the main thread during I/O operations.
-- **Rolling File Appender**: Keeps log files manageable by rotating them based on time or size and retaining historical files.
-
-This setup is ideal for **production environments** where performance and disk space control are important.
+To achieve **both rolling and asynchronous logging**, you need to define a custom configuration using `logback-spring.xml`.
 
 Spring Boot will automatically pick up `logback-spring.xml` on startup if it exists in `src/main/resources`, no extra config needed.
 
-Then place this `logback-spring.xml` file in `src/main/resources` to configure **file logging** with **rolling + async**:
+To configure **file logging** with **rolling + async**, place this `logback-spring.xml` file in `src/main/resources`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

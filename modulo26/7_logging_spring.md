@@ -1009,13 +1009,6 @@ If you're fine with **daily log rolling with a simple format**, properties are e
 
 If you need **size-based rotation, async logging, or advanced behaviors**, go with `logback-spring.xml`.
 
-Use `logback-spring.xml` if you need:
-
-- Size-based or hybrid rolling (time + size)
-- Asynchronous logging
-- Multiple appenders (e.g. file + console, or separate error log)
-- Fine-grained control (filters, encoders, conditional config)
-
 Summing up:
 
 | Feature                       | Supported with `application.properties` |

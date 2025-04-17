@@ -97,7 +97,7 @@ By default, Spring Boot logs:
 
 - To the **console**
 - Using a **color-coded pattern** (when supported by the terminal)
-- With **log level set to INFO**
+- With **log level set to INFO** (`INFO`, `WARN`, and `ERROR` messages will be shown but not `DEBUG` or `TRACE`.)
 
 Default output looks like:
 
@@ -171,6 +171,7 @@ These levels are hierarchical:
 ### Setting Logging Levels in `application.properties`
 You can change the log level globally or for specific packages/classes using the `logging.level` property.
 
+#### Global logging
 To set a **global (root)** log level:
 
 ```properties
@@ -178,22 +179,29 @@ To set a **global (root)** log level:
 logging.level.root=INFO
 ```
 
-This sets the default level for all loggers in the application.
+This sets the default level **for all loggers** in the application and **for all the classes** in the code.
 
-To enable more detailed logging for a specific package (**per-package logging**):
+#### Per-package logging
+To enable more detailed logging for a specific package i.e. **per-package logging**:
 
 ```properties
 # application.properties
 logging.level.com.example.myapp=DEBUG
 ```
 
-Or for a specific class (**per-class logging**):
+This sets the default level **for all loggers** in the application in the **specific package** of the code.
+
+#### Per-class logging
+To enable more detailed logging for a specific class (**per-class logging**):
 
 ```properties
 logging.level.com.example.myapp.service.UserService=TRACE
 ```
 
-You can configure multiple loggers like this:
+This sets the default level **for all loggers** in the application in the **specific class** of the code.
+
+#### Summary
+You can configure multiple logging levels like this:
 
 ```properties
 logging.level.root=WARN
@@ -204,11 +212,9 @@ logging.level.com.example.myapp.repository=TRACE
 
 This allows fine-grained control (e.g. verbose logs during development) but only for specific modules.
 
-Summing-up:
-
 | Property                                  | Meaning                           |
 |-------------------------------------------|-----------------------------------|
-| `logging.level.root=INFO`                 | Sets default logging level        |
+| `logging.level.root=INFO`                 | Sets default global logging level |
 | `logging.level.com.example=DEBUG`         | Sets log level for package        |
 | `logging.level.com.example.MyClass=TRACE` | Sets log level for specific class |
 

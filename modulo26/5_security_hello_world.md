@@ -785,11 +785,11 @@ We want to implement the following behavior:
 
 - **1.** The filter chain should apply **Basic Authentication** for requests to `/shop/login` to authenticate the admin user.
 - **2.** Upon successful authentication, the filter chain should generate a **JWT token** and include it in the response body.
-- **3.** The filter chain should validate and process the **JWT token** on every request to protected endpoints (e.g., `/shop/items/**`, `/shop/users/**`).
+- **3.** The filter chain should validate and process the **JWT token** on every request to protected endpoints (e.g. `/shop/items/**`, `/shop/users/**`).
 - **4.** The JWT token should be passed in the `Authorization` header as a **Bearer token** for access to protected endpoints.
 - **5.** The **`AuthenticationTokenFilter`** should intercept requests to protected endpoints, extracting the JWT token from the `Authorization` header.
 - **6.** The **`AuthenticationTokenFilter`** should validate the JWT token by checking its **signature** and **expiration**. If the token is valid and not expired, the filter chain should allow access to the protected resources.
-- **7.** If the JWT token has expired, the filter should reject the request and respond with an appropriate error (e.g., HTTP status 401 Unauthorized). The admin will need to authenticate again by sending a new **POST request** to `/shop/login` using **Basic Authentication**.
+- **7.** If the JWT token has expired, the filter should reject the request and respond with an appropriate error (e.g. HTTP status 401 Unauthorized). The admin will need to authenticate again by sending a new **POST request** to `/shop/login` using **Basic Authentication**.
 - **8.** **GET requests to `/shop/items/<ITEM_ID>` will remain publicly accessible** and will not require JWT authentication.
 
 A security filter chain implementing such behaviour for our session-less application using **Spring Security 5.x** would be:

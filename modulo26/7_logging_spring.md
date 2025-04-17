@@ -933,108 +933,112 @@ Here’s how to define an `AsyncAppender` that wraps a regular file appender:
 Spring Boot will automatically detect and use this file at application startup **if it is present**.
 
 ## Rolling Appenders
-A **Rolling Appender** is a type of file appender that **automatically rotates log files** based on **time**, **size**, or both. This helps avoid massive log files, prevents disk overuse, and keeps logs manageable.
 
-Rolling behavior applies only to **file logging**, not to **console logging** (which is a live output stream and cannot be rotated like files).
+A **Rolling Appender** automatically rotates log files based on **time**, **size**, or both. This is essential for preventing large, unwieldy log files and controlling disk usage.
 
-Starting from **Spring Boot 3.1**, limited support for **rolling file configuration** was introduced directly via `application.properties`.
+Rolling applies only to **file logging**, not to the console.
 
-This is available **only when using Spring Boot’s default Logback configuration**, and **only if you do not define your own `logback-spring.xml`**.
+Starting from **Spring Boot 3.1**, limited support for rolling file configuration was added via `application.properties`, *but only* if you **do not use a custom `logback-spring.xml`**.
 
-Here it is an example of a rolling behaviour setup for file logging via `application.properties`
+An example of time-based rolling via properties:
 
 ```properties
 # Enable file logging
 logging.file.name=logs/app.log
 
-# Rolling policy
-logging.logback.rollingpolicy.max-file-size=10MB
-logging.logback.rollingpolicy.file-name-pattern=logs/app-%d{yyyy-MM-dd}.%i.log
+# Rolling policy (time-based only)
+logging.logback.rollingpolicy.file-name-pattern=logs/app-%d{yyyy-MM-dd}.log
 logging.logback.rollingpolicy.max-history=7
 logging.logback.rollingpolicy.total-size-cap=1GB
 
-# Custom log output format (for file appender)
+# Custom log format
 logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
 ```
 
-Explanation:
+This setup:
+- Rolls logs **daily** (`%d{yyyy-MM-dd}`)
+- Keeps the last **7 days** of logs
+- Caps the **total log size** at 1GB
 
-- **Maximum file size:**  
-  The `logging.logback.rollingpolicy.max-file-size=10MB` property specifies that the log file will be rolled over once it exceeds 10MB. This ensures that a single log file does not grow too large and helps maintain manageable log files. If the file reaches this size, it will be archived, and a new log file will be created.
-- **Daily rotation:**  
-  The log file is rotated each day, using the pattern `%d{yyyy-MM-dd}` to append the current date to the filename. For example, on April 16th, 2025, the log file will be named `app-2025-04-16.0.log`. This helps in organizing logs by date, so you can easily track logs for any specific day.
-- **Index per day:**  
-  If more than one log file is created in a single day (e.g. the log file exceeds the size limit of 10MB), the `%i` in the file name pattern will append an index number to each file. For instance, if the log file for April 16th exceeds 10MB, the first file will be `app-2025-04-16.0.log`, and the next will be `app-2025-04-16.1.log`. This ensures that all logs are preserved even if multiple log files are created in a single day.
-- **Maximum history of logs:**  
-  The `logging.logback.rollingpolicy.max-history=7` property defines that only the last 7 log files will be retained. This means that older log files will be automatically deleted once the number of retained files exceeds 7. This prevents logs from consuming too much disk space over time, ensuring that only a limited number of past log files are kept.
-- **Total size cap for all log files:**  
-  The `logging.logback.rollingpolicy.total-size-cap=1GB` property ensures that the total size of all retained log files does not exceed 1GB. This helps manage disk usage by preventing logs from growing beyond a manageable size across all historical files.
-- **Date Format:**  
-  The `logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss.SSS}` property ensures that each log message is prefixed with a timestamp, formatted to include the date, time, and milliseconds (e.g. `2025-04-16 14:22:05.101`). This is useful for precise logging, especially in debugging and monitoring applications where time precision is important.
-- **Thread Information:**  
-  The `[%thread]` part in the pattern will log the name of the thread that generated the log message. This is especially important in multi-threaded applications, as it helps you trace which thread was responsible for each log entry.
-- **Log Level:**  
-  The `%-5level` section formats the log level (INFO, DEBUG, ERROR, etc.) with a width of 5 characters, ensuring consistent column alignment in the log output. This makes the log files more readable and easier to parse.
-- **Logger Name:**  
-  The `%logger{36}` specifies the logger's name, truncated to 36 characters. Typically, this would be the name of the class that generated the log message, so you can trace logs to their source in the code.
-- **Log Message:**  
-  The `%msg` is the actual log message that you logged using `logger.info()` or similar methods.
+Spring Boot’s default logging configuration uses `TimeBasedRollingPolicy`. This policy **does not support** `%i` (indexing) or `maxFileSize` unless explicitly configured in XML.
 
-The combination of these formatting options ensures that the log messages are structured, easily readable, and contain all the necessary information for troubleshooting and analysis.
+So, the following **will be ignored**:
 
-Each log entry would follow this structure:
+```properties
+# These have no effect without custom XML configuration:
+logging.logback.rollingpolicy.max-file-size=10MB
+logging.logback.rollingpolicy.file-name-pattern=logs/app-%d{yyyy-MM-dd}.%i.log
+```
 
-````log
-2025-04-16 14:22:05.101 [main] INFO  com.example.MyService - Started!
-2025-04-16 14:22:07.213 [main] DEBUG com.example.MyService - Processing user request
-2025-04-16 14:22:09.345 [pool-1-thread-2] ERROR com.example.MyService - Failed to process user request due to validation error
-2025-04-16 14:22:10.456 [main] INFO  com.example.MyService - Finished processing
-````
+To achieve **size-based or hybrid rolling**, or to enable other advanced logging features, define a custom `logback-spring.xml` file.
 
-The log files would be named like this (depending on the date and whether the file exceeds the maximum size):
+```xml
+<configuration>
+  <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/app.log</file>
 
-- `app-2025-04-16.0.log` (before rotation)
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>logs/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxFileSize>10MB</maxFileSize>
+      <maxHistory>7</maxHistory>
+      <totalSizeCap>1GB</totalSizeCap>
+    </rollingPolicy>
 
-Assuming the log file reaches 10MB and the rolling policy kicks in, once the file size exceeds the set limit, it will roll over to the next log file.
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
 
-So when the file reaches 10MB, it will be archived as:
-- `app-2025-04-16.0.log`
+  <root level="INFO">
+    <appender-ref ref="ROLLING_FILE" />
+  </root>
+</configuration>
+```
 
-A new file will then be created for logging:
-- `app-2025-04-16.1.log`
+This setup gives you full control and makes proper use of `%i` and `maxFileSize`.
 
-If the log continues to grow the next day, a new file will be created, like:
-- `app-2025-04-17.0.log`
+Assuming the app runs on April 16th, 2025:
 
-Older log files exceeding the `max-history=7` limit will be deleted, ensuring only the most recent 7 files are kept.
+- `app-2025-04-16.0.log` (initial file)
+- `app-2025-04-16.1.log` (after hitting 10MB)
+- `app-2025-04-16.2.log` (next rollover on same day)
+- `app-2025-04-17.0.log` (next day starts a new file)
 
-This behavior ensures efficient log file management, controlled file sizes, and systematic deletion of older logs based on the configured retention policy.
+Older logs are deleted once `max-history` or `total-size-cap` limits are hit.
 
-### Limitations
-While the property-based rolling configuration in Spring Boot is convenient, it comes with some important limitations:
+If you're fine with **daily log rolling with a simple format**, properties are enough.
 
-- ✅ **Works only with Spring Boot’s default internal Logback configuration**
-  - This setup is only valid if you're using Spring Boot's default logging configuration. Custom configurations (such as custom `logback-spring.xml`) will override these properties.
+If you need **size-based rotation, async logging, or advanced behaviors**, go with `logback-spring.xml`.
 
-- ❌ **Cannot define:**
-  - **Filters**:
-    - Filters are used to control which log messages are passed through to appenders. They can be used for specific log level restrictions, event type filtering, or logging based on conditions. This property-based approach does not support custom filters.
-  - **Encoders beyond simple pattern**:
-    - Encoders define how log messages are formatted before they are written to the log file. In the property-based setup, you're limited to a simple pattern format (`logging.pattern.file`), and cannot specify custom encoders for more complex log output formats (e.g. JSON, XML).
-  - **Async logging**:
-    - Asynchronous logging (via `AsyncAppender`) is not supported in property-based configuration. Asynchronous logging requires manual setup in the `logback-spring.xml` file, which would allow logs to be handled in a separate thread, improving performance.
-  - **Multiple appenders**:
-    - You cannot define multiple appenders in the properties file. For example, if you need to log to both a file and a remote logging service simultaneously, you'd need to use `logback-spring.xml` to define multiple appenders.
-  - **Conditional or dynamic behavior**:
-    - Property-based logging configurations do not support complex behaviors like conditionally enabling different logging levels or behaviors at runtime, based on system properties or other dynamic conditions.
+Use `logback-spring.xml` if you need:
 
-- ❌ **Custom XML Overrides Properties**
-  - If you include a custom `logback-spring.xml` file in `src/main/resources`:
-    - **Spring Boot disables all logging-related properties from `application.properties`**:
-      - Any logging configuration set in `application.properties`, including file names, rolling policies, or logging levels, will be ignored.
-    - **You must define everything manually in XML**:
-      - In this case, all appenders, rolling policies, encoders, filters, and async configurations must be manually defined in `logback-spring.xml`.
-      - This offers **full control** over the logging configuration but requires more complex setup and verbosity.
+- Size-based or hybrid rolling (time + size)
+- Asynchronous logging
+- Multiple appenders (e.g. file + console, or separate error log)
+- Fine-grained control (filters, encoders, conditional config)
+
+Summing up:
+
+| Feature                       | Supported with `application.properties` |
+|-------------------------------|-----------------------------------------|
+| Daily (time-based) rolling    | ✅ Yes                                   |
+| Size-based rolling            | ❌ No                                    |
+| Time + size rolling           | ❌ No                                    |
+| Async logging (AsyncAppender) | ❌ No                                    |
+| Multiple appenders            | ❌ No                                    |
+| Filters and encoders          | ❌ No (only basic pattern encoder)       |
+| Conditional logging configs   | ❌ No                                    |
+
+| Setup                       | Properties Only | Needs XML |
+|-----------------------------|-----------------|-----------|
+| File logging                | ✅               |           |
+| Time-based rolling          | ✅               |           |
+| Size-based / Hybrid rolling | ❌               | ✅         |
+| Async logging               | ❌               | ✅         |
+| Log format (basic pattern)  | ✅               | ✅         |
+| Filters / Encoders          | ❌               | ✅         |
+| Multiple appenders          | ❌               | ✅         |
+| Dynamic behaviors           | ❌               | ✅         |
 
 ## Asynchronous Rolling File Appender
 To achieve **both rolling and asynchronous logging**, you need to define a custom configuration using `logback-spring.xml`.

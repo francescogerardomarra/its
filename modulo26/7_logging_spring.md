@@ -1020,7 +1020,7 @@ While the property-based rolling configuration in Spring Boot is convenient, it 
   - **Filters**:
     - Filters are used to control which log messages are passed through to appenders. They can be used for specific log level restrictions, event type filtering, or logging based on conditions. This property-based approach does not support custom filters.
   - **Encoders beyond simple pattern**:
-    - Encoders define how log messages are formatted before they are written to the log file. In the property-based setup, you're limited to a simple pattern format (`logging.pattern.file`), and cannot specify custom encoders for more complex log output formats (e.g., JSON, XML).
+    - Encoders define how log messages are formatted before they are written to the log file. In the property-based setup, you're limited to a simple pattern format (`logging.pattern.file`), and cannot specify custom encoders for more complex log output formats (e.g. JSON, XML).
   - **Async logging**:
     - Asynchronous logging (via `AsyncAppender`) is not supported in property-based configuration. Asynchronous logging requires manual setup in the `logback-spring.xml` file, which would allow logs to be handled in a separate thread, improving performance.
   - **Multiple appenders**:

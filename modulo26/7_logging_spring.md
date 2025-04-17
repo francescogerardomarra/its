@@ -965,7 +965,7 @@ Spring Boot’s default logging configuration uses `TimeBasedRollingPolicy`. Thi
 So, the following **will be ignored**:
 
 ```properties
-# These have no effect without custom XML configuration:
+# These have no effect
 logging.logback.rollingpolicy.max-file-size=10MB
 logging.logback.rollingpolicy.file-name-pattern=logs/app-%d{yyyy-MM-dd}.%i.log
 ```

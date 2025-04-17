@@ -928,46 +928,11 @@ Here’s how to define an `AsyncAppender` that wraps a regular file appender:
 Spring Boot will automatically detect and use this file at application startup **if it is present**.
 
 ## Rolling Appenders
-
 A **Rolling Appender** automatically rotates log files based on **time**, **size**, or both. This is essential for preventing large, unwieldy log files and controlling disk usage.
 
 Rolling applies only to **file logging**, not to the console.
 
-Starting from **Spring Boot 3.1**, limited support for rolling file configuration was added via `application.properties`.
-
-However, should you place logging configurations both in `application.properties` and `logback-spring.xml`, the latter prevails.
-
-An example of time-based rolling via properties:
-
-```properties
-# Enable file logging
-logging.file.name=logs/app.log
-
-# Rolling policy (time-based only)
-logging.logback.rollingpolicy.file-name-pattern=logs/app-%d{yyyy-MM-dd}.log
-logging.logback.rollingpolicy.max-history=7
-logging.logback.rollingpolicy.total-size-cap=1GB
-
-# Custom log format
-logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-```
-
-This setup:
-- Rolls logs **daily** (`%d{yyyy-MM-dd}`)
-- Keeps the last **7 days** of logs
-- Caps the **total log size** at 1GB
-
-Spring Boot’s default logging configuration uses `TimeBasedRollingPolicy`. This policy **does not support** `%i` (indexing) or `maxFileSize`.
-
-So, the following **will be ignored**:
-
-```properties
-# These have no effect
-logging.logback.rollingpolicy.max-file-size=10MB
-logging.logback.rollingpolicy.file-name-pattern=logs/app-%d{yyyy-MM-dd}.%i.log
-```
-
-To achieve **size-based or hybrid rolling**, or to enable other advanced logging features, define a custom `logback-spring.xml` file as follows:
+To activate a rolling policy, or to enable other advanced logging features, define a custom `logback-spring.xml` file as follows:
 
 ```xml
 <configuration>
@@ -992,7 +957,7 @@ To achieve **size-based or hybrid rolling**, or to enable other advanced logging
 </configuration>
 ```
 
-This setup gives you full control and makes proper use of `%i` and `maxFileSize`.
+This setup gives you full control.
 
 Spring Boot will automatically pick up `logback-spring.xml` on startup if it exists in `src/main/resources`.
 
@@ -1005,16 +970,12 @@ Assuming the app runs on April 16th, 2025:
 
 Older logs are deleted once `max-history` or `total-size-cap` limits are hit.
 
-If you're fine with **daily log rolling with a simple format**, properties are enough.
-
-If you need **size-based rotation, async logging, or advanced behaviors**, go with `logback-spring.xml`.
-
 Summing up:
 
-| Setup                       | Properties Only | Needs XML |
+| Feature                     | Properties Only | Needs XML |
 |-----------------------------|-----------------|-----------|
 | File logging                | ✅               |           |
-| Time-based rolling          | ✅               |           |
+| Time-based rolling          | ❌               | ✅         |
 | Size-based / Hybrid rolling | ❌               | ✅         |
 | Async logging               | ❌               | ✅         |
 | Log format (basic pattern)  | ✅               | ✅         |
@@ -1023,13 +984,13 @@ Summing up:
 | Dynamic behaviors           | ❌               | ✅         |
 
 ## Asynchronous Rolling File Appender
-Spring Boot does **not** support asynchronous logging or complex rolling policies via `application.properties`. These features must be configured using Logback’s native XML syntax.
+Spring Boot does **not** support asynchronous logging or rolling policies via `application.properties`. These features must be configured using Logback’s native XML syntax.
 
 To achieve **both rolling and asynchronous logging**, you need to define a custom configuration using `logback-spring.xml`.
 
 Spring Boot will automatically pick up `logback-spring.xml` on startup if it exists in `src/main/resources`, no extra config needed.
 
-To configure **file logging** with **rolling + async**, place this `logback-spring.xml` file in `src/main/resources`:
+To configure **file logging** with **rolling** and **async**, place this `logback-spring.xml` file in `src/main/resources`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

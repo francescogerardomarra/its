@@ -1,50 +1,66 @@
 # Logging Hello World
 We will enhance the existing Spring Boot REST JPA web service already protected with **JWT authentication**.
 
-## application.properties
-In the following configuration, we are setting up **file logging** for a Spring Boot 3.4 application using the default Logback logging framework, with **console logging** left untouched. We use the **properties-based configuration** approach because we're only utilizing basic logging features. As a result, the **appender will be synchronous** and we apply a **basic rolling policy**. This setup doesn't require a custom `logback-spring.xml` file, making it simple and effective for straightforward logging needs.
+## `application.properties`
+In the following configuration:
 
-By defining these properties, we ensure that log entries are captured and stored in a structured and manageable way, preventing logs from growing indefinitely and making it easy to trace events over time. The configuration includes features like log rolling, file size limits, and log file history retention, ensuring efficient management of log files without consuming excessive disk space.
+````properties
+# Logging levels
+logging.level.com.example=DEBUG
+logging.level.org.springframework.security=DEBUG
+logging.level.org.springframework.web=DEBUG
+
+# File logging
+logging.file.name=target/logs/logs.log
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+````
+
+we're setting up **basic file logging** for a Spring Boot 3.4 application using the default **Logback** logging system. The configuration is entirely based on `application.properties`, which is ideal for simple use cases where we want to persist logs to a file without needing advanced features like log rolling or asynchronous logging.
+
+This setup does **not require a custom `logback-spring.xml`** file. Logback will automatically handle both console and file logging, and will apply the format we specify for file output.
+
+> 💡 **Important:** This configuration only enables **basic file logging**. While you can customize the file name and log format, **rolling policies** (such as time- or size-based log rotation) are **not supported** through properties alone. For that, you must use a `logback-spring.xml` file.
 
 ### Logging Levels
-The logging level configuration allows you to specify how verbose the logging output should be for different packages or components in the application.
 
-- `logging.level.com.example=DEBUG`: Enables DEBUG-level logging for the application's own code within the `com.example` package. This is useful during development or debugging, as it reveals detailed internal flow such as method entries/exits, variable values, or custom log statements.
+These properties control the **verbosity** of log output for different parts of your application:
 
-- `logging.level.org.springframework.security=DEBUG`: Enables DEBUG logging for Spring Security, which is especially helpful when working with authentication and authorization. It exposes security filters, request interception, and decisions like access granted/denied or role evaluation.
+```properties
+logging.level.com.example=DEBUG
+logging.level.org.springframework.security=DEBUG
+logging.level.org.springframework.web=DEBUG
+```
 
-- `logging.level.org.springframework.web=DEBUG`: Enables DEBUG logging for Spring Web, including controllers, handler mappings, and request-response processing. This helps trace how HTTP requests are handled and routed through your application.
+- `com.example=DEBUG`: Enables detailed logs for your application code.
+- `org.springframework.security=DEBUG`: Useful for tracking authentication and authorization flow.
+- `org.springframework.web=DEBUG`: Helps trace how HTTP requests are handled by controllers and filters.
 
-These levels allow fine-grained control over the verbosity of logs, helping you debug effectively without flooding the output with unnecessary details from unrelated packages.
+This kind of fine-grained level control helps you see the logs you care about during development or debugging without overwhelming the log with unrelated output.
 
 ### File Logging
-The next set of properties configures how logs are written to disk. Note that **console logging remains the default behavior**, and we only add configuration to handle file-based logging.
+This is the core of your file logging configuration:
 
-- `logging.file.name=target/logs/app.log`: Defines the full path and filename for the primary log file. In this case, logs will be written to a file named `app.log` inside the `target/logs/` directory. The file will be created once the application starts logging. If the directory does not exist, Spring Boot (via Logback) will attempt to create it, provided it has the necessary permissions.
+```properties
+logging.file.name=target/logs/logs.log
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+```
 
-- `logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n`: Sets the format for log entries written to the file. It includes a timestamp, thread name, log level, the logger's name (abbreviated to 36 characters), and the actual message. This makes the logs structured and easy to read or parse.
+- `logging.file.name`: Specifies the file path and name (`target/logs/logs.log`). Spring Boot will create this file and directory if possible.
+- `logging.pattern.file`: Controls the format of the file log entries — including timestamps, thread names, log level, logger, and message content — making them easy to read and parse.
 
-### Rolling Policy
-To prevent the log file from growing indefinitely, a rolling policy is defined to archive old logs and maintain a manageable log history.
+> Note: Console logging is still active by default. This configuration adds file output **in addition to** console output.
 
-- `logging.logback.rollingpolicy.file-name-pattern=logs/app-%d{yyyy-MM-dd}.log`: Configures daily log rotation. Each day, a new log file will be created with the current date appended to the filename. For example, `app-2025-04-17.log` will contain all logs for April 17, 2025.
+While this setup covers basic logging well, it **does not implement any log rotation or retention**:
 
-- `logging.logback.rollingpolicy.max-history=7`: Tells Logback to retain only the last 7 days' worth of log files. Older files beyond this retention window will be deleted automatically.
-
-- `logging.logback.rollingpolicy.total-size-cap=1GB`: Sets a total size cap for all log files combined. If the cumulative size of all log files exceeds 1GB, Logback will start deleting the oldest files to stay within the limit.
-
-### How It All Works
-When the application starts, Spring Boot initializes Logback using these configuration properties. Log messages from the application, Spring framework components, and any third-party libraries will be processed according to the defined log levels. These messages will appear both in the **console** (as per the default configuration) and in the log file (`target/logs/app.log`) if the relevant logging events are triggered.
-
-As the application runs, new log entries are continuously appended to the current log file. At midnight (or upon reaching certain file sizes, if such policies are configured), Logback rolls the current log file over to a new one with the current date in its name. Older files are deleted if they exceed the defined retention count or total size cap.
-
-This configuration provides a production-ready logging setup with **console logging untouched**, while allowing for **file persistence, file rotation, and automatic cleanup** to avoid disk overuse.
+- The `logs.log` file will **grow indefinitely**
+- There is **no limit** on file size or disk usage
+- You won't get daily logs or historical backups unless you implement a rolling policy
 
 ## Other changes
-Log lines have been added across the code (especially in controllers and services). No new Maven dependencies need to be added.
+Log lines of various log levels have been added across the code (especially in controllers and services). No new Maven dependencies need to be added.
 
 ## Test
-You can re-run the testing steps from `security_hello_world` for the authenticated endpoints and from `rest_hello_world_refactore` and check how **file logging** behaves under `target/logs/app.log`.
+You can re-run the testing steps from `security_hello_world` for the authenticated endpoints and from `rest_hello_world_refactore` and check how **file logging** behaves under `target/logs/logs.log`.
 
 If you want to have a **clean start**, consider the following steps to empty tha database tables.
 

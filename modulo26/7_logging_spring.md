@@ -1011,16 +1011,6 @@ If you need **size-based rotation, async logging, or advanced behaviors**, go wi
 
 Summing up:
 
-| Feature                       | Supported with `application.properties` |
-|-------------------------------|-----------------------------------------|
-| Daily (time-based) rolling    | ✅ Yes                                   |
-| Size-based rolling            | ❌ No                                    |
-| Time + size rolling           | ❌ No                                    |
-| Async logging (AsyncAppender) | ❌ No                                    |
-| Multiple appenders            | ❌ No                                    |
-| Filters and encoders          | ❌ No (only basic pattern encoder)       |
-| Conditional logging configs   | ❌ No                                    |
-
 | Setup                       | Properties Only | Needs XML |
 |-----------------------------|-----------------|-----------|
 | File logging                | ✅               |           |

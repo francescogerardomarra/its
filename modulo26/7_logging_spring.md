@@ -960,7 +960,7 @@ This setup:
 - Keeps the last **7 days** of logs
 - Caps the **total log size** at 1GB
 
-Spring Boot’s default logging configuration uses `TimeBasedRollingPolicy`. This policy **does not support** `%i` (indexing) or `maxFileSize` unless explicitly configured in XML.
+Spring Boot’s default logging configuration uses `TimeBasedRollingPolicy`. This policy **does not support** `%i` (indexing) or `maxFileSize`.
 
 So, the following **will be ignored**:
 

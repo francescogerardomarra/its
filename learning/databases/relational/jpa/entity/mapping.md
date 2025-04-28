@@ -1,0 +1,80 @@
+# Mapping
+- entity
+    - [definition](definition/definition.md)
+    - [table vs instance](table-vs-instance/table_vs_instance.md)
+    - entity-mapping
+        - [definition](mapping/entity-mapping/definition/definition.md)
+        - `@Entity`
+            - [definition](mapping/entity-mapping/entity/definition/definition.md)
+            - [rules](mapping/entity-mapping/entity/rules/rules.md)
+            - [`@Table`](mapping/entity-mapping/entity/table/definition/definition.md)
+        - `@Id`
+            - simple
+                - [primary key](mapping/entity-mapping/id/simple/primary-keys/primary_keys.md)
+                - [definition](mapping/entity-mapping/id/simple/definition/definition.md)
+                - `@GeneratedValue`
+                    - [definition](mapping/entity-mapping/id/simple/generated/definition/definition.md)
+                    - primary key generation strategies
+                        - [definition](mapping/entity-mapping/id/simple/generated/generation-strats/definition/definition.md)
+                        - [`GenerationType`](mapping/entity-mapping/id/simple/generated/generation-strats/generation-type/generation_type.md)
+                        - [identity](mapping/entity-mapping/id/simple/generated/generation-strats/identity/identity.md)
+                        - [sequence](mapping/entity-mapping/id/simple/generated/generation-strats/sequence/sequence.md)
+                        - [table](mapping/entity-mapping/id/simple/generated/generation-strats/table/table.md)
+                        - [auto](mapping/entity-mapping/id/simple/generated/generation-strats/auto/auto.md)
+                        - [uuid](mapping/entity-mapping/id/simple/generated/generation-strats/uuid/uuid.md)
+            - composite
+                - [composite key](mapping/entity-mapping/id/composite/composite/composite.md)
+                - [purpose](mapping/entity-mapping/id/composite/purpose/purpose.md)
+                - `@EmbeddedId`
+                    - [definition](mapping/entity-mapping/id/composite/embedded-id/definition/definition.md)
+                    - [rules](mapping/entity-mapping/id/composite/embedded-id/rules/rules.md)
+                - `@IdClass`
+                    - [definition](mapping/entity-mapping/id/composite/id-class/definition/definition.md)
+                    - [rules](mapping/entity-mapping/id/composite/id-class/rules/rules.md)
+                - [comparison](mapping/entity-mapping/id/composite/comparison/comparison.md)
+        - `@Column`
+            - [definition](mapping/entity-mapping/column/definition/definition.md)
+            - fields
+                - [definition](mapping/entity-mapping/column/fields/definition/definition.md)
+                - [example](mapping/entity-mapping/column/fields/example/example.md)
+            - properties
+                - [definition](mapping/entity-mapping/column/properties/definition/definition.md)
+                - [example](mapping/entity-mapping/column/properties/example/example.md)
+            - data-type mapping
+                - database-first approach
+                    - [definition](mapping/entity-mapping/column/data-mapping/database-first/definition/definition.md)
+                    - [advantages](mapping/entity-mapping/column/data-mapping/database-first/advantages/advantages.md)
+                    - [disadvantages](mapping/entity-mapping/column/data-mapping/database-first/disadvantages/disadvantages.md)
+                    - [workflow](mapping/entity-mapping/column/data-mapping/database-first/workflow/workflow.md)
+                - types
+                    - [rules](mapping/entity-mapping/column/data-mapping/types/rules/rules.md)
+                    - text
+                        - [`CHAR`](mapping/entity-mapping/column/data-mapping/types/text/char/char.md)
+                        - [`VARCHAR`](mapping/entity-mapping/column/data-mapping/types/text/varchar/varchar.md)
+                        - [`TEXT`](mapping/entity-mapping/column/data-mapping/types/text/text/text.md)
+                        - [`NCHAR`](mapping/entity-mapping/column/data-mapping/types/text/nchar/nchar.md)
+                        - [`NVARCHAR`](mapping/entity-mapping/column/data-mapping/types/text/nvarchar/nvarchar.md)
+                        - [`NTEXT`](mapping/entity-mapping/column/data-mapping/types/text/ntext/ntext.md)
+                    - numbers
+                        - [`INT`](mapping/entity-mapping/column/data-mapping/types/numbers/int/int.md)
+                        - [`BIGINT`](mapping/entity-mapping/column/data-mapping/types/numbers/bigint/bigint.md)
+                        - [`SMALLINT`](mapping/entity-mapping/column/data-mapping/types/numbers/smallint/smallint.md)
+                        - [`TINYINT`](mapping/entity-mapping/column/data-mapping/types/numbers/tinyint/tinyint.md)
+                        - [`NUMERIC`](mapping/entity-mapping/column/data-mapping/types/numbers/numeric/numeric.md)
+                        - [`DECIMAL`](mapping/entity-mapping/column/data-mapping/types/numbers/decimal/decimal.md)
+                        - [`FLOAT`](mapping/entity-mapping/column/data-mapping/types/numbers/float/float.md)
+                        - [`REAL`](mapping/entity-mapping/column/data-mapping/types/numbers/real/real.md)
+                        - [`MONEY`](mapping/entity-mapping/column/data-mapping/types/numbers/money/money.md)
+                        - [`SMALLMONEY`](mapping/entity-mapping/column/data-mapping/types/numbers/smallmoney/smallmoney.md)
+                    - boolean
+                        - [`BIT`](mapping/entity-mapping/column/data-mapping/types/boolean/bit/bit.md)
+                    - binary
+                        - [`BLOB`](mapping/entity-mapping/column/data-mapping/types/binary/blob/blob.md)
+                        - [`CLOB`](mapping/entity-mapping/column/data-mapping/types/binary/clob/clob.md)
+                        - [`BINARY`](mapping/entity-mapping/column/data-mapping/types/binary/binary/binary.md)
+                        - [`VARBINARY`](mapping/entity-mapping/column/data-mapping/types/binary/varbinary/varbinary.md)
+                    - date and time
+                        - [`DATE`](mapping/entity-mapping/column/data-mapping/types/date-time/date/date.md)
+                        - [`TIME`](mapping/entity-mapping/column/data-mapping/types/date-time/time/time.md)
+                        - [`TIMESTAMP`](mapping/entity-mapping/column/data-mapping/types/date-time/timestamp/timestamp.md)
+    

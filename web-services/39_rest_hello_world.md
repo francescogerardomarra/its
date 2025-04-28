@@ -356,12 +356,12 @@ In order to perform CRUD operations efficiently in an object-oriented programmin
 
 
 ### Summary Table:
-| Feature  | POJO | Entity | DTO |
-|----------|------|--------|-----|
-| Framework Dependency | No | Yes (JPA/Hibernate) | No |
-| Maps to DB Table | No | Yes | No |
-| Used in Persistence | No | Yes | No |
-| Used for API Communication | No | No | Yes |
+| Feature                    | POJO | Entity              | DTO |
+|----------------------------|------|---------------------|-----|
+| Framework Dependency       | No   | Yes (JPA/Hibernate) | No  |
+| Maps to DB Table           | No   | Yes                 | No  |
+| Used in Persistence        | No   | Yes                 | No  |
+| Used for API Communication | No   | No                  | Yes |
 
 ---
 
@@ -3445,28 +3445,28 @@ Ensure the following scenario exists in the database before testing:
 ```sql
 SELECT * FROM shop_schema.User;
 ```
-| user_id | username    | email            | created_at              |
-|---------|------------|------------------|-------------------------|
-| 2       | alice_smith| alice@example.com| 2025-03-03 18:46:12.235 |
-| 3       | bob_jones  | bob@example.com  | 2025-03-03 18:46:12.248 |
+| user_id | username    | email             | created_at              |
+|---------|-------------|-------------------|-------------------------|
+| 2       | alice_smith | alice@example.com | 2025-03-03 18:46:12.235 |
+| 3       | bob_jones   | bob@example.com   | 2025-03-03 18:46:12.248 |
 
 ### Orders Table:
 ```sql
 SELECT * FROM shop_schema.Order;
 ```
 | order_id | user_id_fk | order_date                 | status  |
-|----------|-----------|----------------------------|---------|
-| 2        | 2         | 2025-03-03 18:48:54.254455 | pending |
-| 3        | 3         | 2025-03-03 18:48:54.280006 | pending |
-| 4        | 3         | 2025-03-03 18:48:54.294364 | pending |
+|----------|------------|----------------------------|---------|
+| 2        | 2          | 2025-03-03 18:48:54.254455 | pending |
+| 3        | 3          | 2025-03-03 18:48:54.280006 | pending |
+| 4        | 3          | 2025-03-03 18:48:54.294364 | pending |
 
 ### Items Table (Initial):
 ```sql
 SELECT * FROM shop_schema.Item;
 ```
-| item_id | name           | description                    | price   | stock_quantity |
-|---------|---------------|--------------------------------|---------|---------------|
-| 1       | Gaming Laptop | A high-performance laptop     | 1499.99 | 0             |
+| item_id | name          | description               | price   | stock_quantity |
+|---------|---------------|---------------------------|---------|----------------|
+| 1       | Gaming Laptop | A high-performance laptop | 1499.99 | 0              |
 
 ## 1. Create Additional Items
 

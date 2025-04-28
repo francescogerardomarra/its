@@ -254,15 +254,15 @@ SOAP is widely supported in Java through libraries and frameworks like:
 ### JAX-WS vs. Spring Web Services
 In addition to JAXB, JAX-WS and Spring Web Services (Spring-WS) are both popular choices for creating SOAP-based web services in Java, but they differ in their approach:
 
-| Feature                    | `@Endpoint` (Spring-WS)                         | `@WebService` (JAX-WS)                         |
-|----------------------------|------------------------------------------------|------------------------------------------------|
-| **Technology**              | Part of **Spring Web Services**                | Part of **JAX-WS** (Java EE standard)          |
-| **Protocol**                | SOAP-based (Spring-WS implementation)          | SOAP-based (JAX-WS implementation)             |
-| **Usage**                   | Used in Spring for building SOAP web services  | Standard Java EE annotation for SOAP services  |
-| **Annotation**              | `@Endpoint`                                    | `@WebService`                                  |
-| **Configuration**           | Custom Spring configuration for SOAP endpoints | JAX-WS runtime usually handles configuration   |
-| **Message Handling**        | Uses `@PayloadRoot`, `@ResponsePayload`, etc.   | Direct methods annotated with `@WebMethod` (if needed) |
-| **WSDL Generation**         | WSDL is not automatically generated; you need to configure it explicitly | WSDL is often generated automatically         |
+| Feature              | `@Endpoint` (Spring-WS)                                                  | `@WebService` (JAX-WS)                                 |
+|----------------------|--------------------------------------------------------------------------|--------------------------------------------------------|
+| **Technology**       | Part of **Spring Web Services**                                          | Part of **JAX-WS** (Java EE standard)                  |
+| **Protocol**         | SOAP-based (Spring-WS implementation)                                    | SOAP-based (JAX-WS implementation)                     |
+| **Usage**            | Used in Spring for building SOAP web services                            | Standard Java EE annotation for SOAP services          |
+| **Annotation**       | `@Endpoint`                                                              | `@WebService`                                          |
+| **Configuration**    | Custom Spring configuration for SOAP endpoints                           | JAX-WS runtime usually handles configuration           |
+| **Message Handling** | Uses `@PayloadRoot`, `@ResponsePayload`, etc.                            | Direct methods annotated with `@WebMethod` (if needed) |
+| **WSDL Generation**  | WSDL is not automatically generated; you need to configure it explicitly | WSDL is often generated automatically                  |
 
 In summary:
 - If you're working within the **Spring ecosystem** and building SOAP web services, you’ll use `@Endpoint` and other **Spring Web Services** annotations.

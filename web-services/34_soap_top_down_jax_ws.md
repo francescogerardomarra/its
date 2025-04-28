@@ -113,13 +113,13 @@ In this case, the WSDL will define the message as a set of method parameters, ra
 
 ---
 
-| Feature          | `DOCUMENT` (Preferred) | `RPC` (Alternative) |
-|-----------------|----------------------|----------------------|
-| **SOAP Structure** | Encapsulated in an XML document | Direct function call style |
-| **Flexibility**  | ✅ High (supports complex structures) | ❌ Limited |
-| **Interoperability** | ✅ Better for non-Java clients | ❌ May have compatibility issues |
-| **Extensibility** | ✅ Easily modified and extended | ❌ Less adaptable |
-| **Best Use Case** | Enterprise applications, multi-language support | Simple, internal Java services |
+| Feature              | `DOCUMENT` (Preferred)                          | `RPC` (Alternative)             |
+|----------------------|-------------------------------------------------|---------------------------------|
+| **SOAP Structure**   | Encapsulated in an XML document                 | Direct function call style      |
+| **Flexibility**      | ✅ High (supports complex structures)            | ❌ Limited                       |
+| **Interoperability** | ✅ Better for non-Java clients                   | ❌ May have compatibility issues |
+| **Extensibility**    | ✅ Easily modified and extended                  | ❌ Less adaptable                |
+| **Best Use Case**    | Enterprise applications, multi-language support | Simple, internal Java services  |
 
 `Style.DOCUMENT` is the preferred choice for **enterprise-level web services** due to its **extensibility, readability, and interoperability** with non-Java clients. 🚀
 

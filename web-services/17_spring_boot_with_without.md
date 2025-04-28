@@ -18,11 +18,11 @@ Spring MVC is a traditional web framework based on the Model-View-Controller des
 
 #### Advantages
 
-| Advantage            | Description                                                                 |
-|----------------------|-----------------------------------------------------------------------------|
-| Reduced Configuration| Minimal configuration needed due to auto-configuration.                      |
-| Quick Setup          | Faster setup and development cycle.                                         |
-| Integrated Features  | Seamless integration with Spring ecosystem and third-party libraries.        |
+| Advantage             | Description                                                           |
+|-----------------------|-----------------------------------------------------------------------|
+| Reduced Configuration | Minimal configuration needed due to auto-configuration.               |
+| Quick Setup           | Faster setup and development cycle.                                   |
+| Integrated Features   | Seamless integration with Spring ecosystem and third-party libraries. |
 
 #### Disadvantages
 
@@ -41,17 +41,17 @@ Spring MVC is a traditional web framework based on the Model-View-Controller des
 
 #### Advantages
 
-| Advantage            | Description                                                                 |
-|----------------------|-----------------------------------------------------------------------------|
-| Full Control         | Complete control over configuration and environment.                        |
-| Lightweight Setup    | Only the necessary components are included, leading to a potentially smaller footprint. |
+| Advantage         | Description                                                                             |
+|-------------------|-----------------------------------------------------------------------------------------|
+| Full Control      | Complete control over configuration and environment.                                    |
+| Lightweight Setup | Only the necessary components are included, leading to a potentially smaller footprint. |
 
 #### Disadvantages
 
-| Disadvantage         | Description                                                                 |
-|----------------------|-----------------------------------------------------------------------------|
-| More Boilerplate     | More boilerplate code is required to set up the application.                 |
-| Complexity           | Higher complexity in managing dependencies and configurations.               |
+| Disadvantage     | Description                                                    |
+|------------------|----------------------------------------------------------------|
+| More Boilerplate | More boilerplate code is required to set up the application.   |
+| Complexity       | Higher complexity in managing dependencies and configurations. |
 
 ## Spring WebFlux With and Without Spring Boot
 
@@ -76,10 +76,10 @@ Spring WebFlux is a reactive, non-blocking web framework introduced in Spring 5.
 
 #### Disadvantages
 
-| Disadvantage         | Description                                                                 |
-|----------------------|-----------------------------------------------------------------------------|
-| Overhead             | Some overhead due to auto-configuration.                                    |
-| Less Fine-Grained Control | May include unnecessary components if not customized.                   |
+| Disadvantage              | Description                                           |
+|---------------------------|-------------------------------------------------------|
+| Overhead                  | Some overhead due to auto-configuration.              |
+| Less Fine-Grained Control | May include unnecessary components if not customized. |
 
 ### Using Spring WebFlux Without Spring Boot
 
@@ -98,22 +98,17 @@ Spring WebFlux is a reactive, non-blocking web framework introduced in Spring 5.
 
 #### Disadvantages
 
-| Disadvantage         | Description                                                                 |
-|----------------------|-----------------------------------------------------------------------------|
-| Steeper Learning Curve | Reactive programming is more complex and requires deeper understanding.    |
-| Manual Setup         | More manual setup and configuration, increasing the complexity.              |
+| Disadvantage           | Description                                                             |
+|------------------------|-------------------------------------------------------------------------|
+| Steeper Learning Curve | Reactive programming is more complex and requires deeper understanding. |
+| Manual Setup           | More manual setup and configuration, increasing the complexity.         |
 
 ## Differences Between Spring MVC and Spring WebFlux
 
-| Feature                  | Spring MVC (With/Without Boot)         | Spring WebFlux (With/Without Boot)       |
-|--------------------------|----------------------------------------|------------------------------------------|
-| Programming Model        | Synchronous                            | Asynchronous and Reactive                |
-| API                      | Servlet API                            | Reactive Streams API                     |
-| Suitable For             | Traditional web applications           | Modern, high-throughput, reactive apps   |
-| Learning Curve           | Easier for those familiar with servlets| Steeper due to reactive paradigm         |
-| Performance Under Load   | Thread-per-request, may block on I/O   | Non-blocking, better for high concurrency|
-
-## Conclusion
-
-Both Spring MVC and Spring WebFlux can be used with or without Spring Boot. Spring Boot simplifies setup and development by reducing boilerplate code and providing integrated features, but using the frameworks without Spring Boot offers greater control and customization. Spring MVC is ideal for traditional web applications, while Spring WebFlux is better suited for reactive, high-concurrency scenarios. Understanding the trade-offs helps in choosing the right setup based on project requirements.
-
+| Feature                | Spring MVC (With/Without Boot)          | Spring WebFlux (With/Without Boot)        |
+|------------------------|-----------------------------------------|-------------------------------------------|
+| Programming Model      | Synchronous                             | Asynchronous and Reactive                 |
+| API                    | Servlet API                             | Reactive Streams API                      |
+| Suitable For           | Traditional web applications            | Modern, high-throughput, reactive apps    |
+| Learning Curve         | Easier for those familiar with servlets | Steeper due to reactive paradigm          |
+| Performance Under Load | Thread-per-request, may block on I/O    | Non-blocking, better for high concurrency |

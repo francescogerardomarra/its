@@ -111,13 +111,13 @@ This document explores the differences between the server models used by Spring 
 
 ## Comparison of Thread Models
 
-| Aspect               | Blocking (Tomcat/Jetty)         | Non-Blocking (Netty)            |
-|----------------------|--------------------------------|---------------------------------|
-| **Concurrency Model** | Thread-per-request             | Event-loop based                |
-| **Thread Usage**     | One thread per request         | Single thread handles multiple tasks |
-| **Scalability**      | Limited by thread pool size    | High, limited by CPU resources  |
-| **Latency**          | Higher due to blocking waits   | Lower due to asynchronous processing |
-| **Ease of Development** | Easier (sequential flow)       | More complex (callbacks, events) |
+| Aspect                  | Blocking (Tomcat/Jetty)      | Non-Blocking (Netty)                 |
+|-------------------------|------------------------------|--------------------------------------|
+| **Concurrency Model**   | Thread-per-request           | Event-loop based                     |
+| **Thread Usage**        | One thread per request       | Single thread handles multiple tasks |
+| **Scalability**         | Limited by thread pool size  | High, limited by CPU resources       |
+| **Latency**             | Higher due to blocking waits | Lower due to asynchronous processing |
+| **Ease of Development** | Easier (sequential flow)     | More complex (callbacks, events)     |
 
 ---
 

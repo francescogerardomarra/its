@@ -310,12 +310,12 @@ GET /users?role=admin&status=active
 
 ### How to Decide Which to Use
 
-| Feature           | Path Variables          | Query Parameters       |
-|------------------|------------------------|------------------------|
-| Purpose          | Identify a resource    | Filter, search, modify request behavior |
-| Required?        | Yes                     | No                     |
-| URL Structure    | `/users/{userId}`       | `/users?status=active` |
-| Use Case        | Retrieve specific item | Retrieve filtered list |
+| Feature       | Path Variables         | Query Parameters                        |
+|---------------|------------------------|-----------------------------------------|
+| Purpose       | Identify a resource    | Filter, search, modify request behavior |
+| Required?     | Yes                    | No                                      |
+| URL Structure | `/users/{userId}`      | `/users?status=active`                  |
+| Use Case      | Retrieve specific item | Retrieve filtered list                  |
 
 #### General Guidelines:
 - **Use path variables for required, unique identifiers** (e.g. `/users/{userId}`).

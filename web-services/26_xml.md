@@ -195,11 +195,11 @@ Example:
 
 XML allows you to store data either as attributes or elements. Choosing between the two depends on the use case:
 
-| Use Case              | Attributes                      | Elements                 |
-|-----------------------|---------------------------------|--------------------------|
-| Small metadata        | Best suited                    | Not ideal               |
-| Complex or nested data| Not suitable                   | Best suited             |
-| Readability           | Harder to read in bulk         | Easier to understand    |
+| Use Case               | Attributes             | Elements             |
+|------------------------|------------------------|----------------------|
+| Small metadata         | Best suited            | Not ideal            |
+| Complex or nested data | Not suitable           | Best suited          |
+| Readability            | Harder to read in bulk | Easier to understand |
 
 ---
 
@@ -323,7 +323,7 @@ Empty elements are elements with no content. They can be represented in two ways
 Certain characters are reserved in XML and cannot be used directly. Instead, use their escape sequences.
 
 | Character | Escape Sequence |
-| --------- | --------------- |
+|-----------|-----------------|
 | `<`       | `&lt;`          |
 | `>`       | `&gt;`          |
 | `&`       | `&amp;`         |

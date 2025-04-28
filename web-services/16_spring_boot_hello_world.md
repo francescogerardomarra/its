@@ -24,10 +24,10 @@ Spring Boot is a framework designed to simplify the development of Java-based ap
 
 ## Compatibility of Spring Versions with Java Versions
 
-| Spring Boot Version | Java Compatibility   |
-|---------------------|----------------------|
-| 2.x (i.e. 2.7.x)   | Java 8, 11, and above |
-| 3.x (i.e. 3.0.x)   | Java 17 and above    |
+| Spring Boot Version | Java Compatibility    |
+|---------------------|-----------------------|
+| 2.x (i.e. 2.7.x)    | Java 8, 11, and above |
+| 3.x (i.e. 3.0.x)    | Java 17 and above     |
 
 To ensure compatibility across environments, we will use Spring Boot 2.7.x in this example, as it supports Java 11, which is the minimum version required for our project.
 

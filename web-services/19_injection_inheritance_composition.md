@@ -167,13 +167,13 @@ public class Main {
 
 ### Key Differences
 
-| Aspect              | Inheritance                     | Composition                      |
-|---------------------|----------------------------------|-----------------------------------|
-| Relationship        | "Is-a"                          | "Has-a"                          |
-| Coupling            | Tightly coupled                 | Loosely coupled                  |
-| Reusability         | Limited to superclass behavior  | High; components can be reused   |
-| Flexibility         | Less flexible                   | More flexible                    |
-| Use Case            | Suitable for hierarchical models| Suitable for dynamic behavior    |
+| Aspect       | Inheritance                      | Composition                    |
+|--------------|----------------------------------|--------------------------------|
+| Relationship | "Is-a"                           | "Has-a"                        |
+| Coupling     | Tightly coupled                  | Loosely coupled                |
+| Reusability  | Limited to superclass behavior   | High; components can be reused |
+| Flexibility  | Less flexible                    | More flexible                  |
+| Use Case     | Suitable for hierarchical models | Suitable for dynamic behavior  |
 
 ---
 

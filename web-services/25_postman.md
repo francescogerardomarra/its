@@ -29,12 +29,12 @@ Snap is a package management system that allows applications to be installed as 
 
 APT (Advanced Package Tool) is the traditional package manager for Debian-based distributions like Ubuntu. It installs software from the official system repositories and manages dependencies separately.
 
-| Feature  | Snap | APT |
-|----------|------|-----|
-| **Source** | Snap Store | Ubuntu/Debian Repositories |
-| **Updates** | Automatic | Manual |
-| **Dependency Handling** | Bundled in the package | Managed separately |
-| **Compatibility** | Works across distributions | Specific to Debian-based systems |
+| Feature                 | Snap                       | APT                              |
+|-------------------------|----------------------------|----------------------------------|
+| **Source**              | Snap Store                 | Ubuntu/Debian Repositories       |
+| **Updates**             | Automatic                  | Manual                           |
+| **Dependency Handling** | Bundled in the package     | Managed separately               |
+| **Compatibility**       | Works across distributions | Specific to Debian-based systems |
 
 ### Dependency handling: Snap vs APT
 
@@ -86,12 +86,12 @@ Snap packages are self-contained and include all necessary dependencies within t
   - **Slower Startup Times:** Due to sandboxing and bundled dependencies.
 
 ### **Comparison Table**
-| Feature  | APT  | Snap  |
-|----------|------|------|
-| Handles Missing Dependencies | Downloads and installs from repositories | Bundles everything, no missing dependencies |
-| Installation Failure | Can fail if dependencies are unavailable | Does not fail due to missing dependencies |
-| Disk Usage | Lower (shared dependencies) | Higher (dependencies duplicated) |
-| Compatibility | May break if system dependencies change | Always works since dependencies are included |
+| Feature                      | APT                                      | Snap                                         |
+|------------------------------|------------------------------------------|----------------------------------------------|
+| Handles Missing Dependencies | Downloads and installs from repositories | Bundles everything, no missing dependencies  |
+| Installation Failure         | Can fail if dependencies are unavailable | Does not fail due to missing dependencies    |
+| Disk Usage                   | Lower (shared dependencies)              | Higher (dependencies duplicated)             |
+| Compatibility                | May break if system dependencies change  | Always works since dependencies are included |
 
 ### **Final Thoughts**
 - **APT is best for system efficiency**, as it shares dependencies and minimizes disk usage.

@@ -518,13 +518,13 @@ While JSON Schema and Java Bean Validation (JSR 303/JSR 380) both serve to enfor
 
 ### **Comparison Table**
 
-| Feature                | JSON Schema Validation | Java Bean Validation (JSR 303/380) |
-|------------------------|------------------------|------------------------------------|
-| When it applies       | Before deserialization | After deserialization             |
-| Scope of validation   | JSON structure, types, required fields | Object-level constraints (annotations on Java fields) |
-| Example constraints   | `type`, `minimum`, `maxLength`, `pattern` | `@NotNull`, `@Size`, `@Pattern`, `@Max`, `@Min` |
-| Enforced by           | Everit JSON Schema     | Hibernate Validator (or similar)  |
-| Error handling        | Prevents invalid JSON from being parsed | Prevents invalid objects from being processed |
+| Feature             | JSON Schema Validation                    | Java Bean Validation (JSR 303/380)                    |
+|---------------------|-------------------------------------------|-------------------------------------------------------|
+| When it applies     | Before deserialization                    | After deserialization                                 |
+| Scope of validation | JSON structure, types, required fields    | Object-level constraints (annotations on Java fields) |
+| Example constraints | `type`, `minimum`, `maxLength`, `pattern` | `@NotNull`, `@Size`, `@Pattern`, `@Max`, `@Min`       |
+| Enforced by         | Everit JSON Schema                        | Hibernate Validator (or similar)                      |
+| Error handling      | Prevents invalid JSON from being parsed   | Prevents invalid objects from being processed         |
 
 ### **Complementary Usage**
 Although JSON Schema ensures that incoming JSON follows a valid structure, it does not enforce Java-specific rules. Java Bean Validation serves as an additional safeguard to verify constraints on Java objects before they are processed in an application.
@@ -959,13 +959,13 @@ Jackson provides various annotations that control how JSON data is serialized an
 5. **@JsonSetter** - Defines a custom setter for deserialization.
 
 ### **Annotation Summary Table**
-| Annotation     | Serialization | Deserialization |
-|--------------|--------------|--------------|
-| @JsonProperty | Yes | Yes |
-| @JsonIgnore | Yes | Yes |
-| @JsonInclude | Yes | No |
-| @JsonCreator | No | Yes |
-| @JsonSetter | No | Yes |
+| Annotation    | Serialization | Deserialization |
+|---------------|---------------|-----------------|
+| @JsonProperty | Yes           | Yes             |
+| @JsonIgnore   | Yes           | Yes             |
+| @JsonInclude  | Yes           | No              |
+| @JsonCreator  | No            | Yes             |
+| @JsonSetter   | No            | Yes             |
 
 ---
 

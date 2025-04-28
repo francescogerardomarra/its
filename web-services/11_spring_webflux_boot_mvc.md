@@ -61,14 +61,14 @@ Spring MVC is a traditional, synchronous web framework built on the Model-View-C
 
 ## Comparison Table
 
-| Feature            | Spring WebFlux                  | Spring Boot                        | Spring MVC                      |
-|--------------------|---------------------------------|------------------------------------|---------------------------------|
-| **Purpose**        | Reactive web framework         | Simplify application development  | Synchronous web framework      |
-| **Nature**         | Non-blocking, Reactive         | Framework Enhancer                | Blocking, Synchronous          |
-| **Request/Response Model** | Asynchronous                   | N/A                                | Synchronous                    |
-| **Concurrency Model** | Event-loop-based               | N/A                                | Thread-per-request             |
-| **Use Case**       | High-concurrency, non-blocking | Rapid development and prototyping | Server-side rendering, REST APIs |
-| **Server Type**    | Netty, Tomcat, Jetty, etc.     | Embedded Tomcat, Jetty, Undertow  | Tomcat, Jetty, etc.            |
+| Feature                    | Spring WebFlux                 | Spring Boot                       | Spring MVC                       |
+|----------------------------|--------------------------------|-----------------------------------|----------------------------------|
+| **Purpose**                | Reactive web framework         | Simplify application development  | Synchronous web framework        |
+| **Nature**                 | Non-blocking, Reactive         | Framework Enhancer                | Blocking, Synchronous            |
+| **Request/Response Model** | Asynchronous                   | N/A                               | Synchronous                      |
+| **Concurrency Model**      | Event-loop-based               | N/A                               | Thread-per-request               |
+| **Use Case**               | High-concurrency, non-blocking | Rapid development and prototyping | Server-side rendering, REST APIs |
+| **Server Type**            | Netty, Tomcat, Jetty, etc.     | Embedded Tomcat, Jetty, Undertow  | Tomcat, Jetty, etc.              |
 
 ---
 

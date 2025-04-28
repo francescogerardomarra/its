@@ -517,14 +517,14 @@ An array in JSON is an ordered list of values enclosed in square brackets `[]`. 
 
 ### 3.7. Summary of JSON Data Types
 
-| Data Type | Example | Description |
-| --------- | ------- | ----------- |
-| String    | `"John Doe"` | A sequence of characters enclosed in double quotes. |
-| Number    | `42`, `3.14` | A numerical value (can be integer or floating-point). |
-| Boolean   | `true`, `false` | Represents a binary value (true or false). |
-| Null      | `null` | Represents the absence of a value. |
-| Object    | `{"name": "John", "age": 30}` | A collection of key-value pairs enclosed in curly braces. |
-| Array     | `["apple", "banana", "cherry"]` | An ordered list of values enclosed in square brackets. |
+| Data Type | Example                         | Description                                               |
+|-----------|---------------------------------|-----------------------------------------------------------|
+| String    | `"John Doe"`                    | A sequence of characters enclosed in double quotes.       |
+| Number    | `42`, `3.14`                    | A numerical value (can be integer or floating-point).     |
+| Boolean   | `true`, `false`                 | Represents a binary value (true or false).                |
+| Null      | `null`                          | Represents the absence of a value.                        |
+| Object    | `{"name": "John", "age": 30}`   | A collection of key-value pairs enclosed in curly braces. |
+| Array     | `["apple", "banana", "cherry"]` | An ordered list of values enclosed in square brackets.    |
 
 ---
 

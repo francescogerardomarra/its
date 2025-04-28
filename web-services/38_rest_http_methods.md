@@ -250,9 +250,9 @@ Some APIs might treat PATCH as **idempotent** if they fully replace fields, whil
 
 ### PATCH vs PUT: idempotency
 
-| Method  | Idempotent?  | Purpose  |
-|---------|-------------|----------|
-| **PUT** | ✅ Yes       | Replaces the entire resource. |
+| Method    | Idempotent?       | Purpose                        |
+|-----------|-------------------|--------------------------------|
+| **PUT**   | ✅ Yes             | Replaces the entire resource.  |
 | **PATCH** | ❌ Not necessarily | Modifies part of the resource. |
 
 ---
@@ -391,12 +391,12 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 
 ## Idempotency in REST
 | HTTP Method | Idempotent? | Safe? |
-|------------|------------|------|
-| GET        | Yes        | Yes  |
-| POST       | No         | No   |
-| PUT        | Yes        | No   |
-| PATCH      | No         | No   |
-| DELETE     | Yes        | No   |
+|-------------|-------------|-------|
+| GET         | Yes         | Yes   |
+| POST        | No          | No    |
+| PUT         | Yes         | No    |
+| PATCH       | No          | No    |
+| DELETE      | Yes         | No    |
 
 ---
 

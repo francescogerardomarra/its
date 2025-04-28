@@ -175,15 +175,15 @@ Disadvantages:
 ## Log Entry
 Regardless of format, every log entry should contain key information to ensure it's actionable, searchable, and useful for debugging. In modern distributed systems, this goes beyond just time and message. Capturing execution context is equally important.
 
-| Field       | Purpose                                                                 |
-|-------------|-------------------------------------------------------------------------|
-| Timestamp   | When the event occurred                                                 |
-| Log Level   | Severity of the event (e.g. INFO, DEBUG, WARN, ERROR)                  |
-| Message     | Description of what happened                                            |
-| Context     | Metadata such as `userId`, `sessionId`, `ipAddress`, `correlationId`    |
-| Class       | The class or module where the log originated                            |
-| LOC         | Line of code where the log was emitted                                  |
-| Thread ID   | Identifier for the thread handling the operation                        |
+| Field     | Purpose                                                              |
+|-----------|----------------------------------------------------------------------|
+| Timestamp | When the event occurred                                              |
+| Log Level | Severity of the event (e.g. INFO, DEBUG, WARN, ERROR)                |
+| Message   | Description of what happened                                         |
+| Context   | Metadata such as `userId`, `sessionId`, `ipAddress`, `correlationId` |
+| Class     | The class or module where the log originated                         |
+| LOC       | Line of code where the log was emitted                               |
+| Thread ID | Identifier for the thread handling the operation                     |
 
 These additional fields (`class`, `LOC`, `threadId`) greatly improve traceability, especially in concurrent environments or during complex workflows.
 

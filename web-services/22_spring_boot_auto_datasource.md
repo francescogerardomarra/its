@@ -596,10 +596,10 @@ Lombok is used during development for generating code (like getters, setters), b
 
 **Summary of Default Scopes vs. Specific Scopes**
 
-| Dependency                 | Default Scope | Chosen Scope | Explanation |
-|----------------------------|---------------|--------------|-------------|
-| PostgreSQL JDBC Driver      | `compile`     | `runtime`    | PostgreSQL is needed only at runtime for database connectivity, reducing unnecessary dependency during compile phase. |
-| Lombok                     | `compile`     | `provided`   | Lombok is required at compile-time for code generation, but not at runtime. The `provided` scope ensures it's excluded from the final artifact. |
+| Dependency             | Default Scope | Chosen Scope | Explanation                                                                                                                                     |
+|------------------------|---------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| PostgreSQL JDBC Driver | `compile`     | `runtime`    | PostgreSQL is needed only at runtime for database connectivity, reducing unnecessary dependency during compile phase.                           |
+| Lombok                 | `compile`     | `provided`   | Lombok is required at compile-time for code generation, but not at runtime. The `provided` scope ensures it's excluded from the final artifact. |
 
 - **`compile` (default scope)**: Available at both compile-time and runtime, and included in the final packaged artifact (JAR, WAR).
 - **`provided`**: Required at compile-time but not included in the final artifact. Assumes the runtime environment (e.g. application server) provides it. Common for servlet APIs and libraries like Lombok.
@@ -1454,13 +1454,13 @@ If successful, you should see:
 ---
 
 ## **Comparison of Approaches**
-| Feature                 | Plain JDBC            | Spring JDBC Template | Spring Data JPA       |
-|------------------------|----------------------|----------------------|----------------------|
-| Configuration Effort   | High (Manual Setup)  | Moderate (Template)  | Minimal (Auto-config) |
-| Boilerplate Code      | High                 | Medium               | Low                   |
-| Query Customization   | Full SQL control     | SQL with templates   | Derived queries, JPQL |
-| Performance Overhead  | Lower overhead       | Moderate             | Slightly higher       |
-| Best For              | Complex DB operations | Intermediate SQL use | Standard CRUD apps    |
+| Feature              | Plain JDBC            | Spring JDBC Template | Spring Data JPA       |
+|----------------------|-----------------------|----------------------|-----------------------|
+| Configuration Effort | High (Manual Setup)   | Moderate (Template)  | Minimal (Auto-config) |
+| Boilerplate Code     | High                  | Medium               | Low                   |
+| Query Customization  | Full SQL control      | SQL with templates   | Derived queries, JPQL |
+| Performance Overhead | Lower overhead        | Moderate             | Slightly higher       |
+| Best For             | Complex DB operations | Intermediate SQL use | Standard CRUD apps    |
 
 - Use **Plain JDBC** when you need **fine-grained control** over SQL execution.
 - Use **Spring JDBC Template** when you need structured SQL handling without ORM overhead.

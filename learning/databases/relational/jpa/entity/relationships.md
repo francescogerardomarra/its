@@ -49,7 +49,7 @@
           - [usage](entity-relationships/relationships/types/many-to-many/bi-directional/usage/usage.md)
           - [example](entity-relationships/relationships/types/many-to-many/bi-directional/example/example.md)
     - comparisons
-      - [what is the true difference between a `@OneToMany` and a `@ManyToOne` relationship?](entity-relationships/relationships/types/comparisons/onetomany-vs-manytoone) // todo
+      - [what is the true difference between a `@OneToMany` and a `@ManyToOne` relationship?](entity-relationships/relationships/types/onetomany-vs-manytoone/onetomany_vs_manytoone.md)
     - general
       - cascade operations
         - [definition](entity-relationships/relationships/types/general/cascade-operations/definition/definition.md)

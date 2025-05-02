@@ -17,11 +17,11 @@
                     - primary key generation strategies
                         - [definition](mapping/entity-mapping/id/simple/generated/generation-strats/definition/definition.md)
                         - [`GenerationType`](mapping/entity-mapping/id/simple/generated/generation-strats/generation-type/generation_type.md)
-                        - [identity](mapping/entity-mapping/id/simple/generated/generation-strats/identity/identity.md)
-                        - [sequence](mapping/entity-mapping/id/simple/generated/generation-strats/sequence/sequence.md)
-                        - [table](mapping/entity-mapping/id/simple/generated/generation-strats/table/table.md)
-                        - [auto](mapping/entity-mapping/id/simple/generated/generation-strats/auto/auto.md)
-                        - [uuid](mapping/entity-mapping/id/simple/generated/generation-strats/uuid/uuid.md)
+                          - [identity](mapping/entity-mapping/id/simple/generated/generation-strats/generation-type/identity/identity.md)
+                          - [auto](mapping/entity-mapping/id/simple/generated/generation-strats/generation-type/auto/auto.md)
+                          - [sequence](mapping/entity-mapping/id/simple/generated/generation-strats/generation-type/sequence/sequence.md)
+                          - [table](mapping/entity-mapping/id/simple/generated/generation-strats/generation-type/table/table.md)
+                          - [uuid](mapping/entity-mapping/id/simple/generated/generation-strats/generation-type/uuid/uuid.md)
             - composite
                 - [composite key](mapping/entity-mapping/id/composite/composite/composite.md)
                 - [purpose](mapping/entity-mapping/id/composite/purpose/purpose.md)
@@ -35,11 +35,19 @@
         - `@Column`
             - [definition](mapping/entity-mapping/column/definition/definition.md)
             - fields
-                - [definition](mapping/entity-mapping/column/fields/definition/definition.md)
-                - [example](mapping/entity-mapping/column/fields/example/example.md)
-            - properties
-                - [definition](mapping/entity-mapping/column/properties/definition/definition.md)
-                - [example](mapping/entity-mapping/column/properties/example/example.md)
+              - persistent
+                - definition
+                - example
+              - non-persistent 
+                - definition
+                - example
+
+                - [REMOVEdefinition](mapping/entity-mapping/column/fields/definition/definition.md)
+                - [REMOVEexample](mapping/entity-mapping/column/fields/example/example.md)
+            - REMOVEproperties
+                - [REMOVEdefinition](mapping/entity-mapping/column/properties/definition/definition.md)
+                - [REMOVEexample](mapping/entity-mapping/column/properties/example/example.md)
+              
             - data-type mapping
                 - database-first approach
                     - [definition](mapping/entity-mapping/column/data-mapping/database-first/definition/definition.md)

@@ -1,11 +1,9 @@
-# Spring Data JPA with `JPARepository`
-### What is Spring Data JPA?
+# JPARepository
 Spring Data JPA is a part of the Spring framework that simplifies
 working with databases using Java Persistence API (JPA).
 It eliminates boilerplate code by providing built-in methods for
 common database operations like saving, updating, deleting, and retrieving data.
 
-### What is `JpaRepository`?
 `JpaRepository` is an interface in Spring Data JPA that extends `CrudRepository` 
 and `PagingAndSortingRepository`, providing additional functionalities such as 
 pagination, sorting, and more advanced query methods.

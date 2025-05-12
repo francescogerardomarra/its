@@ -20,7 +20,40 @@ with a PostgreSQL database (this example makes use of Spring Data JPA and `JpaRe
 Since the repository layer inherits the method signatures from `JpaRepository`,
 we can automatically use the standard method implementations from hibernate.
 
-In our case we make use of the `save()` method to insert or update an entity into our postgresql database table called `person`.
+In our case we make use of the `save()` method to insert or update an entity
+into our postgresql database table called `person`.
+
+```java
+package com.example.service;
+
+import com.example.model.Person;
+import com.example.repository.PersonRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PersonService {
+
+    private final PersonRepository personRepository;
+
+    @Autowired
+    public PersonService(PersonRepository personRepository) {
+        this.personRepository = personRepository;
+    }
+
+    // Save or update a person
+    public Person savePerson(Person person) {
+        return personRepository.save(person); // Uses JpaRepository's save() method
+    }
+
+    // Fetch people by city using repository
+    public List<Person> findPeopleByCity(String city) {
+        return personRepository.findPeopleByCity(city);
+    }
+}
+```
 
 For this application we use a specific database schema called `my_schema`.
 

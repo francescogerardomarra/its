@@ -1,4 +1,4 @@
-# Example 2: with HikariCP
+# Example 2: HikariCP
 **Here is an example of using connection pooling with the HikariCP library in a JDBC-based Java application:**
 ```java
 import com.zaxxer.hikari.HikariConfig;
@@ -7,44 +7,51 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main {
   public static void main(String[] args) {
-    // Configure HikariCP
+    // Configurazione HikariCP
     HikariConfig config = new HikariConfig();
-    config.setJdbcUrl("jdbc:mysql://localhost:3306/your_database"); // Database URL
-    config.setUsername("your_username"); // Database username
-    config.setPassword("your_password"); // Database password
-    config.setMaximumPoolSize(10); // Maximum number of connections in the pool
+    config.setJdbcUrl("jdbc:mysql://localhost:3306/your_database");
+    config.setUsername("your_username");
+    config.setPassword("your_password");
+    config.setMaximumPoolSize(5); // max connessioni nella pool
 
-    // Initialize the HikariCP DataSource
     try (HikariDataSource dataSource = new HikariDataSource(config)) {
-      // Acquire a connection from the pool
-      try (Connection connection = dataSource.getConnection();
-           Statement statement = connection.createStatement();
-           ResultSet resultSet = statement.executeQuery("SELECT * FROM your_table")) {
+      // Executor con più thread rispetto al massimo della pool
+      ExecutorService executor = Executors.newFixedThreadPool(10);
 
-        // Process the result set
-        while (resultSet.next()) {
-          System.out.println("Column 1: " + resultSet.getString("column1"));
-          System.out.println("Column 2: " + resultSet.getString("column2"));
+      Runnable queryTask = () -> {
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM your_table")) {
+
+          // Elaborazione del risultato
+          if (rs.next()) {
+            System.out.println(Thread.currentThread().getName() + " ha letto count = " + rs.getInt(1));
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
         }
+      };
+
+      // Sottometto 10 task concorrenti
+      for (int i = 0; i < 10; i++) {
+        executor.submit(queryTask);
       }
+
+      executor.shutdown();
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 }
 ```
-### Explanation:
-- **HikariConfig setup:**
-    - The `HikariConfig` object is used to configure the connection pool settings such as database URL, credentials, and maximum pool size.
-- **HikariDataSource initialization:**
-    - A `HikariDataSource` object is created using the configuration. This object manages the connection pool.
-- **Connection acquisition and release:**
-    - The `getConnection` method is used to acquire a connection from the pool.
-    - When the `Connection` object is closed (via `try-with-resources`), it is returned to the pool instead of being physically closed.
-- **Query execution:**
-    - A query is executed using the `Statement` object, and the results are processed using the `ResultSet`.
+**What this HikariCP example shows:**
 
-This approach ensures efficient use of database connections and reduces the overhead of connection management.
+- We use a `HikariDataSource` with pool size = 5.
+- We create a pool of 10 threads; each thread obtains a connection via `dataSource.getConnection()`.
+- When all 5 slots are in use, the other threads wait until a connection is freed.
+- Thanks to the `try-with-resources`, at the end of the block the `Connection` is automatically returned to the pool instead of being closed permanently.

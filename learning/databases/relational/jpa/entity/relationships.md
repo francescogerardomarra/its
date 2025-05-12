@@ -3,77 +3,57 @@
   - [definition](entity-relationships/relationships/definition/definition.md)
   - foreign key
     - [definition](entity-relationships/relationships/foreign-key/definition/definition.md)
-    - [column-name convention](entity-relationships/relationships/foreign-key/convention/convention.md)
-    - multiplicity
-      - [definition](entity-relationships/relationships/multiplicity/definition/definition.md)
-      - [purpose](entity-relationships/relationships/multiplicity/purpose/purpose.md)
-    - types
-      - `@OneToOne`
-        - [definition](entity-relationships/relationships/types/one-to-one/definition/definition.md)
-        - [direction](entity-relationships/relationships/types/one-to-one/direction/direction.md)
-        - [owning and inverse sides](entity-relationships/relationships/types/one-to-one/sides/sides.md)
-        - uni-directional
-          - [definition](entity-relationships/relationships/types/one-to-one/uni-directional/definition/definition.md)
-          - [`@JoinColumn`](entity-relationships/relationships/types/one-to-one/uni-directional/join-column/join_column.md)
-          - [usage](entity-relationships/relationships/types/one-to-one/uni-directional/usage/usage.md)
-          - [example](entity-relationships/relationships/types/one-to-one/uni-directional/example/example.md)
-        - bi-directional
-          - [definition](entity-relationships/relationships/types/one-to-one/bi-directional/definition/definition.md)
-          - [`mappedBy`](entity-relationships/relationships/types/one-to-one/bi-directional/mappedby/mappedby.md)
-          - [usage](entity-relationships/relationships/types/one-to-one/bi-directional/usage/usage.md)
-          - [example](entity-relationships/relationships/types/one-to-one/bi-directional/example/example.md)
-      - `@OneToMany`
-        - [definition](entity-relationships/relationships/types/one-to-many/definition/definition.md)
-        - uni-directional
-          - [usage](entity-relationships/relationships/types/one-to-many/uni-directional/usage/usage.md)
-          - [example](entity-relationships/relationships/types/one-to-many/uni-directional/example/example.md)
-        - bi-directional
-          - [usage](entity-relationships/relationships/types/one-to-many/bi-directional/usage/usage.md)
-          - [example](entity-relationships/relationships/types/one-to-many/bi-directional/example/example.md)
-      - `@ManyToOne`
-        - [definition](entity-relationships/relationships/types/many-to-one/definition/definition.md)
-        - uni-directional
-          - [usage](entity-relationships/relationships/types/many-to-one/uni-directional/usage/usage.md)
-          - [example](entity-relationships/relationships/types/many-to-one/uni-directional/example/example.md)
-        - bi-directional
-          - [usage](entity-relationships/relationships/types/many-to-one/bi-directional/usage/usage.md)
-          - [example](entity-relationships/relationships/types/many-to-one/bi-directional/example/example.md)
-      - `@ManyToMany`
-        - [definition](entity-relationships/relationships/types/many-to-many/definition/definition.md)
-        - [indirect relationship](entity-relationships/relationships/types/many-to-many/indirect/indirect.md)
-        - uni-directional
-          - [`@JoinTable`](entity-relationships/relationships/types/many-to-many/uni-directional/join-table/join_table.md)
-          - [usage](entity-relationships/relationships/types/many-to-many/uni-directional/usage/usage.md)
-          - [example](entity-relationships/relationships/types/many-to-many/uni-directional/example/example.md)
-        - bi-directional
-          - [usage](entity-relationships/relationships/types/many-to-many/bi-directional/usage/usage.md)
-          - [example](entity-relationships/relationships/types/many-to-many/bi-directional/example/example.md)
-    - comparisons
-      - [what is the true difference between a `@OneToMany` and a `@ManyToOne` relationship?](entity-relationships/relationships/types/onetomany-vs-manytoone/onetomany_vs_manytoone.md)
-    - general
-      - cascade operations
-        - [definition](entity-relationships/relationships/types/general/cascade-operations/definition/definition.md)
-        - [purpose](entity-relationships/relationships/types/general/cascade-operations/purpose/purpose.md)
-        - types
-          - [`CascadeType.PERSIST`](entity-relationships/relationships/types/general/cascade-operations/types/persist/persist.md)
-          - [`CascadeType.MERGE`](entity-relationships/relationships/types/general/cascade-operations/types/merge/merge.md)
-          - [`CascadeType.REMOVE`](entity-relationships/relationships/types/general/cascade-operations/types/remove/remove.md)
-          - [`CascadeType.REFRESH`](entity-relationships/relationships/types/general/cascade-operations/types/refresh/refresh.md)
-          - [`CascadeType.DETACH`](entity-relationships/relationships/types/general/cascade-operations/types/detach/detach.md)
-          - [`CascadeType.ALL`](entity-relationships/relationships/types/general/cascade-operations/types/all/all.md)
-          - [use cases](entity-relationships/relationships/types/general/cascade-operations/use-cases/use_cases.md)
-          - [example](entity-relationships/relationships/types/general/cascade-operations/example/example.md)
-      - fetch types
-        - [definition](entity-relationships/relationships/types/general/fetch/definition/definition.md)
-        - [purpose](entity-relationships/relationships/types/general/fetch/purpose/purpose.md)
-        - types
-          - `FetchType.EAGER`
-            - [definition](entity-relationships/relationships/types/general/fetch/types/eager/definition/definition.md)
-            - [use case](entity-relationships/relationships/types/general/fetch/types/eager/use-case/use_case.md)
-            - [example](entity-relationships/relationships/types/general/fetch/types/eager/example/example.md)
-          - `FetchType.LAZY`
-            - [definition](entity-relationships/relationships/types/general/fetch/types/lazy/definition/definition.md)
-            - [use case](entity-relationships/relationships/types/general/fetch/types/lazy/use-case/use_case.md)
-            - [example](entity-relationships/relationships/types/general/fetch/types/lazy/example/example.md)
-      - orphan removal
-        - [definition](entity-relationships/relationships/types/general/orphan-removal/definition/definition.md)
+    - [example](entity-relationships/relationships/foreign-key/example/example.md)
+    - [naming conventions](entity-relationships/relationships/foreign-key/convention/convention.md)
+  - cardinality
+    - [definition](entity-relationships/relationships/cardinality/definition/definition.md)
+    - [purpose](entity-relationships/relationships/cardinality/purpose/purpose.md)
+  - ownership
+    - [definition](entity-relationships/relationships/ownership/definition/definition.md)
+    - [why does it matter?](entity-relationships/relationships/ownership/why/why.md)
+    - [owning and inverse sides](entity-relationships/relationships/ownership/sides/sides.md)
+  - direction
+    - [definition](entity-relationships/relationships/direction/definition/definition.md)
+  - types
+    - `@OneToOne`
+      - [definition](entity-relationships/relationships/types/one-to-one/definition/definition.md)
+      - uni-directional
+        - [definition](entity-relationships/relationships/types/one-to-one/uni-directional/definition/definition.md)
+        - [`@JoinColumn`](entity-relationships/relationships/types/one-to-one/uni-directional/join-column/join_column.md)
+      - bi-directional
+        - [definition](entity-relationships/relationships/types/one-to-one/bi-directional/definition/definition.md)
+        - [`mappedBy`](entity-relationships/relationships/types/one-to-one/bi-directional/mappedby/mappedby.md)
+    - `@OneToMany`
+      - [definition](entity-relationships/relationships/types/one-to-many/definition/definition.md)
+    - `@ManyToOne`
+      - [definition](entity-relationships/relationships/types/many-to-one/definition/definition.md)
+    - `@ManyToMany`
+      - [definition](entity-relationships/relationships/types/many-to-many/definition/definition.md)
+      - [indirect relationship](entity-relationships/relationships/types/many-to-many/indirect/indirect.md)
+      - [`@JoinTable`](entity-relationships/relationships/types/many-to-many/uni-directional/join-table/join_table.md)
+    - cascade operations
+      - [definition](entity-relationships/relationships/types/cascade-operations/definition/definition.md)
+      - [purpose](entity-relationships/relationships/types/cascade-operations/purpose/purpose.md)
+      - types
+        - [`CascadeType.PERSIST`](entity-relationships/relationships/types/cascade-operations/types/persist/persist.md)
+        - [`CascadeType.MERGE`](entity-relationships/relationships/types/cascade-operations/types/merge/merge.md)
+        - [`CascadeType.REMOVE`](entity-relationships/relationships/types/cascade-operations/types/remove/remove.md)
+        - [`CascadeType.REFRESH`](entity-relationships/relationships/types/cascade-operations/types/refresh/refresh.md)
+        - [`CascadeType.DETACH`](entity-relationships/relationships/types/cascade-operations/types/detach/detach.md)
+        - [`CascadeType.ALL`](entity-relationships/relationships/types/cascade-operations/types/all/all.md)
+        - [use cases](entity-relationships/relationships/types/cascade-operations/use-cases/use_cases.md)
+        - [example](entity-relationships/relationships/types/cascade-operations/example/example.md)
+    - fetch types
+      - [definition](entity-relationships/relationships/types/fetch/definition/definition.md)
+      - [purpose](entity-relationships/relationships/types/fetch/purpose/purpose.md)
+      - types
+        - `FetchType.EAGER`
+          - [definition](entity-relationships/relationships/types/fetch/types/eager/definition/definition.md)
+          - [use case](entity-relationships/relationships/types/fetch/types/eager/use-case/use_case.md)
+          - [example](entity-relationships/relationships/types/fetch/types/eager/example/example.md)
+        - `FetchType.LAZY`
+          - [definition](entity-relationships/relationships/types/fetch/types/lazy/definition/definition.md)
+          - [use case](entity-relationships/relationships/types/fetch/types/lazy/use-case/use_case.md)
+          - [example](entity-relationships/relationships/types/fetch/types/lazy/example/example.md)
+    - orphan removal
+      - [definition](entity-relationships/relationships/types/orphan-removal/definition/definition.md)

@@ -6,3 +6,5 @@
   needed for the actual text, plus a small overhead
   to store the length of the string;
 - it is used when there is a need to store multilingual data or characters outside the ASCII range.
+- **this data type is supported by these technologies:**
+  - SQL Server

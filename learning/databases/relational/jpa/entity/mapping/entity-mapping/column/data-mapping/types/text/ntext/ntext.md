@@ -8,3 +8,5 @@
 - it is used to store large amounts of text data;
 - it is typically used when the maximum length of `VARCHAR` is insufficient;
 - it is also used when there is a need to store multilingual data or characters outside the ASCII range.
+- **this data type is supported by these technologies:**
+  - SQL Server

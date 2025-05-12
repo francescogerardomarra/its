@@ -1,5 +1,6 @@
-# Definition
+# Implementation
 **The `@IdClass` annotation has the following characteristics:**
+- it is one of two possible methods to denote a composite key;
 - it requires defining a separate class
 for the composite key and using `@Id` on the individual fields in the entity class.
 

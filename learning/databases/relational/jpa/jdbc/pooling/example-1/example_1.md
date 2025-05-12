@@ -1,4 +1,4 @@
-# Example 1: only JDBC
+# Example 1: manual
 Here’s a simple example of connection pooling using Java's built-in JDBC without any external libraries like HikariCP.
 
 **This implementation will create a basic connection pool manually:**
@@ -8,76 +8,97 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main {
-  // List to hold available connections
-  private List<Connection> connectionPool;
-  private String jdbcUrl = "jdbc:mysql://localhost:3306/your_database";
-  private String username = "your_username";
-  private String password = "your_password";
-  private int poolSize = 5; // Pool size
+  // Lista condivisa di connessioni disponibili
+  private final List<Connection> connectionPool;
+  private final String jdbcUrl = "jdbc:mysql://localhost:3306/your_database";
+  private final String username = "your_username";
+  private final String password = "your_password";
+  private final int poolSize = 5; // dimensione massima della pool
 
-  // Constructor to initialize the pool
   public Main() throws SQLException {
     connectionPool = new ArrayList<>();
-
-    // Initialize the pool with connections
+    // Inizializzo la pool con un numero fisso di connessioni
     for (int i = 0; i < poolSize; i++) {
       connectionPool.add(createNewConnection());
     }
   }
 
-  // Method to create a new database connection
+  // Crea una nuova connessione al database
   private Connection createNewConnection() throws SQLException {
     return DriverManager.getConnection(jdbcUrl, username, password);
   }
 
-  // Method to get a connection from the pool
+  // Metodo thread-safe per ottenere una connessione
   public synchronized Connection getConnection() throws SQLException {
-    if (connectionPool.size() > 0) {
-      return connectionPool.remove(connectionPool.size() - 1);
+    if (!connectionPool.isEmpty()) {
+      Connection conn = connectionPool.remove(connectionPool.size() - 1);
+      System.out.println(Thread.currentThread().getName() + " ha acquisito una connessione dalla pool.");
+      return conn;
     } else {
-      // If no connections are available, create a new one
-      return createNewConnection();
+      // Se la pool è vuota, ne creo una nuova (opzionale)
+      Connection conn = createNewConnection();
+      System.out.println(Thread.currentThread().getName() + " ha creato una nuova connessione (pool esaurita).");
+      return conn;
     }
   }
 
-  // Method to return a connection to the pool
+  // Metodo thread-safe per restituire la connessione
   public synchronized void releaseConnection(Connection connection) {
     if (connection != null) {
       connectionPool.add(connection);
+      System.out.println(Thread.currentThread().getName() + " ha rilasciato una connessione nella pool.");
     }
   }
 
-  // Main method to test the pool
+  // Runnable che simula un lavoro sul DB
+  private class Worker implements Runnable {
+    @Override
+    public void run() {
+      Connection conn = null;
+      try {
+        conn = getConnection();
+        // Simulo un'operazione sul DB
+        Thread.sleep(500);
+        System.out.println(Thread.currentThread().getName() + " sta eseguendo query sul database...");
+      } catch (Exception e) {
+        e.printStackTrace();
+      } finally {
+        // Rilascio sempre la connessione
+        releaseConnection(conn);
+      }
+    }
+  }
+
   public static void main(String[] args) {
     try {
       Main pool = new Main();
 
-      // Get a connection from the pool
-      Connection connection = pool.getConnection();
-      System.out.println("Connection acquired: " + connection);
+      // Creo un Executor con più thread rispetto alla dimensione della pool
+      ExecutorService executor = Executors.newFixedThreadPool(10);
+      for (int i = 0; i < 10; i++) {
+        executor.submit(pool.new Worker());
+      }
 
-      // Do some work with the connection (e.g., querying the database)
-
-      // Return the connection to the pool
-      pool.releaseConnection(connection);
-      System.out.println("Connection returned to the pool.");
-
+      executor.shutdown();
     } catch (SQLException e) {
       e.printStackTrace();
     }
   }
 }
 ```
-### Explanation:
-- **Connection Pool Initialization:**
-    - The pool is initialized with a fixed number of connections (e.g., 5 in this case).
-- **Getting a Connection:**
-    - When `getConnection()` is called, the pool either returns an available connection or creates a new one if the pool is empty.
-- **Releasing a Connection:**
-    - Once a database operation is complete, the connection is returned to the pool using `releaseConnection()`, making it available for reuse.
+**What this multithreaded example does:**
+- in `main` an `ExecutorService` with 10 threads is created, each running a `Worker`.
+- each `Worker` calls `getConnection()` concurrently: if the pool has free connections it takes one, otherwise it creates a new one.
+- after “working” on the DB (simulated with `Thread.sleep`), each thread returns the connection using `releaseConnection()`.
+- on the console you can see which and how many threads acquire/create/release connections until the pool is exhausted.
+ making it available for reuse.
 
 ### Notes:
-- This is a very basic connection pool and lacks advanced features like connection validation or automatic cleanup, which are present in production-grade libraries like HikariCP or Apache DBCP.
-- This implementation ensures that connections are reused, reducing the overhead of establishing new database connections repeatedly.
+- This is a very basic connection pool and lacks advanced features like connection validation or
+automatic cleanup, which are present in production-grade libraries like HikariCP or Apache DBCP.
+- This implementation ensures that connections are reused, reducing the overhead of establishing
+new database connections repeatedly.

@@ -1,5 +1,6 @@
-# `Definition`
+# Implementation
 **The `@EmbeddedId` annotation has the following characteristics:**
+- it is one of two possible methods to denote a composite key;
 - it involves creating an
 [embeddable class](../../../../../../../../../../java/chapter-2/object-oriented/embeddable-classes/definition/definition.md)
 that represents the composite key

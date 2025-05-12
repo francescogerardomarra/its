@@ -10,8 +10,8 @@
         - [example](jdbc/management/example/example.md)
     - connection pooling
         - [definition](jdbc/pooling/definition/definition.md)
-        - [example 1: only JDBC](jdbc/pooling/example-1/example_1.md)
-        - [example 2: with HikariCP](jdbc/pooling/example-2/example_2.md)
+        - [example 1: manual](jdbc/pooling/example-1/example_1.md)
+        - [example 2: HikariCP](jdbc/pooling/example-2/example_2.md)
 - JPA
     - [definition](jpa/definition/definition.md)
     - [jakarta](jpa/jakarta/jakarta.md)
@@ -22,10 +22,10 @@
     - [JPA vs ORM](orm/jpa-vs-orm/jpa_vs_orm.md)
 - persistence in Spring
     - [definition](spring/definition/definition.md)
-    - [Spring Boot](spring/boot/boot.md)
-    - concepts
-        - [datasource](spring/concepts/datasource/datasource.md)
-        - [autoconfiguration](spring/concepts/auto-config/auto_config.md)
+    - Spring boot
+      - [what it is](spring/boot/what-it-is/what_it_is.md)
+      - [datasource](spring/boot/datasource/datasource.md)
+      - [autoconfiguration](spring/boot/auto-config/auto_config.md)
     - [JpaRepository](spring/repository/repository.md)
 - entity
     - [mapping](entity/mapping.md)

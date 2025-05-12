@@ -10,13 +10,3 @@ the method with a [transactional context](../lifecycle/boundaries/transactional-
 the method will be treated as part of a single, atomic unit of work.
 - if the method’s operations succeed, the transaction is committed (i.e., changes are persisted).
 - if an error occurs, the transaction is rolled back (i.e., all changes are discarded).
-
-
-<https://www.geeksforgeeks.org/transaction-in-dbms/>
-<https://www.geeksforgeeks.org/sql-transactions/>
-<https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/>
-<https://www.geeksforgeeks.org/dbms-dirty-read-in-sql/>
-<https://www.geeksforgeeks.org/types-of-schedules-in-dbms/>
-<https://www.geeksforgeeks.org/concurrency-problems-in-dbms-transactions/>
-<https://memgraph.com/blog/acid-transactions-meaning-of-isolation-levels>
-<https://www.geeksforgeeks.org/conflict-serializability-in-dbms/>

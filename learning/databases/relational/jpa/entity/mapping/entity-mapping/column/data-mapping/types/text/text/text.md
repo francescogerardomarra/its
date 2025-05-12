@@ -8,3 +8,7 @@
   to store the length of the string;
 - it is used to store large amounts of text data;
 - it is typically used when the maximum length of `VARCHAR` is insufficient.
+- **this data type is supported by these technologies:**
+  - MySQL
+  - PostgreSQL
+  - SQL Server

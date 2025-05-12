@@ -6,3 +6,5 @@
   padding with spaces if the stored string
   is shorter than the defined length;
 - it is used when there is a need to store multilingual data or characters outside the ASCII range.
+- **this data type is supported by these technologies:**
+  - SQL Server

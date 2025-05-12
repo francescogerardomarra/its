@@ -9,3 +9,7 @@ is shorter than the defined length;
 ISO-8859-1 (Latin-1), or any other character set configured in the database;
 - it is used for storing strings with 
 a fixed length, such as codes or abbreviations.
+- **this data type is supported by these technologies:**
+  - MySQL
+  - PostgreSQL
+  - SQL Server

@@ -29,14 +29,11 @@
     - [JpaRepository](spring/repository/repository.md)
 - entity
     - [mapping](entity/mapping.md)
+    - [constraints](entity/constraints.md)
     - [relationships](entity/relationships.md)
-        - example
-            - [db build](entity/entity-relationships/example/db-build/db_build.md)
-            - [application](entity/entity-relationships/example/application/application.md)
-            - [running](entity/entity-relationships/example/running/running.md)
-            - considerations
-                - [simple primary key](entity/entity-relationships/example/considerations/simple/simple.md)
-                - [implicit junction table](entity/entity-relationships/example/considerations/implicit/implicit.md)
+- custom queries
+  - JPQL
+  - Native queries
 - dto
     - [definition](../../../java/chapter-2/object-oriented/components/dto/dto.md)
     - [separation of concerns](dto/separation/separation.md)
@@ -46,21 +43,6 @@
         - [db build](dto/example/db-build/db_build.md)
         - [application](dto/example/application/application.md)
         - [running](dto/example/running/running.md)
-- custom queries
-    - JPQL
-        - [definition](entity/custom-queries/jpql/definition/definition.md)
-        - example
-            - [description](entity/custom-queries/jpql/example/description/description.md)
-            - [db build](entity/custom-queries/jpql/example/db-build/db_build.md)
-            - [application](entity/custom-queries/jpql/example/application/application.md)
-            - [running](entity/custom-queries/jpql/example/running/running.md)
-    - Native queries
-        - [definition](entity/custom-queries/native-queries/definition/definition.md)
-        - example
-            - [description](entity/custom-queries/native-queries/example/description/description.md)
-            - [db build](entity/custom-queries/native-queries/example/db-build/db_build.md)
-            - [application](entity/custom-queries/native-queries/example/application/application.md)
-            - [running](entity/custom-queries/native-queries/example/running/running.md)
 - transactions
     - [definition](transactions/definition/definition.md)
     - [why do they matter?](transactions/why/why.md)

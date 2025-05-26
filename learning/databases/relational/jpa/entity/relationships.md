@@ -31,29 +31,43 @@
       - [definition](entity-relationships/relationships/types/many-to-many/definition/definition.md)
       - [indirect relationship](entity-relationships/relationships/types/many-to-many/indirect/indirect.md)
       - [`@JoinTable`](entity-relationships/relationships/types/many-to-many/uni-directional/join-table/join_table.md)
-    - cascade operations
-      - [definition](entity-relationships/relationships/types/cascade-operations/definition/definition.md)
-      - [purpose](entity-relationships/relationships/types/cascade-operations/purpose/purpose.md)
-      - types
-        - [`CascadeType.PERSIST`](entity-relationships/relationships/types/cascade-operations/types/persist/persist.md)
-        - [`CascadeType.MERGE`](entity-relationships/relationships/types/cascade-operations/types/merge/merge.md)
-        - [`CascadeType.REMOVE`](entity-relationships/relationships/types/cascade-operations/types/remove/remove.md)
-        - [`CascadeType.REFRESH`](entity-relationships/relationships/types/cascade-operations/types/refresh/refresh.md)
-        - [`CascadeType.DETACH`](entity-relationships/relationships/types/cascade-operations/types/detach/detach.md)
-        - [`CascadeType.ALL`](entity-relationships/relationships/types/cascade-operations/types/all/all.md)
-        - [use cases](entity-relationships/relationships/types/cascade-operations/use-cases/use_cases.md)
-        - [example](entity-relationships/relationships/types/cascade-operations/example/example.md)
+    - cascading
+      - database-level
+        - [definition](entity-relationships/relationships/types/cascading/database-level/definition/definition.md)
+        - [implementation](entity-relationships/relationships/types/cascading/database-level/implementation/implementation.md)
+        - types
+          - [`ON DELETE CASCADE`](entity-relationships/relationships/types/cascading/database-level/on-delete-cascade/on_delete_cascade.md)
+          - [`ON DELETE SET NULL`](entity-relationships/relationships/types/cascading/database-level/on-delete-set-null/on_delete_set_null.md)
+          - [`ON DELETE SET DEFAULT`](entity-relationships/relationships/types/cascading/database-level/on-delete-set-default/on_delete_set_default.md)
+          - [`ON DELETE RESTRICT`](entity-relationships/relationships/types/cascading/database-level/on-delete-restrict/on_delete_restrict.md)
+          - [`ON DELETE NO ACTION`](entity-relationships/relationships/types/cascading/database-level/on-delete-no-action/on_delete_no_action.md)
+          - [`ON UPDATE CASCADE`](entity-relationships/relationships/types/cascading/database-level/on-update-cascade/on_update_cascade.md)
+          - [`ON UPDATE SET NULL`](entity-relationships/relationships/types/cascading/database-level/on-update-set-null/on_update_set_null.md)
+      - application-level
+        - [definition](entity-relationships/relationships/types/cascading/application-level/definition/definition.md)
+        - [implementation](entity-relationships/relationships/types/cascading/application-level/implementation/implementation.md)
+        - [JpaRepository vs Entity Manager](entity-relationships/relationships/types/cascading/application-level/jparepo-vs-manager/jparepo_vs_manager.md)
+        - types
+          - [`CascadeType.PERSIST`](entity-relationships/relationships/types/cascading/application-level/types/persist/persist.md)
+          - [`CascadeType.MERGE`](entity-relationships/relationships/types/cascading/application-level/types/merge/merge.md)
+          - [`CascadeType.REMOVE`](entity-relationships/relationships/types/cascading/application-level/types/remove/remove.md)
+          - [`CascadeType.REFRESH`](entity-relationships/relationships/types/cascading/application-level/types/refresh/refresh.md)
+          - [`CascadeType.DETACH`](entity-relationships/relationships/types/cascading/application-level/types/detach/detach.md)
+          - [`CascadeType.ALL`](entity-relationships/relationships/types/cascading/application-level/types/all/all.md)
     - fetch types
       - [definition](entity-relationships/relationships/types/fetch/definition/definition.md)
-      - [purpose](entity-relationships/relationships/types/fetch/purpose/purpose.md)
+      - [implementation](entity-relationships/relationships/types/fetch/implementation/implementation.md)
       - types
-        - `FetchType.EAGER`
-          - [definition](entity-relationships/relationships/types/fetch/types/eager/definition/definition.md)
-          - [use case](entity-relationships/relationships/types/fetch/types/eager/use-case/use_case.md)
-          - [example](entity-relationships/relationships/types/fetch/types/eager/example/example.md)
         - `FetchType.LAZY`
-          - [definition](entity-relationships/relationships/types/fetch/types/lazy/definition/definition.md)
-          - [use case](entity-relationships/relationships/types/fetch/types/lazy/use-case/use_case.md)
-          - [example](entity-relationships/relationships/types/fetch/types/lazy/example/example.md)
-    - orphan removal
-      - [definition](entity-relationships/relationships/types/orphan-removal/definition/definition.md)
+          - [`@OneToOne`](entity-relationships/relationships/types/fetch/types/lazy/one-to-one/one_to_one.md)
+          - [`@OneToMany`/`@ManyToOne`](entity-relationships/relationships/types/fetch/types/lazy/one-to-many/one_to_many.md)
+          - [`@ManyToMany`](entity-relationships/relationships/types/fetch/types/lazy/many-to-many/many_to_many.md)
+          - N+1 query problem
+            - [definition](entity-relationships/relationships/types/fetch/types/lazy/n1-problem/definition/definition.md)
+            - mitigations
+              - [`@BatchSize`](entity-relationships/relationships/types/fetch/types/lazy/n1-problem/mitigations/batch-size/batch_size.md)
+              - [explicit JOIN](entity-relationships/relationships/types/fetch/types/lazy/n1-problem/mitigations/join/join.md)//tofinish
+        - `FetchType.EAGER`
+          - `@OneToOne`
+          - `@OneToMany`/`@ManyToOne`
+          - `@ManyToMany`

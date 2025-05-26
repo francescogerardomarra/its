@@ -22,6 +22,8 @@ public class Person {
     private Long id;
 
     private String name;
+    
+    private String email;
 
     // Inverse side of the relationship
     @OneToOne(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)

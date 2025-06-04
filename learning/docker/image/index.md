@@ -1,0 +1,45 @@
+# Image
+
+- [Definition](definition/definition.md)
+- [Characteristics](characteristic/characteristic.md)
+- [Structure](structure/structure.md)
+- [Where are images stored?](where-stored/where_stored.md)
+- [Build an image](build/build.md)
+- Tags and metadata
+    - [Definition](tag-and-meta/definition/definition.md)
+    - [What is a tag?](tag-and-meta/what-is-tag/what_is_tag.md)
+    - [How to tag an image?](tag-and-meta/how-tag/how_tag.md)
+    - Multiple image tags
+      - [Definition](tag-and-meta/multiple-tag/definition/definition.md)
+      - [Tagging during build](tag-and-meta/multiple-tag/during-build/during_build.md)
+      - [Tagging after build](tag-and-meta/multiple-tag/after-build/after_build.md)
+    - [Push the tag to repository](tag-and-meta/push-repo/push_repo.md)
+    - Dangling image
+      - [Introduction](tag-and-meta/dangling/intro/intro.md)
+      - [Where do they come from?](tag-and-meta/dangling/how-create/how_create.md)
+      - [How to list them?](tag-and-meta/dangling/how-list/how_list.md)
+      - [Characteristics](tag-and-meta/dangling/characteristic/characteristic.md)
+      - [How to remove them?](tag-and-meta/dangling/remove/remove.md)
+      - [Is it possible to instantiate containers?](tag-and-meta/dangling/instantiate-container/instantiate_container.md)
+      - [Example](tag-and-meta/dangling/example/example.md)
+      - [How to avoid creating them](tag-and-meta/dangling/avoid/avoid.md)
+    - Remove a tag
+    - `latest` tag
+      - [Definition](tag-and-meta/latest-tag/definition/definition.md)
+      - [How `latest` is assigned?](tag-and-meta/latest-tag/how-assigned/how_assigned.md)
+      - [Example](tag-and-meta/latest-tag/example/example.md)
+      - Risks of referring to `latest` tag
+        - [Unpredictable behavior](tag-and-meta/latest-tag/risk/unpredictable/unpredictable.md)
+        - [Lack of control](tag-and-meta/latest-tag/risk/lack/lack.md)
+        - [Best practices](tag-and-meta/latest-tag/risk/best/best.md)
+    - [Why use tags?](tag-and-meta/why-use-tag/why_use_tag.md)
+    - [Additional image metadata](tag-and-meta/additional-meta/additional_meta.md)
+- [Create a container from an image](container-from-image/container_from_image.md) // TODO: link the container chapter
+- Common commands
+  - [Definition](common-command/definition/definition.md)
+  - [Build](common-command/build/build.md)
+  - [Tag](common-command/tag/tag.md)
+  - [List](common-command/list/list.md)
+  - [Inspect](common-command/inspect/inspect.md)
+  - [Remove](common-command/remove/remove.md)
+  - [Pushing and pulling](common-command/push-pull/push_pull.md)

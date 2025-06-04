@@ -1,0 +1,120 @@
+# Docker
+
+- [What is Docker?](what-is-docker/what_is_docker.md)
+- Docker vs VM
+  - [What is a VM (Virtual Machine)?](docker-vs-vm/what-is/what_is.md)
+  - [Why use VM?](docker-vs-vm/why-use/why_use.md)
+  - Types of VM
+    - [Definition](docker-vs-vm/type/definition/definition.md)
+    - [Type 1](docker-vs-vm/type/type-one/type_one.md)
+    - [Type 2](docker-vs-vm/type/type-two/type_two.md)
+    - [Comparison](docker-vs-vm/type/comparison/comparison.md)
+  - Comparison
+    - [Architecture](docker-vs-vm/comparison/architecture/architecture.md)
+    - [Startup time](docker-vs-vm/comparison/startup/startup.md)
+    - [Resource utilization](docker-vs-vm/comparison/resource/resource.md)
+    - [Isolation](docker-vs-vm/comparison/isolation/isolation.md)
+    - [Portability](docker-vs-vm/comparison/portability/portability.md)
+    - [Performance](docker-vs-vm/comparison/performance/performance.md)
+    - [Use cases](docker-vs-vm/comparison/use-case/use_case.md)
+    - [Networking](docker-vs-vm/comparison/networking/networking.md)
+    - [Storage](docker-vs-vm/comparison/storage/storage.md)
+    - [Table](docker-vs-vm/comparison/table/table.md)
+- Architecture
+  - [Main layers](architecture/main-layer/main_layer.md)
+  - Components explanation
+    - [Docker client](architecture/component/client/client.md)
+    - [Docker host](architecture/component/host/host.md)
+    - [Docker registry](architecture/component/registry/registry.md)
+  - [`containerd` and `runc`](architecture/containerd-vs-runc/containerd_vs_runc.md)
+  - [Workflow](architecture/workflow/workflow.md)
+  - [Underlying technologies](architecture/technology/technology.md)
+  - [Diagram of Docker architecture](architecture/diagram/diagram.md)
+- Docker engine
+  - [Definition](docker-engine/definition/definition.md)
+  - Components
+    - [Docker Daemon](docker-engine/component/daemon/daemon.md)
+    - [Docker CLI](docker-engine/component/cli/cli.md)
+    - [REST API](docker-engine/component/rest-api/rest_api.md)
+  - [Comparison with Docker architecture](docker-engine/comparison/comparison.md)
+  - [How it works](docker-engine/how-it-work/how_it_work.md)
+  - [Features](docker-engine/feature/feature.md)
+  - [Workflow](docker-engine/workflow/workflow.md)
+- Container OS different from host OS
+  - [Definition](os-different/definition/definition.md)
+  - [Containers and the host OS kernel](os-different/os-kernel/os_kernel.md)
+  - [User space](os-different/user-space/user_space.md)
+  - [Isolation via namespaces and cgroups](os-different/isolation/isolation.md)
+  - [Example](os-different/example/example.md)
+  - [Why it works?](os-different/why-it-work/why_it_work.md)
+  - [Limitations](os-different/limitation/limitation.md)
+  - [Comparison with VM](os-different/vm-comparison/vm_comparison.md)
+- Container
+  - [Definition](container/definition/definition.md)
+  - [Where are containers stored?](container/where-stored/where_stored.md)
+  - Containers and VMs together
+    - [Definition](container/together/definition/definition.md)
+    - Example
+      - [Multiple app without containers](container/together/example/without-container/without_container.md)
+      - [Multiple app with containers](container/together/example/with-container/with_container.md)
+  - Container lifecycle
+    - [Definition](container/lifecycle/definition/definition.md)
+    - [After stop](container/lifecycle/after-stop/after_stop.md)
+  - [Docker run VS Docker start](container/run-vs-start/run_vs_start.md)
+  - Running a container
+    - [Prerequisites](container/running/prerequisite/prerequisite.md)
+    - [Pull the image](container/running/image-pull/image_pull.md)
+    - [Run the container](container/running/run/run.md)
+    - [Verify the container is running](container/running/verify/verify.md)
+  - Remove a container
+    - [Remove by container id](container/remove/by-id/by_id.md)
+    - [Remove by container name](container/remove/by-name/by_name.md)
+  - Common commands
+    - General container management
+      - [List running containers](container/common-command/general/list-running/list_running.md)
+      - [Start a stopped container](container/common-command/general/start-stopped/start_stopped.md)
+      - [Stop a running container](container/common-command/general/stop-running/stop_running.md)
+      - [Restart a container](container/common-command/general/restart/restart.md)
+      - Remove a container
+        - [Remove a stopped container](container/common-command/general/remove/stopped/stopped.md)
+        - [Remove a running container](container/common-command/general/remove/running/running.md)
+      - [Inspect a container details](container/common-command/general/inspect/inspect.md)
+      - Display container logs
+        - [Static display](container/common-command/general/display/static/static.md)
+        - [Dynamic display](container/common-command/general/display/dynamic/dynamic.md)
+    - Container creation and execution
+      - Run a container
+        - [Run in attached mode (default)](container/common-command/creation-execution/run/attached-mode/attached_mode.md)
+        - [Run in detached mode](container/common-command/creation-execution/run/detached-mode/detached_mode.md)
+        - [Run with port mapping](container/common-command/creation-execution/run/port-mapping/port_mapping.md)
+        - [Run with a name](container/common-command/creation-execution/run/with-name/with_name.md)
+        - [Run interactively](container/common-command/creation-execution/run/interactively/interactively.md)
+      - Execute a command in a running container
+        - [Single command](container/common-command/creation-execution/in-running/single/single.md)
+        - [Execute shell](container/common-command/creation-execution/in-running/shell/shell.md)
+        - [Interactively run vs execute](container/common-command/creation-execution/in-running/run-vs-execute/run_vs_execute.md)
+      - [Run a container and remove it after it stops](container/common-command/creation-execution/run-remove/run_remove.md)
+    - Stats and monitoring
+      - [Check resource usage (CPU, memory, I/O)](container/common-command/monitoring/check-resource/check_resource.md)
+    - Checkpointing and saving
+      - Commit changes to an image
+      - Export a container
+      - Import a container from a file
+    - Cleanup
+      - Remove all stopped containers
+      - Remove unused images 
+      - Remove unused volumes 
+      - Remove all unused objects
+- Image
+- Registry
+- Dockerfile
+- Layers
+- Multi-stage builds
+- Ports
+- Networking
+- Overriding container defaults
+- Volumes
+- Sharing local files with containers
+- Multi-container application
+- Secrets
+- Orchestrators

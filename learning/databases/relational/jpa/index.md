@@ -26,14 +26,14 @@
       - [what it is](spring/boot/what-it-is/what_it_is.md)
       - [datasource](spring/boot/datasource/datasource.md)
       - [autoconfiguration](spring/boot/auto-config/auto_config.md)
-    - [JpaRepository](spring/repository/repository.md)
+    - [`JpaRepository`](spring/repository/repository.md)
 - entity
     - [mapping](entity/mapping.md)
     - [constraints](entity/constraints.md)
     - [relationships](entity/relationships.md)
 - custom queries
-  - JPQL
-  - Native queries
+  - [JPQL](custom-queries/jpql/jpql.md)
+  - [native queries](custom-queries/native-queries/native_queries.md)
 - dto
     - [definition](../../../java/chapter-2/object-oriented/components/dto/dto.md)
     - [separation of concerns](dto/separation/separation.md)

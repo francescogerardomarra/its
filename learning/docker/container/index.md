@@ -1,0 +1,68 @@
+# Container
+
+
+- [Definition](definition/definition.md)
+- [Where are containers stored?](where-stored/where_stored.md)
+- Containers and VMs together
+    - [Definition](together/definition/definition.md)
+    - Example
+        - [Multiple app without containers](together/example/without-container/without_container.md)
+        - [Multiple app with containers](together/example/with-container/with_container.md)
+- Container lifecycle
+    - [Definition](lifecycle/definition/definition.md)
+    - [After stop](lifecycle/after-stop/after_stop.md)
+- [Docker run VS Docker start](run-vs-start/run_vs_start.md)
+- Running a container
+    - [Prerequisites](running/prerequisite/prerequisite.md)
+    - [Pull the image](running/image-pull/image_pull.md)
+    - [Run the container](running/run/run.md)
+    - [Verify the container is running](running/verify/verify.md)
+- Remove a container
+    - [Remove by container id](remove/by-id/by_id.md)
+    - [Remove by container name](remove/by-name/by_name.md)
+- Common commands
+    - General container management
+        - [List running containers](common-command/general/list-running/list_running.md)
+        - [Start a stopped container](common-command/general/start-stopped/start_stopped.md)
+        - [Stop a running container](common-command/general/stop-running/stop_running.md)
+        - [Kill a running container](common-command/general/kill-container/kill_container.md)
+        - [Restart a container](common-command/general/restart/restart.md)
+        - Remove a container
+            - [Remove a stopped container](common-command/general/remove/stopped/stopped.md)
+            - [Remove a running container](common-command/general/remove/running/running.md)
+        - [Inspect a container details](common-command/general/inspect/inspect.md)
+        - Display container logs
+            - [Static display](common-command/general/display/static/static.md)
+            - [Dynamic display](common-command/general/display/dynamic/dynamic.md)
+    - Container creation and execution
+        - Run a container
+            - [Run in attached mode (default)](common-command/creation-execution/run/attached-mode/attached_mode.md)
+            - [Run in detached mode](common-command/creation-execution/run/detached-mode/detached_mode.md)
+            - [Run with port mapping](common-command/creation-execution/run/port-mapping/port_mapping.md)
+            - [Run with automatic port mapping](common-command/creation-execution/run/auto-port/auto_port.md)
+            - [Run with a name](common-command/creation-execution/run/with-name/with_name.md)
+            - [Run interactively](common-command/creation-execution/run/interactively/interactively.md)
+            - [Restart policy](common-command/creation-execution/run/restart/restart.md)
+        - Execute a command in a running container
+            - [Single command](common-command/creation-execution/in-running/single/single.md)
+            - [Execute shell](common-command/creation-execution/in-running/shell/shell.md)
+            - [Interactively run vs execute](common-command/creation-execution/in-running/run-vs-execute/run_vs_execute.md)
+            - [docker attach](common-command/creation-execution/in-running/attach/attach.md)
+            - Disconnect from container without stopping it
+              - [Interactive mode](common-command/creation-execution/in-running/disconnect/interactive/interactive.md)
+              - [Non-interactive mode](common-command/creation-execution/in-running/disconnect/non-interactive/non_interactive.md)
+        - [Run a container and remove it after it stops](common-command/creation-execution/run-remove/run_remove.md)
+    - Resource usage
+      - Memory
+        - [Limit memory](common-command/resource/memory/only-memory/only_memory.md)
+        - [Limit memory + swap](common-command/resource/memory/swap/swap.md)
+      - CPU
+        - [Limit CPU cores](common-command/resource/cpu/core/core.md)
+        - [Pin to specific cores (CPU affinity)](common-command/resource/cpu/pin-core/pin_core.md)
+        - [Set CPU shares (relative weight)](common-command/resource/cpu/cpu-share/cpu_share.md)
+    - Stats and monitoring
+        - [Check resource usage (CPU, memory, I/O)](common-command/monitoring/check-resource/check_resource.md)
+    - Checkpointing and saving
+        - [Commit changes to an image](common-command/checkpointing/commit/commit.md)
+    - Cleanup
+        - [Remove all stopped containers](common-command/cleanup/remove-stopped/remove_stopped.md)

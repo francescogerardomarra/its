@@ -1,0 +1,266 @@
+# Docker Swarm
+
+<!-- todo: check note files and grammar, also unlinked files -->
+
+- [Definition](defintion/definition.md)
+- [When use it](when-use/when_use.md)
+- Swarm mode
+  - [Definition](swarm-mode/definition/definition.md)
+  - [Why use it](swarm-mode/why-use/why_use.md)
+  - [What changes when enabled](swarm-mode/what-change/what_change.md)
+  - [How enable it](swarm-mode/how-enable/how_enable.md)
+- Nodes
+  - [Definition](node/definition/definition.md)
+  - Why having multiple nodes
+    - [Scalability](node/why-multiple/scalability/scalability.md)
+    - [Fault tolerance](node/why-multiple/fault/fault.md)
+    - [High availability](node/why-multiple/availability/availability.md)
+    - Seamless service deployment
+      - [Rolling updates](node/why-multiple/service-deployment/rolling/rolling.md)
+      - [Zero downtime](node/why-multiple/service-deployment/zero-downtime/zero_downtime.md)
+      - [Example](node/why-multiple/service-deployment/example/example.md)
+      - Can a container be suddenly shut down?
+        - [Definition](node/why-multiple/service-deployment/shut-down/definition/definition.md)
+        - How to prevent
+          - Option 1 (common)
+            - Canary releases
+              - [Definition](node/why-multiple/service-deployment/shut-down/how-prevent/option-one/canary-release/definition/definition.md)
+              - Use in Docker Swarm
+                - [Definition](node/why-multiple/service-deployment/shut-down/how-prevent/option-one/canary-release/in-swarm/definition/definition.md)
+                - Steps to implement canary releases in Docker Swarm
+                  1. [deploy two versions of the service](node/why-multiple/service-deployment/shut-down/how-prevent/option-one/canary-release/in-swarm/step/deploy/deploy.md)
+                  2. [use a reverse proxy for traffic splitting](node/why-multiple/service-deployment/shut-down/how-prevent/option-one/canary-release/in-swarm/step/reverse-proxy/reverse_proxy.md)
+                  3. [monitor the canary](node/why-multiple/service-deployment/shut-down/how-prevent/option-one/canary-release/in-swarm/step/monitor/monitor.md)
+                  4. [roll forward or roll back](node/why-multiple/service-deployment/shut-down/how-prevent/option-one/canary-release/in-swarm/step/roll-back/roll_back.md)
+              - [Why can they be used to assure zero downtime?](node/why-multiple/service-deployment/shut-down/how-prevent/option-one/canary-release/zero-downtime/zero_downtime.md)
+          - Option 2 (less common)
+            - [Definition](node/why-multiple/service-deployment/shut-down/how-prevent/option-two/definition/definition.md)
+            - Steps:
+              1. [Graceful shutdown handler](node/why-multiple/service-deployment/shut-down/how-prevent/option-two/step/graceful-shutdown/graceful_shutdown.md)
+              2. [`stop_grace_period` option](node/why-multiple/service-deployment/shut-down/how-prevent/option-two/step/stop-period/stop_period.md)
+              3. [Health checks](node/why-multiple/service-deployment/shut-down/how-prevent/option-two/step/health-check/health_check.md)
+              4. [`--update-parallelism` and `--update-delay`](node/why-multiple/service-deployment/shut-down/how-prevent/option-two/step/parallelism-delay/parallelism_delay.md)
+              5. [Load balancer](node/why-multiple/service-deployment/shut-down/how-prevent/option-two/step/load-balancer/load_balancer.md)
+    - [Isolation and resource management](node/why-multiple/isolation/isolation.md)
+  - [Is it possible to have multiple nodes on one machine?](node/one-machine/one_machine.md)
+  - Types
+    - Manager node
+      - Core responsibilities
+        - [Cluster management](node/type/manager/responsibility/management/management.md)
+        - [Orchestration and scheduling](node/type/manager/responsibility/orchestration/orchestration.md)
+        - Raft consensus
+          - [Introduction](node/type/manager/responsibility/raft-consensus/intro/intro.md)
+          - [Purpose](node/type/manager/responsibility/raft-consensus/purpose/purpose.md)
+          - [Roles](node/type/manager/responsibility/raft-consensus/role/role.md)
+          - [How it works](node/type/manager/responsibility/raft-consensus/how-work/how_work.md)
+          - [How quorum is calculated](node/type/manager/responsibility/raft-consensus/quorum/quorum.md)
+          - [What happens if you don't have a quorum?](node/type/manager/responsibility/raft-consensus/no-quorum/no_quorum.md)
+          - [Example](node/type/manager/responsibility/raft-consensus/example/example.md)
+        - [Security](node/type/manager/responsibility/security/security.md)
+      - [Is it possible to have multiple manager nodes?](node/type/manager/multiple-manager/multiple_manager.md)
+      - [Do they run also workloads?](node/type/manager/workload/workload.md)
+      - [How to create](node/type/manager/how-create/how_create.md)
+      - [Add manager nodes](node/type/manager/add-manager/add_manager.md)
+      - Example 
+        - [Prerequisites](node/type/manager/example/prerequisite/prerequisite.md)
+        - [Definition](node/type/manager/example/definition/definition.md)
+        - [Steps](node/type/manager/example/step/step.md)
+    - Worker node
+      - [Definition](node/type/worker/definition/definition.md)
+      - [How to create it](node/type/worker/how-create/how_create.md)
+      - [Promote a worker to manager](node/type/worker/promote/promote.md)
+      - [Example](node/type/worker/example/example.md)
+      - Key features
+        - [Security and communication](node/type/worker/feature/security/security.md)
+        - [Fault tolerance](node/type/worker/feature/fault/fault.md)
+    - Example
+      - [Prerequisites](node/type/example/prerequisite/prerequisite.md)
+      - [Definition](node/type/example/definition/definition.md)
+      - [Steps](node/type/example/step/step.md)
+- Services
+  - [Definition](service/definition/definition.md)
+  - [What it defines](service/what-define/what_define.md)
+  - Operations
+    - [How to create](service/operation/how-create/how_create.md)
+    - How to update
+      - [Definition](service/operation/how-update/definition/definition.md)
+      - [Syntax](service/operation/how-update/syntax/syntax.md)
+      - What happens under the hood
+        1. [Swarm manager validates the request](service/operation/how-update/what-happen/validate/validate.md)
+        2. [Rolling update begins (if applicable)](service/operation/how-update/what-happen/rolling-update/rolling_update.md)
+        3. [Respecting update parameters](service/operation/how-update/what-happen/update-param/update_param.md)
+        4. [Tasks transition from old to new state](service/operation/how-update/what-happen/task-transition/task_transition.md)
+        5. [Old containers removed](service/operation/how-update/what-happen/old-container/old_container.md)
+        6. [Health Checks and Failures](service/operation/how-update/what-happen/health-check/health_check.md)
+    - [List services](service/operation/list-service/list_service.md)
+    - [Inspect services](service/operation/inspect-service/inspect-service.md)
+  - Types
+    - Replicated
+      - [Definition](service/type/replicated/definition/definition.md)
+      - [Use case](service/type/replicated/use-case/use_case.md)
+    - Global
+      - [Definition](service/type/global/definition/definition.md)
+      - [Use case](service/type/global/use-case/use_case.md)
+  - [Service vs container](service/service-vs-container/service_vs_container.md)
+  - [Where the pulled images are stored](service/image-stored/image_stored.md)
+  - Options
+    - [Name a service (`--name`)](service/option/name/name.md)
+    - [Set the replicas number (`--replicas`)](service/option/replica/replica.md)
+    - [Publish container port (`-p`)](service/option/port/port.md)
+    - Set where run (`--constraint`)
+      - [Definition](service/option/constraint/definition/definition.md)
+      - [Syntax](service/option/constraint/syntax/syntax.md)
+      - [Example](service/option/constraint/example/example.md)
+      - [Multiple constraints](service/option/constraint/multiple/multiple.md)
+  - [Example](service/example/example.md)
+  - [Scale service](service/scale/scale.md)
+- Task
+  - [Definition](task/definition/definition.md)
+  - [Relation with service](task/service-relation/service_relation.md)
+  - [Key properties](task/key-properties/key_properties.md)    
+  - [Lifecycle](task/lifecycle/lifecycle.md)
+  - Operations
+    - [List tasks](task/operation/list/list.md)
+    - [Inspect tasks](task/operation/inspect/inspect.md)
+- Rolling updates
+  - [Definition](rolling-update/definition/definition.md)
+  - [Key components](rolling-update/key-component/key_component.md)
+  - Examples
+    - [Update a service](rolling-update/example/update/update.md)
+    - Manual rollbacks
+      - [Definition](rolling-update/example/manual/definition/definition.md)
+      - [When to use](rolling-update/example/manual/when-use/when_use.md)
+  - [Benefits](rolling-update/benefit/benefit.md)
+- Load balancer
+  - [Introduction](load-balancer/intro/intro.md)
+  - Routing mesh
+    - [Definition](load-balancer/routing-mesh/definition/definition.md) <!-- todo: say that is a spread load balancer and not a centralized one -->
+    - [How it works](load-balancer/routing-mesh/how-work/how_work.md)
+    - [Example](load-balancer/routing-mesh/example/example.md)
+    - Distributed load balancer
+      - [Definition](load-balancer/routing-mesh/distributed/definition/definition.md)
+      - [Why is distributed (advantages)](load-balancer/routing-mesh/distributed/why/why.md)
+    - [Bypass the routing mesh](load-balancer/routing-mesh/bypass/bypass.md)
+    - Internal mechanism
+      - [Service creation and publishing](load-balancer/routing-mesh/internal/service-creation/service_creation.md)
+      - [Ingress network setup](load-balancer/routing-mesh/internal/ingress/ingress.md)
+      - [IPVS and load balancing](load-balancer/routing-mesh/internal/ipvs/ipvs.md)
+      - [Load balancing mechanism](load-balancer/routing-mesh/internal/load-balance/load_balance.md)
+      - [Connection path summary](load-balancer/routing-mesh/internal/connection/connection.md)
+    - Limitations
+      - [Lack of traffic awareness](load-balancer/routing-mesh/limitation/traffic/traffic.md)
+      - [No support for UDP or other protocols](load-balancer/routing-mesh/limitation/no-udp/no_udp.md)
+      - [Security and isolation](load-balancer/routing-mesh/limitation/security/security.md)
+      - [Scalability limits](load-balancer/routing-mesh/limitation/scalability/scalability.md)
+  - DNS round-robin
+    - [Definition](load-balancer/dns/definition/definition.md)
+    - [How it works](load-balancer/dns/how-work/how_work.md)
+    - [How the IP is chosen](load-balancer/dns/how-ip/how_ip.md)
+  - Traefik
+    - [Definition](load-balancer/traefik/definition/definition.md)
+    - [How it works with Swarm](load-balancer/traefik/how-work/how_work.md)
+    - Comparison with routing mesh
+      - [Definition](load-balancer/traefik/mesh-comparison/definition/definition.md)
+      - [Table](load-balancer/traefik/mesh-comparison/table/table.md)
+    - Global mode
+      - [Definition](load-balancer/traefik/global/definition/definition.md)
+      - [Benefits](load-balancer/traefik/global/benefit/benefit.md)
+    - Example
+      - [Definition](load-balancer/traefik/example/definition/definition.md)
+      - [Traefik configuration](load-balancer/traefik/example/traefik/traefik.md)
+      - [`myapp` service configuration](load-balancer/traefik/example/myapp/myapp.md)
+  - Example
+    - Domain with 5 nodes
+      - Associate all nodes with the domain
+        - [Definition](load-balancer/example/five-node/all-node/definition/definition.md)
+        - [Implementation](load-balancer/example/five-node/all-node/implementation/implementation.md)
+      - Associate only one node with the domain
+        - [Definition](load-balancer/example/five-node/single-node/definition/definition.md)
+        - [Implementation](load-balancer/example/five-node/single-node/implementation/implementation.md)
+      - [Use Traefik as load balancer](load-balancer/example/traefik/traefik.md)
+- Networking
+  - Overlay
+    - [Definition](networking/overlay/definition/definition.md)
+    - [When it is used](networking/overlay/when-used/when_used.md)
+    - [How it works](networking/overlay/how-work/how_work.md)
+    - [Example](networking/overlay/example/example.md)
+    - [Comparison with bridge network](networking/overlay/bridge-comparison/bridge_comparison.md)
+- Volumes
+  - [Definition](volume/definition/definition.md)
+  - Types
+    - Local volumes (default)
+      - [Definition](volume/type/local/definition/definition.md)
+      - [Problem in a distributed environment](volume/type/local/problem/problem.md)
+    - [Shared volumes (e.g., NFS, CIFS or cloud storage)](volume/type/shared/shared.md)
+    - Docker volume plugins
+      - [Definition](volume/type/plugin/definition/definition.md)
+      - [Differences from shared volumes](volume/type/plugin/shared-diff/shared_diff.md)
+  - Example
+    - Local volume
+      - [CLI](volume/example/local/cli/cli.md)
+      - [Docker Compose](volume/example/local/compose/compose.md)
+    - Shared volume
+      - [Definition](volume/example/shared/definition/definition.md)
+      - Steps
+        1. [Prepare NFS server](volume/example/shared/step/nfs-server/nfs_server.md)
+        2. [`docker-compose.yml` file](volume/example/shared/step/compose/compose.md)
+        3. [Deploy to Docker Swarm](volume/example/shared/step/deploy/deploy.md)
+        4. [Verify](volume/example/shared/step/verify/verify.md)
+  - [Best practices](volume/best-practice/best_practice.md)
+- [Secret management](secret/secret.md)
+- [Docker Compose](compose/compose.md)
+- Stack
+  - [Definition](stack/definition/definition.md)
+  - [Exist just with Docker Compose](stack/only-compose/only_compose.md)
+  - Why not `docker compose up` command
+    - [Definition](stack/no-up/definition/definition.md)
+    - [Why `docker compose up` doesn't work with Swarm](stack/no-up/not-working/not_working.md)
+- Common commands
+  - Definition <!-- todo: copy the definition from other common commands chapters --> 
+  - Cluster management
+    - [Initialize a Swarm](common-command/cluster/initialize/initialize.md)
+    - [Join a Swarm (worker or manager)](common-command/cluster/initialize/initialize.md)
+    - Get join tokens
+      - [Worker node](common-command/cluster/get-token/worker/worker.md)
+      - [Manager node](common-command/cluster/get-token/manager/manager.md)
+    - [Leave a Swarm](common-command/cluster/leave-swarm/leave_swarm.md)
+  - Node management
+    - [List all nodes](common-command/node/list/list.md)
+    - [Inspect a node](common-command/node/inspect/inspect.md)
+    - Update node availability
+      - [Drain](common-command/node/availability/drain/drain.md)
+      - [Active](common-command/node/availability/active/active.md)
+    - Manage node roles
+      - [Promote a node](common-command/node/manage-role/promote/promote.md)
+      - [Demote a node](common-command/node/manage-role/demote/demote.md)
+  - Service management
+    - [Create a service](common-command/service/create/create.md)
+    - [List services](common-command/service/list/list.md)
+    - [Inspect a service](common-command/service/inspect/inspect.md)
+    - [List tasks in a service](common-command/service/list-task/list_task.md)
+    - [Update a service](common-command/service/update/update.md)
+    - [Scale a service](common-command/service/scale/scale.md)
+    - [Remove a service](common-command/service/remove/remove.md)
+  - Stack management
+    - [Deploy a stack from a `docker-compose.yml` file](common-command/stack/deploy/deploy.md)
+    - [List stacks](common-command/stack/list-stack/list_stack.md)
+    - [List services in a stack](common-command/stack/list-service/list_service.md)
+    - [Remove a stack](common-command/stack/remove/remove.md)
+  - Monitoring and troubleshooting
+    - [View service logs](common-command/monitoring/service-log/service_log.md)
+    - [View system events](common-command/monitoring/system-event/system_event.md)
+
+  - [node update](common-command/node-update/node_update.md) <!-- todo: implement this section -->
+  - [docker service update --rollback <service_name>](common-command/update-rollback/update_rollback.md) <!-- todo: implement this section -->
+  - Connect to network (`--network`)
+  - Set env variables (`--env`)
+  - Mount volumes or bind mount
+
+- [note new](note_new.md)
+
+- [see note here](note.md)
+
+
+<!-- todo: explain route mesh (load balancer): (using the routing mesh, which is a built-in load balancing system that forwards incoming traffic on published ports to available service replicas anywhere in the Swarm -->
+<!-- todo: explain docker service rollback my_service -->
+<!-- todo: add the diagram in [note](load-balancer/note-two/note.md) in the routing mesh chapter -->

@@ -1,0 +1,67 @@
+# Volume
+
+- [Introduction](intro/intro.md)
+- [Why use volumes](why-use/why_use.md)
+- Mounts
+  - [Introduction](mount/intro/intro.md)
+  - [Lifetime](mount/lifetime/lifetime.md)
+  - Type
+    - Bind mounts
+      - [Definition](mount/type/bind/definition/definition.md)
+      - [How it works (with example)](mount/type/bind/how-work/how_work.md)
+      - [Why use them](mount/type/bind/why-use/why_use.md)
+      - [What happens to container folder content?](mount/type/bind/container-content/container_content.md)
+    - Named volumes
+      - [Definition](mount/type/named/definition/definition.md)
+      - [How it works (with example)](mount/type/named/how-work/how_work.md)
+      - [Why use them](mount/type/named/why-use/why_use.md)
+      - [What happens to container folder content?](mount/type/named/container-content/container_content.md)
+    - Anonymous volumes
+      - [Definition](mount/type/anonymous/definition/definition.md)
+      - [How it works (with example)](mount/type/anonymous/how-work/how_work.md)
+      - [Why use them (and why prefer named volumes)](mount/type/anonymous/why-use/why_use.md)
+      - [What happens to container folder content?](mount/type/anonymous/container-content/container_content.md)
+- Create volumes
+  - [Manually](create/manually/manually.md)
+  - Automatically
+    - [Dockerfile](create/automatically/dockerfile/dockerfile.md)
+    - [Container inialitization](create/automatically/container/container.md)
+    - [`docker-compose.yml` file](create/automatically/compose/compose.md)
+- [Where they are stored](where-stored/where_stored.md)
+- Share volumes
+  - [Bind mounts](share/bind/bind.md)
+  - [Named volumes](share/named/named.md)
+  - [Anonymous volumes](share/anonymous/anonymous.md)
+- Operation
+  - [List](operation/list/list.md)
+  - [Inspect](operation/inspect/inspect.md) 
+  - [Remove](operation/remove/remove.md)
+  - [Prune](operation/prune/prune.md)
+- Drivers
+  - [Definition](driver/definition/definition.md)
+  - Type
+    - [local](driver/type/local/local.md)
+    - nfs
+      - [Definition](driver/type/nfs/definition/definition.md)
+      - [Example use case](driver/type/nfs/use-case/use_case.md)
+      - [Example](driver/type/nfs/example/example.md)
+      - [Important notes](driver/type/nfs/note/note.md)
+    - tmpfs
+      - [Definition](driver/type/tmpfs/definition/definition.md)
+      - [When use it](driver/type/tmpfs/when-use/when_use.md)
+      - [Example](driver/type/tmpfs/example/example.md)
+    - [Cloud or third part](driver/type/cloud/cloud.md)
+    - Custom
+      - [Definition](driver/type/custom/definition/definition.md)
+      - [Why use it](driver/type/custom/why-use/why_use.md)
+- [Is it possible to assign an existing volume to an existing container?](existing-container/existing_container.md)
+- Common commands
+  - Create volumes
+    - [docker volume create](common-command/create/volume-create/volume_create.md)
+  - List volumes
+    - [docker volume ls](common-command/list/volume-ls/volume_ls.md)
+  - Inspect a volume
+    - [docker volume inspect](common-command/inspect/volume-inspect/volume_inspect.md)
+  - Remove a volume
+    - [docker volume rm](common-command/remove/volume-rm/volume_rm.md)
+    - [docker volume prune](common-command/remove/volume-prune/volume_prune.md)

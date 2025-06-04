@@ -1,0 +1,11 @@
+# Comparison
+
+| **Aspect**                | **Pipeline generates artifact, `Dockerfile` builds image**                                                 | **Multi-stage Dockerfile builds artifact & image**                                                         |
+|---------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| **Build process**         | the pipeline compiles the code and generates an artifact (e.g., JAR, binary, frontend bundle).             | the `Dockerfile` compiles the code inside a container as part of a multi-stage build.                      |
+| **Build location**        | compilation happens on the CI/CD server (GitHub Actions, Jenkins, GitLab CI, etc.).                        | compilation happens inside the container during the `docker build` process.                                |
+| **Artifact reusability**  | the artifact (JAR, binary) can be reused for different environments (e.g., testing, production).           | the compiled code is directly embedded in the Docker image, not reusable outside the image.                |
+| **Performance & caching** | faster builds since the pipeline caches dependencies and only updates changed parts.                       | can be slower since Docker rebuilds the application each time, unless caching is optimized.                |
+| **Image size**            | more control over what goes into the image; only necessary files are copied.                               | multi-stage builds optimize the image, but may still contain unnecessary dependencies if not handled well. |
+| **Security & isolation**  | builds are isolated on the CI/CD server, preventing unnecessary dependencies inside the container.         | dependencies are installed inside the build stage but discarded before the final stage.                    |
+| **Flexibility**           | easier to integrate with multiple deployment strategies (e.g., deploy JAR to a server **without** Docker). | tightly coupled with Docker; the application always runs in a containerized environment.                   |

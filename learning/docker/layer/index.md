@@ -1,0 +1,21 @@
+# Layers
+
+- [Introduction](intro/intro.md)
+- [What is a layer?](what-is/what_is.md)
+- Layers creation
+  - [Example of creating layers](layer-creation/example-creating/example_creating.md)
+  - [What's inside a layer?](layer-creation/inside-layer/inside_layer.md) 
+  - [Where are layers stored?](layer-creation/where-stored/where_stored.md)
+  - [Commands that create layers](layer-creation/command-create/command_create.md)
+  - [Persist container layer to image (`docker commit`)](layer-creation/persist-container/persist_container.md)
+- [Each layer is read-only](read-only/read-only.md)
+- [Image layers with container](with-container/with_container.md)
+- Caching layers
+  - [Definition](caching/definition/definition.md)
+  - [How caching works](caching/how-work/how_work.md)
+  - [Why are next layers invalidated?](caching/why-invalidated/why_invalidated.md)
+  - Optimizing cache
+    - [Definition](caching/optimize/definition/definition.md)
+    - Example
+      - [Non-optimized](caching/optimize/example/non-optimized/non_optimized.md)
+      - [Optimized](caching/optimize/example/optimized/optimized.md)

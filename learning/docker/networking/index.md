@@ -1,0 +1,60 @@
+# Networking
+
+- [Introduction](intro/intro.md)
+- Types of networks
+  - `bridge`
+    - [Definition](type/bridge/definition/definition.md)
+    - [How it works](type/bridge/how-work/how_work.md)
+    - Key features
+      - [Isolation](type/bridge/key-feature/isolation/isolation.md)
+      - [DNS resolution](type/bridge/key-feature/dns-resolution/dns_resolution.md)
+      - [Port mapping](type/bridge/key-feature/port-mapping/port_mapping.md)
+    - Types 
+      - [Default vs user-defined network](type/bridge/type/default-vs-user/default_vs_user.md)
+  - `host`
+    - [How it works](type/host/how-work/how_work.md)
+    - [Example](type/host/example/example.md)
+    - [Port conflicts](type/host/port-conflict/port_conflict.md)
+    - [Containers communication](type/host/communication/communication.md)
+  - `overlay` (Docker Swarm) <!-- todo: move this chapter in docker swarm -->
+    - [Definition](type/overlay/definition/definition.md)
+    - [Why use it](type/overlay/why-use/why_use.md)
+    - [How it works](type/overlay/why-use/why_use.md)
+  - `none`
+    - [Definition](type/none/definition/definition.md)
+    - [Why use it](type/none/why-use/why_use.md)
+    - [How it works](type/none/how-work/how_work.md)
+    - [Example](type/none/example/example.md)
+- Docker Compose 
+  - [Default networks](docker-compose/default/default.md)
+  - [Defined networks](docker-compose/defined/defined.md)
+- Operations
+  - [Network creation](operation/creation/creation.md)
+  - [Inspect networks](operation/inspect/inspect.md)
+  - [Create and connect a container to network](operation/connect/connect.md)
+  - [Connect existing container to network](operation/connect-existing/connect-existing.md)
+- How containers access the internet
+  - [Default bridge network](access-internet/default-bridge/default_bridge.md)
+  - [User-defined network](access-internet/user-defined/user_defined.md)
+- [DNS in Docker Networks](dns/dns.md)
+- Port binding
+  - [Definition](port-binding/definition/definition.md)
+  - [Example](port-binding/example/example.md)
+  - [Benefits](port-binding/benefit/benefit.md)
+  - [Multiple ports](port-binding/multiple-port/multiple_port.md)
+- [Quick troubleshooting](troubleshooting/troubleshooting.md)
+- [Security tips](security-tip/security_tip.md)
+- Common commands
+  - Definition 
+  - Create networks
+    - [docker network create](common-command/create/network-create/network_create.md)
+    - [docker network create with specific IP range](common-command/create/network-create-ip/network_create_ip.md)
+  - List and inspect networks
+    - [docker network ls](common-command/list-inspect/network-ls/network_ls.md)
+    - [docker network inspect](common-command/list-inspect/network-inspect/network_inspect.md)
+  - Connect and disconnect from networks
+    - [docker network connect](common-command/connect-disconnect/network-connect/network_connect.md)
+    - [docker network disconnect](common-command/connect-disconnect/network-disconnect/network_disconnect.md)
+  - Remove networks
+    - [docker network rm](common-command/remove/network-rm/network_rm.md)
+    - [docker network prune](common-command/remove/network-prune/network_prune.md)

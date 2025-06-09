@@ -1,4 +1,4 @@
-# Check Networks
+# Check Networks Definition
 
 - open your terminal and navigate to the directory containing your `docker-compose.yml` file;
 - make sure the Docker Compose environment is running by executing `docker-compose up -d`;

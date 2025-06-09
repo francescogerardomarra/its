@@ -15,7 +15,7 @@
 - the root user within the container has full access to all files and directories, regardless of their `uid` and `gid` ownership;
 
 
-- the command has some limitations, since it can not be used for `bind` volumes.
+- the command has some limitations, since it cannot be used for `bind` volumes.
 
 **Example:**
 

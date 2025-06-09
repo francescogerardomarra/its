@@ -13,5 +13,5 @@
   - [manually](../../../create/manually/manually.md);
   - automatically:
     - [Dockerfile](../../../create/automatically/dockerfile/dockerfile.md);
-    - [container inialitization](../../../create/automatically/container/container.md);
+    - [container initialization](../../../create/automatically/container/container.md);
     - [`docker-compose.yml` file](../../../create/automatically/compose/compose.md).

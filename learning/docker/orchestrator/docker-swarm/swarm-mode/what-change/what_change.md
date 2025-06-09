@@ -2,7 +2,7 @@
 
 When you run `docker swarm init`:
 - the local Docker engine becomes a Swarm manager node;
-- if you want to join an existing Swarm (as a worker or manager), you should not run `init` but use the `docker swarm join` command (see [here]()); <!-- todo: link on how to join swarm -->
+- if you want to join an existing Swarm (as a worker or manager), you should not run `init` but use the `docker swarm join` command (see [here](../../common-command/cluster/join/join.md));
 - Docker creates a Swarm internal network (ingress) for load balancing services;
 
 

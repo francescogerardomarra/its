@@ -3,7 +3,7 @@
 **Bind mounts:**
 
 - data is stored exactly where you specify on the host;
-- for example if you specify this: 
+- for example, if you specify this: 
 
     ```commandline
     docker run -v /home/user/data:/app/data my-image

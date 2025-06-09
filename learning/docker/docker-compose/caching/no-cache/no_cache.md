@@ -1,4 +1,4 @@
-# Forcing or Avoiding Cache
+# `--no-cache` Option
 
 - in the context of Docker and Docker Compose, the `--no-cache` option is used when building images to tell Docker not to use any cached layers from previous builds;
 - Docker will rebuild the image from scratch;

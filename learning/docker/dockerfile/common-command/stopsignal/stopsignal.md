@@ -1,4 +1,4 @@
-# STOPSIGNAL
+# `STOPSIGNAL`
 
 - **purpose:**
   - `STOPSIGNAL` defines which signal Docker should send to the container's main process (PID 1) when stopping it gracefully using `docker stop` command;

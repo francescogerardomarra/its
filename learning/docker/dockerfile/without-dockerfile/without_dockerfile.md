@@ -6,8 +6,8 @@
  
 
 - these alternative methods can be handy for specific scenarios, such as quick prototyping, automation, or advanced use cases:
-  - [Docker CLI (docker commit)](): // todo: link to container chapter
-    - you can create a container manually and then commit it as an image.
+  - [Docker CLI (`docker commit`)](../../container/common-command/checkpointing/commit/commit.md):
+    - you can create a container from an image, make modifications to it, and then use `docker commit` to save those changes as a new image.
   - Docker BuildKit with inline commands:
     - Docker BuildKit allows building images using shell-like commands without a `Dockerfile`.
   - Docker API or SDK:

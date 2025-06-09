@@ -1,6 +1,6 @@
-# Run Multiple `docker compose up`
+# Run Multiple `docker compose up` Introduction
 
-In this chapter, we are going to see what appens during this common scenario:
+In this chapter, we are going to see what happens during this common scenario:
 
 1. We have a docker-compose.yml:
 

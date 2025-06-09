@@ -25,4 +25,4 @@
 
 - it creates the volume `myvolume` only on the node where the container is scheduled to run, meaning it is local to that node and not automatically shared across nodes in the swarm;
 - it implies that if the service is redeployed or scaled and lands on a different node, a different volume instance named `myvolume` will be created on that node;
-- leading to data not being shared between nodes unless an external volume driver (like [NFS](../../../type/shared/shared.md) or a plugin like [Portworx or RexRay](../../../type/plugin/definition/definition.md)) is used.
+- leading to data not being shared between nodes, unless an external volume driver (like [NFS](../../../type/shared/shared.md) or a plugin like [Portworx or RexRay](../../../type/plugin/definition/definition.md)) is used.

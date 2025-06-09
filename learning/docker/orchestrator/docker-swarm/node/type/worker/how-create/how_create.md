@@ -1,6 +1,6 @@
 # How to Create It
 
-1. **create a manager node**: once you [created a manager node] you received this output: <!-- todo: link to creating a manager node -->
+1. **create a manager node**: once you [created a manager node](../../manager/how-create/how_create.md) you received this output:
 
     ```commandline
     Swarm initialized: current node (wbkfxctwut6tuvtiru0s2r5uu) is now a manager.

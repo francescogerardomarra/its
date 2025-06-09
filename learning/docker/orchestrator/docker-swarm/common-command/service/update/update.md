@@ -13,6 +13,6 @@ docker service update --image <new-image> <service-id>
 * `<service-id>` specifies which service to update;
 
 
-* triggers a [rolling update](), ensuring minimal downtime; <!-- todo: link to rolling update -->
+* triggers a [rolling update](../../../node/why-multiple/service-deployment/rolling/rolling.md), ensuring minimal downtime;
 * useful for deploying new versions of an application;
 * this is just an example, you can update a service for other reasons as well, such as changing the number of replicas, environment variables, or resource limits.

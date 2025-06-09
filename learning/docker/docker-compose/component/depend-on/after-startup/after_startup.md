@@ -1,4 +1,4 @@
-# How Healthcheck Is Used After Startup
+# How `healthcheck` Is Used After Startup
 
 - in this example, we are referring to the healthcheck of [db](../healthcheck/healthcheck.md) service;
 - if a service defines a `healthcheck:`:

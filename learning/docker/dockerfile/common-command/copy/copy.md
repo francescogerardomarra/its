@@ -1,4 +1,4 @@
-# COPY
+# `COPY`
 
 - **purpose:**
   - copies files or directories from the host machine to the container image;

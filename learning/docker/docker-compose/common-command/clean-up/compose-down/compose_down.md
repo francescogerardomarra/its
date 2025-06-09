@@ -5,5 +5,5 @@
 - it removes the default and custom networks that were created for those containers;
 
 
-- it removes any [anonymous volumes] (named volumes will stay); <!-- todo: link to anonymous volumes in volumes chapter -->
+- it removes any [anonymous volumes](../../../../volume/mount/type/anonymous/how-work/how_work.md) (named volumes will stay);
 - if you use `--volumes` or `-v` flag, also named volumes will be removed.

@@ -1,4 +1,4 @@
-# Container Lifecycle
+# Container Lifecycle Definition
 
 - when you run a Docker container using the command `docker run`, several things happen depending on the configuration and the nature of your application;
 - here's what generally happens after running a container and when the program finishes:

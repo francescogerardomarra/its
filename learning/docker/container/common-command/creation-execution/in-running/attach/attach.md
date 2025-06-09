@@ -22,7 +22,7 @@ This example demonstrates how to run a Docker container in attached mode to cont
     [de77a44881aa] Tue Jun  3 09:32:47 UTC 2025
     [de77a44881aa] Tue Jun  3 09:32:48 UTC 2025
     ```
-2. close the terminal (see [here](), **not** press `ctrl + C` otherwise you kill the container); <!-- todo: link to disconnect to container -->
+2. close the terminal by GUI (see [here](../disconnect/non-interactive/non_interactive.md), **not** press `ctrl + C` otherwise you kill the container);
 3. attach to the `my-time-logger` container to reconnect and enter container attach mode again:
 
     ```commandline

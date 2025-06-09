@@ -1,4 +1,4 @@
-# What Is a Docker Image Tag?
+# What Is a Tag?
 
 - a **tag** is an optional part of the image name and is typically formatted as `repository:tag`;
 - the default tag is `latest` if you do not specify one;

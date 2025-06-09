@@ -1,4 +1,4 @@
-# Unpredictable Behavior:
+# Unpredictable Behavior
 
 - if the `latest` tag gets updated to point to a different version, your builds or deployments might break unexpectedly;
 - the new version of the image may introduce:

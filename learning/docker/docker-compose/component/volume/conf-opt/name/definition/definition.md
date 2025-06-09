@@ -1,6 +1,6 @@
-# Name
+# Name Definition
 
-- by default a volume name is `<project_name>_<volume_name>`;
+- by default, a volume name is `<project_name>_<volume_name>`;
 - with this option, you can override it;
 - the `name` option in Docker Compose is used to specify a custom name for a volume;
 

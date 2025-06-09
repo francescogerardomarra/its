@@ -1,5 +1,5 @@
 # Ingress Network Setup
 
-- Docker automatically creates an **overlay network called `ingress`**; <!-- todo: link to overlay network -->
+- Docker automatically creates an **[overlay](../../../../networking/overlay/definition/definition.md) network called `ingress`**;
 - every node connects to the ingress network;
 - the **routing mesh uses this network** to route external traffic to available service replicas.

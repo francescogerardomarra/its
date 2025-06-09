@@ -101,5 +101,5 @@
 17. it does not require any prior cleanup of the existing tag, Docker will:
     1. reassign `myapp:latest` to point to the image associated with `myapp:2.0`;
     2. leave the image previously associated with `myapp:latest` intact (but it will no longer have the `latest` tag unless it has another tag pointing to it);
-18. if `myapp:latest` was the only tag associated with an image, and you reassign `myapp:latest` to a different image, the original image will become [dangling]; // TODO: add link 
+18. if `myapp:latest` was the only tag associated with an image, and you reassign `myapp:latest` to a different image, the original image will become [dangling](../../dangling/intro/intro.md);
 19. a dangling image is an image that has no repository or tag associated with it but still exists in your local Docker environment.

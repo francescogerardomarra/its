@@ -1,4 +1,4 @@
-# Distributed Load Balancer
+# Distributed Load Balancer Definition
 
 - in most traditional architectures, the **load balancer is a single, centralized component** sitting **in front** of your services:
 

@@ -6,8 +6,8 @@
 - Containers and VMs together
     - [Definition](together/definition/definition.md)
     - Example
-        - [Multiple app without containers](together/example/without-container/without_container.md)
-        - [Multiple app with containers](together/example/with-container/with_container.md)
+        - [Multiple apps without containers](together/example/without-container/without_container.md)
+        - [Multiple apps with containers](together/example/with-container/with_container.md)
 - Container lifecycle
     - [Definition](lifecycle/definition/definition.md)
     - [After stop](lifecycle/after-stop/after_stop.md)

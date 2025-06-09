@@ -15,7 +15,7 @@
      ping <target-container-name or IP>  # Use the container name for bridge/user-defined networks
      ```
 
-- check `/etc/hosts` and `/etc/resolv.conf` inside the container to understand how DNS and hostname resolution is set up (useful if containers cannot reach each other using names):
+- check `/etc/hosts` and `/etc/resolv.conf` inside the container to understand how DNS and hostname resolution are set up (useful if containers cannot reach each other using names):
 
   - `/etc/hosts`: 
     - Docker injects host-to-IP mappings here, especially for containers on user-defined bridge networks;

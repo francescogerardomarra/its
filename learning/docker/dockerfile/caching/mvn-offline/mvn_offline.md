@@ -2,7 +2,7 @@
 
 - `mvn dependency:go-offline` is a Maven command used to download all project dependencies and plugins required for building the project;
 - it ensures that all necessary artifacts are stored in the local repository so that future builds can run without an internet connection;
-- it does not change the Maven configuration to offline mode but rather prefetches all needed resources;
+- it does not change the Maven configuration to offline mode but rather prefetches all necessary resources;
  
 
 - it is useful when you plan to build a project in an environment without internet access;

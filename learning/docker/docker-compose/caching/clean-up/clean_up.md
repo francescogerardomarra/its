@@ -1,4 +1,4 @@
-# Clean up cache
+# Clean Up
 
 Over time, cached layers and unused images accumulate; you can clean up using:
 

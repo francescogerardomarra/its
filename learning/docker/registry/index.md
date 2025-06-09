@@ -1,7 +1,5 @@
 # Registry
 
-TODO: aggiungere esempio in cui è dockerhub ad accorgersi delle modifiche e buildare il codice
-
 - [Introduction](intro/intro.md)
 - [Registry vs repository](registry-vs-repo/registry_vs_repo.md)
 - What is stored in a registry?
@@ -42,7 +40,7 @@ TODO: aggiungere esempio in cui è dockerhub ad accorgersi delle modifiche e bui
           - [What it is](self-hosting/example/advanced-config/authentication/tls-encryption/what-is/what_is.md)
           - [Why it's important](self-hosting/example/advanced-config/authentication/tls-encryption/why-important/why_important.md)
           - How to enable it
-            - [Obtain a SSL/TLS certificate](self-hosting/example/advanced-config/authentication/tls-encryption/how-enable/obtain-certificate/obtain_certificate.md)
+            - [Obtain an SSL/TLS certificate](self-hosting/example/advanced-config/authentication/tls-encryption/how-enable/obtain-certificate/obtain_certificate.md)
             - [Configure the Docker registry](self-hosting/example/advanced-config/authentication/tls-encryption/how-enable/configure-registry/configure_registry.md)
             - [`config.yml` within a volume](self-hosting/example/advanced-config/authentication/tls-encryption/how-enable/within-volume/within_volume.md)
             - [What is the `config.yml`](self-hosting/example/advanced-config/authentication/tls-encryption/how-enable/what-is/what_is.md)
@@ -61,13 +59,14 @@ TODO: aggiungere esempio in cui è dockerhub ad accorgersi delle modifiche e bui
           - [Advantages](self-hosting/example/advanced-config/data-storage/aws/advantage/advantage.md)
           - [Security](self-hosting/example/advanced-config/data-storage/aws/security/security.md)
       - [Third-party tools](self-hosting/example/advanced-config/third-party/third-party.md)
-  - Where are they located? // initial there is just a storage not a registry
+  - Where are they located?
     - [Introduction](self-hosting/where-located/intro/intro.md)
     - [Dedicated private server](self-hosting/where-located/dedicated-server/dedicated_server.md)
     - [VM in cloud](self-hosting/where-located/vm-in-cloud/vm_in_cloud.md)
     - [Kubernetes cluster](self-hosting/where-located/kubernetes/kubernetes.md)
     - [Developer localhost](self-hosting/where-located/dev-localhost/dev_localhost.md)
     - [Private network (behind a VPN or firewall)](self-hosting/where-located/private-network/private_network.md)
+    - [By default, do I have a registry on my machine?](self-hosting/where-located/default-registry/default_registry.md)
   - Tools to enhance self-hosted registries
     - [Definition](self-hosting/tool/definition/tool.md)
     - [Harbor](self-hosting/tool/harbor/harbor.md)
@@ -93,30 +92,40 @@ TODO: aggiungere esempio in cui è dockerhub ad accorgersi delle modifiche e bui
       - [Collaborative development](docker-hub/github-integration/key-feature/collaborative/collaborative.md)
       - [Security and access control](docker-hub/github-integration/key-feature/security/security.md)
       - [Public and private repositories](docker-hub/github-integration/key-feature/public-private/public_private.md)
+    - [What we want to achieve](docker-hub/github-integration/what-achieve/what_acheive.md)
     - [Use cases](docker-hub/github-integration/use-case/use_case.md)
     - Example
-      - [Definition](docker-hub/github-integration/example/definition/definition.md)
-      - [Prerequisites](docker-hub/github-integration/example/prerequisite/prerequisite.md)
-      - Steps
-        1. [GitLab repository](docker-hub/github-integration/example/step/gitlab-repo/gitlab_repo.md)
-        2. [Docker Hub repository](docker-hub/github-integration/example/step/dockerhub-repo/dockerhub_repo.md)
-        3. [Docker Hub token](docker-hub/github-integration/example/step/dockerhub-token/dockerhub_token.md)
-        4. [Docker Hub credentials on GitLab](docker-hub/github-integration/example/step/dockerhub-credential/dockerhub_credential.md)
-        5. [Maven project](docker-hub/github-integration/example/step/maven-project/maven_project.md)
-        6. [Connect the Maven project with Gitlab](docker-hub/github-integration/example/step/connect-gitlab/connect_gitlab.md)
-        7. [Dockerfile](docker-hub/github-integration/example/step/dockerfile/dockerfile.md)
-        8. GitLab pipeline
-           - [Definition](docker-hub/github-integration/example/step/gitlab-pipeline/definition/definition.md)
-           - [What is a pipeline](docker-hub/github-integration/example/step/gitlab-pipeline/pipeline/pipeline.md)
-           - [Base image](docker-hub/github-integration/example/step/gitlab-pipeline/base-image/base_image.md)
-           - [Docker service](docker-hub/github-integration/example/step/gitlab-pipeline/docker-service/docker_service.md)
-           - [Stages](docker-hub/github-integration/example/step/gitlab-pipeline/stage/stage.md)
-           - [Environment variables](docker-hub/github-integration/example/step/gitlab-pipeline/environment/environment.md)
-           - [Maven build job](docker-hub/github-integration/example/step/gitlab-pipeline/maven-build/maven_build.md)
-           - [Docker image build and push job](docker-hub/github-integration/example/step/gitlab-pipeline/docker-image/docker_image.md)
-        9. [Push the code to GitLab](docker-hub/github-integration/example/step/gitlab-push/gitlab_push.md)
-        10. [Verify the GitLab pipeline](docker-hub/github-integration/example/step/gitlab-verify/gitlab_verify.md)
-        11. [Verify the automatic push on Docker Hub](docker-hub/github-integration/example/step/dockerhub-verify/dockerhub_verify.md)
+      - CI
+        - [Definition](docker-hub/github-integration/example/ci/definition/definition.md)
+        - [Prerequisites](docker-hub/github-integration/example/ci/prerequisite/prerequisite.md)
+        - Steps
+          1. [GitLab repository](docker-hub/github-integration/example/ci/step/gitlab-repo/gitlab_repo.md)
+          2. [Docker Hub repository](docker-hub/github-integration/example/ci/step/dockerhub-repo/dockerhub_repo.md)
+          3. [Docker Hub token](docker-hub/github-integration/example/ci/step/dockerhub-token/dockerhub_token.md)
+          4. [Docker Hub credentials on GitLab](docker-hub/github-integration/example/ci/step/dockerhub-credential/dockerhub_credential.md)
+          5. [Maven project](docker-hub/github-integration/example/ci/step/maven-project/maven_project.md)
+          6. [Connect the Maven project with Gitlab](docker-hub/github-integration/example/ci/step/connect-gitlab/connect_gitlab.md)
+          7. [Dockerfile](docker-hub/github-integration/example/ci/step/dockerfile/dockerfile.md)
+          8. GitLab pipeline
+             - [Definition](docker-hub/github-integration/example/ci/step/gitlab-pipeline/definition/definition.md)
+             - [What is a pipeline](docker-hub/github-integration/example/ci/step/gitlab-pipeline/pipeline/pipeline.md)
+             - [Base image](docker-hub/github-integration/example/ci/step/gitlab-pipeline/base-image/base_image.md)
+             - [Docker service](docker-hub/github-integration/example/ci/step/gitlab-pipeline/docker-service/docker_service.md)
+             - [Stages](docker-hub/github-integration/example/ci/step/gitlab-pipeline/stage/stage.md)
+             - [Environment variables](docker-hub/github-integration/example/ci/step/gitlab-pipeline/environment/environment.md)
+             - [Maven build job](docker-hub/github-integration/example/ci/step/gitlab-pipeline/maven-build/maven_build.md)
+             - [Docker image build and push job](docker-hub/github-integration/example/ci/step/gitlab-pipeline/docker-image/docker_image.md)
+          9. [Push the code to GitLab](docker-hub/github-integration/example/ci/step/gitlab-push/gitlab_push.md)
+          10. [Verify the GitLab pipeline](docker-hub/github-integration/example/ci/step/gitlab-verify/gitlab_verify.md)
+          11. [Verify the automatic push on Docker Hub](docker-hub/github-integration/example/ci/step/dockerhub-verify/dockerhub_verify.md)
+      - CD
+        - [Definition](docker-hub/github-integration/example/cd/definition/definition.md)
+        - [Caveats](docker-hub/github-integration/example/cd/caveat/caveat.md)
+        - Steps
+          1. [Enable Docker Hub webhook](docker-hub/github-integration/example/cd/step/enable-webhook/enable_webhook.md)
+          2. [Run a lightweight webhook listener on your server](docker-hub/github-integration/example/cd/step/run-webhook/run_webhook.md)
+          3. [Expose port 8080 (if needed)](docker-hub/github-integration/example/cd/step/expose/expose.md)
+          4. [Verify that the image is updated](docker-hub/github-integration/example/cd/step/verify/verify.md)
 - Common commands
   - [Definition](common-command/definition/definition.md)
   - [Docker Hub login](common-command/dockerhub-login/dockerhub_login.md)

@@ -1,4 +1,4 @@
-# Introduction
+# Dangling Images Introduction
 
 - a dangling image is an image that exists in your system but **is not tagged and is not referenced by any container**;
 - it usually occurs when you build or pull new images, and the older versions are left behind without any meaningful tag or a container reference;

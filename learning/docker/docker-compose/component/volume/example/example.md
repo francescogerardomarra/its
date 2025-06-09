@@ -22,7 +22,7 @@ volumes:
 **Volume explanation:**
 
 - the volume named `shared-data` is defined under the `volumes` key at the bottom of the `docker-compose.yml` file;
-- it is a named volume, which means Docker manages it independently from the container lifecycle;
+- it is a named volume, which means Docker manages it independently of the container lifecycle;
 - the volume is mounted in the `app` service at the path `/usr/share/nginx/html`;
 
 

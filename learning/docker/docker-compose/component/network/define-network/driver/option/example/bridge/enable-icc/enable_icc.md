@@ -10,7 +10,7 @@
 - it disables inter-container communication on a bridge network but still allows external connectivity if configured;
 
 
-- while [driver: none](../../../../type/none/none.md) sets a full isolation without any network access.
+- while [driver: none](../../../../type/none/none.md) sets full isolation without any network access.
 
 **Example:**
 

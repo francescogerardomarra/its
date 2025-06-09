@@ -1,4 +1,4 @@
-# Example
+# Example 2
 
 - in this chapter, we show a complete `docker-compose.yml` file that includes most of the more important configurations;
 - **if you run this file it will not work since it requires some external manual configurations (like creating a web image `Dockerfile`)**;

@@ -1,4 +1,4 @@
-### 3. **Image Pulling Cache**
+# Pulled Images
 
 If you use pre-built images (from Docker Hub or a registry), Compose checks if the image is already available locally:
 

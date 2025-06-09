@@ -26,7 +26,7 @@ CMD ["java", "-jar", "target/myapp.jar"]
 
 **Image:** 
 
-In this image we consider the following scenario:
+In this image, we consider the following scenario:
 - we already build the image once;
 - we are building the image for the second time, just changing a line within the Java code;
 - instructions with `-` don't invalidate the cache because they only add metadata to the image;

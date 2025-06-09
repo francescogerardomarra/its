@@ -1,4 +1,4 @@
-# Multiple Image Tags
+# Multiple Image Tags Definition
 
 - it is possible to assign multiple tags to a Docker image;
 - tags are essentially aliases for a given image ID, and a single image can have multiple tags pointing to it;

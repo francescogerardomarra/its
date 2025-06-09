@@ -1,6 +1,6 @@
 # Deploy the Docker Swarm service
 
-- see what is a Docker Swarm service [here]; //TODO: link to orchestrator chapter
+- see what is a Docker Swarm service [here](../../../../../../../orchestrator/docker-swarm/index.md);
 - enter the root [project](../maven-project/maven_project.md) folder with a terminal and run this command:
 
     ```commandline

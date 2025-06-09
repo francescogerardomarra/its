@@ -1,4 +1,4 @@
-# `o`
+# `o` Definition
 
 - `driver_opts` is used in Docker Compose to specify options for volume drivers;
 - it is used as a dictionary where each key-value pair corresponds to a specific driver option;

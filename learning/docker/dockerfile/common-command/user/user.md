@@ -1,4 +1,4 @@
-# USER
+# `USER`
 
 - **purpose:**
   - specifies which **user** the container should run commands as, instead of the default `root`;

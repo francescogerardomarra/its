@@ -19,7 +19,7 @@
 
 **Example:**
 
-1. run this command on a terminal:
+1. run this command in a terminal:
 
     ```commandline
     docker run -it --name my-ubuntu ubuntu

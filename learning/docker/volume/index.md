@@ -1,4 +1,4 @@
-# Volume
+# Volumes
 
 - [Introduction](intro/intro.md)
 - [Why use volumes](why-use/why_use.md)
@@ -21,11 +21,12 @@
       - [How it works (with example)](mount/type/anonymous/how-work/how_work.md)
       - [Why use them (and why prefer named volumes)](mount/type/anonymous/why-use/why_use.md)
       - [What happens to container folder content?](mount/type/anonymous/container-content/container_content.md)
+    - [Comparison](mount/type/comparison/comparison.md)
 - Create volumes
   - [Manually](create/manually/manually.md)
   - Automatically
     - [Dockerfile](create/automatically/dockerfile/dockerfile.md)
-    - [Container inialitization](create/automatically/container/container.md)
+    - [Container initialization](create/automatically/container/container.md)
     - [`docker-compose.yml` file](create/automatically/compose/compose.md)
 - [Where they are stored](where-stored/where_stored.md)
 - Share volumes

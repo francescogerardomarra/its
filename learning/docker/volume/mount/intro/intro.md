@@ -1,4 +1,4 @@
-# Introduction
+# Mounts Introduction
 
 In Docker, there are three types of mechanisms to persist and share data: 
 - **bind mounts** (link a specific host path to the container);

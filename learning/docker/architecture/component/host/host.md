@@ -1,6 +1,6 @@
 # Docker Host
 
-The docker host is composed by these components:
+The docker host is composed of these components:
 
 - **Docker Daemon (dockerd)**:
   - runs on the host machine;

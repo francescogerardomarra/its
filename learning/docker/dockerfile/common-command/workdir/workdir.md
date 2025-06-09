@@ -1,4 +1,4 @@
-# WORKDIR
+# `WORKDIR`
 
 - **purpose:**
   - sets the **working directory** for all subsequent `RUN`, `CMD`, `ENTRYPOINT`, and other commands in the Dockerfile;

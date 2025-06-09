@@ -1,7 +1,7 @@
 # Example Definition
 
 - in this example, we want to create 2 manager nodes;
-- we **don't use** the [drain] command, so the manager nodes **can** run workloads (containers); <!-- todo: link to drain command -->
+- we **don't use** the [drain](../../../../../common-command/node/availability/drain/drain.md) command, so the manager nodes **can** run workloads (containers);
 - we want to deploy a service called `myweb`, running nginx with 3 replicas;
 
 

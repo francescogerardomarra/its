@@ -1,4 +1,4 @@
-# ENTRYPOINT
+# `ENTRYPOINT`
 
 - **purpose:**
   - defines the main executable that always runs when the container starts;

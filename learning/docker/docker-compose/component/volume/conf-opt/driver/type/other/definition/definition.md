@@ -1,4 +1,4 @@
-# Others
+# Other Types Definition
 
 - in Docker Compose, volume drivers other than the default `local` driver can be used to manage persistent storage;
 - these drivers allow you to store data on remote or more specialized backends rather than the host file system;

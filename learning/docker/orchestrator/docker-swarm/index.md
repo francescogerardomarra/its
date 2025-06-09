@@ -1,14 +1,12 @@
 # Docker Swarm
 
-<!-- todo: check note files and grammar, also unlinked files -->
-
 - [Definition](defintion/definition.md)
 - [When use it](when-use/when_use.md)
 - Swarm mode
   - [Definition](swarm-mode/definition/definition.md)
   - [Why use it](swarm-mode/why-use/why_use.md)
   - [What changes when enabled](swarm-mode/what-change/what_change.md)
-  - [How enable it](swarm-mode/how-enable/how_enable.md)
+  - [How to enable it](swarm-mode/how-enable/how_enable.md)
 - Nodes
   - [Definition](node/definition/definition.md)
   - Why having multiple nodes
@@ -125,16 +123,14 @@
 - Rolling updates
   - [Definition](rolling-update/definition/definition.md)
   - [Key components](rolling-update/key-component/key_component.md)
-  - Examples
-    - [Update a service](rolling-update/example/update/update.md)
-    - Manual rollbacks
-      - [Definition](rolling-update/example/manual/definition/definition.md)
-      - [When to use](rolling-update/example/manual/when-use/when_use.md)
+  - Manual rollbacks
+    - [Definition](rolling-update/manual/definition/definition.md)
+    - [When to use](rolling-update/manual/when-use/when_use.md)  
   - [Benefits](rolling-update/benefit/benefit.md)
 - Load balancer
   - [Introduction](load-balancer/intro/intro.md)
   - Routing mesh
-    - [Definition](load-balancer/routing-mesh/definition/definition.md) <!-- todo: say that is a spread load balancer and not a centralized one -->
+    - [Definition](load-balancer/routing-mesh/definition/definition.md)
     - [How it works](load-balancer/routing-mesh/how-work/how_work.md)
     - [Example](load-balancer/routing-mesh/example/example.md)
     - Distributed load balancer
@@ -179,17 +175,19 @@
         - [Implementation](load-balancer/example/five-node/single-node/implementation/implementation.md)
       - [Use Traefik as load balancer](load-balancer/example/traefik/traefik.md)
 - Networking
-  - Overlay
+  - `overlay`
     - [Definition](networking/overlay/definition/definition.md)
     - [When it is used](networking/overlay/when-used/when_used.md)
     - [How it works](networking/overlay/how-work/how_work.md)
-    - [Example](networking/overlay/example/example.md)
-    - [Comparison with bridge network](networking/overlay/bridge-comparison/bridge_comparison.md)
+    - Example
+      - [CLI](networking/overlay/example/cli/cli.md)
+      - [`docker-compose.yml` file](networking/overlay/example/compose/compose.md)
+    - [Comparison with `bridge` network](networking/overlay/bridge-comparison/bridge_comparison.md)
 - Volumes
   - [Definition](volume/definition/definition.md)
   - Types
     - Local volumes (default)
-      - [Definition](volume/type/local/definition/definition.md)
+      - [Named volumes and bind mounts](volume/type/local/named-bind/named_bind.md)
       - [Problem in a distributed environment](volume/type/local/problem/problem.md)
     - [Shared volumes (e.g., NFS, CIFS or cloud storage)](volume/type/shared/shared.md)
     - Docker volume plugins
@@ -216,13 +214,13 @@
     - [Definition](stack/no-up/definition/definition.md)
     - [Why `docker compose up` doesn't work with Swarm](stack/no-up/not-working/not_working.md)
 - Common commands
-  - Definition <!-- todo: copy the definition from other common commands chapters --> 
+  - [Definition](common-command/definition/definition.md)
   - Cluster management
     - [Initialize a Swarm](common-command/cluster/initialize/initialize.md)
-    - [Join a Swarm (worker or manager)](common-command/cluster/initialize/initialize.md)
     - Get join tokens
       - [Worker node](common-command/cluster/get-token/worker/worker.md)
       - [Manager node](common-command/cluster/get-token/manager/manager.md)
+    - [Join a Swarm (worker or manager)](common-command/cluster/join/join.md)
     - [Leave a Swarm](common-command/cluster/leave-swarm/leave_swarm.md)
   - Node management
     - [List all nodes](common-command/node/list/list.md)
@@ -241,6 +239,8 @@
     - [Update a service](common-command/service/update/update.md)
     - [Scale a service](common-command/service/scale/scale.md)
     - [Remove a service](common-command/service/remove/remove.md)
+    - [Set some environment variables](common-command/service/set-env/set_env.md)
+    - [Roll back a service](common-command/service/rollback/rollback.md)
   - Stack management
     - [Deploy a stack from a `docker-compose.yml` file](common-command/stack/deploy/deploy.md)
     - [List stacks](common-command/stack/list-stack/list_stack.md)
@@ -249,18 +249,3 @@
   - Monitoring and troubleshooting
     - [View service logs](common-command/monitoring/service-log/service_log.md)
     - [View system events](common-command/monitoring/system-event/system_event.md)
-
-  - [node update](common-command/node-update/node_update.md) <!-- todo: implement this section -->
-  - [docker service update --rollback <service_name>](common-command/update-rollback/update_rollback.md) <!-- todo: implement this section -->
-  - Connect to network (`--network`)
-  - Set env variables (`--env`)
-  - Mount volumes or bind mount
-
-- [note new](note_new.md)
-
-- [see note here](note.md)
-
-
-<!-- todo: explain route mesh (load balancer): (using the routing mesh, which is a built-in load balancing system that forwards incoming traffic on published ports to available service replicas anywhere in the Swarm -->
-<!-- todo: explain docker service rollback my_service -->
-<!-- todo: add the diagram in [note](load-balancer/note-two/note.md) in the routing mesh chapter -->

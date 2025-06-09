@@ -1,4 +1,4 @@
-# Format Rule
+# Format Rules
 
 - **line by line entries**:
     - each line in the `.dockerignore` file specifies a pattern;

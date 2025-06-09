@@ -1,4 +1,4 @@
-# Each Node Has an Instance
+# Benefits
 
 - **each node runs its own instance of the Traefik proxy**;
 - this means that every node in your Docker Swarm cluster will have its own dedicated Traefik instance;

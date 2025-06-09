@@ -1,4 +1,4 @@
-# Multiple App With Containers
+# Multiple Apps With Containers
 
 1. **setup**:
    - single VM;

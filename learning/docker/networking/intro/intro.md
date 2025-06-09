@@ -1,4 +1,4 @@
-# Introduction
+# Networking Introduction
 
 Docker networking allows containers to talk to:
 - each other (inter-container communication);

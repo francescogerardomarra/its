@@ -6,7 +6,7 @@
 
 
 - the last argument (`my_stack`) is the name of the stack, which will be used to reference the deployed services;
-- a stack is a collection of services, along with networks and volumes, that work together in Docker Swarm;
+- a stack is a collection of services, along with networks and volumes that work together in Docker Swarm;
 - this command works only in **Docker Swarm mode**, meaning `docker swarm init` must be run beforehand on the manager node;
  
 

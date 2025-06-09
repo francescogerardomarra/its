@@ -17,7 +17,7 @@
 
 **Using Docker Compose:**
 
-If you're using a service deployed with Docker Compose that has a specific number of replicas defined in the `docker-compose.yml` file, and you manually scale the service using `docker service update --replicas`: <!-- todo: link to the ovveridding manually replicas in the Docker Compose chapter -->
+If you're using a service deployed with Docker Compose that has a specific number of replicas defined in the [docker-compose.yml](../../../../docker-compose/component/service/replica/with-swarm/mode/replicated/replicated.md) file, and you manually scale the service using `docker service update --replicas`:
 - it overrides the number of replicas defined in your `docker-compose.yml` file, but only at runtime, not in the file itself;
 - the number of replicas will revert to what's defined in the `docker-compose.yml` only when you redeploy the stack using:
 

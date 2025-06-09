@@ -15,4 +15,4 @@ docker node ls
 
 * is only available when the current Docker host is part of a Swarm;
 * commonly used to monitor and manage the Swarm setup;
-* this command can be executed just on a [manager node]. <!-- todo: link to manager nodes chapter -->
+* this command can be executed just on a [manager node](../../../node/type/manager/responsibility/raft-consensus/role/role.md).

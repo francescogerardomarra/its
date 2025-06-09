@@ -15,4 +15,4 @@
   - `--update-delay`: how long Swarm waits after each batch is updated, before checking health and starting the next batch.
 - **benefit**: 
   - safer updates, easier rollback if something goes wrong;
-  - since there is a specific command for performing rollback after the update: `docker service update --rollback <service_name>`. <!-- todo: link to common commands section -->
+  - since there is a specific command for performing rollback after the update: [docker service update --rollback <service_name>](../../../../rolling-update/manual/definition/definition.md).

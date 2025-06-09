@@ -1,4 +1,4 @@
-# How Prevent Definition
+# Option 2 (Less Common) Definition
 
 - to fully prevent dropped or disrupted client requests during a Docker Swarm rolling update, you must combine all the next elements under the [steps section](../../../../../../../index.md);
 - each one solves a different part of the shutdown problem;

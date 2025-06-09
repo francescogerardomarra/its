@@ -1,4 +1,4 @@
-# `docker-compose.yml` file
+# `docker-compose.yml` File
 
 - Docker Compose supports defining environment variables in `docker-compose.yml`;
 - variables can be set directly under the `environment` section;

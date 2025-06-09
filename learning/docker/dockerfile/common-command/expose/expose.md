@@ -1,4 +1,4 @@
-# EXPOSE
+# `EXPOSE`
 
 - **purpose:**
   - declares that the container **intends** to listen on a specific network port at runtime;

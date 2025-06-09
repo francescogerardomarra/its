@@ -2,7 +2,7 @@
 
 - `driver_opts` is a key under the `volumes` section in a Docker Compose file;
 - it specifies options to configure the volume driver;
-- each option is defined as a key-value pair, where the key represents the specific configuration parameter and the value is the configuration value;
+- each option is defined as a key-value pair, where the key represents the specific configuration parameter, and the value is the configuration value;
 
 
 - it is primarily used when the volume driver requires specific settings, such as storage location or size limits;

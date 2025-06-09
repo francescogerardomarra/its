@@ -1,4 +1,4 @@
-# Introduction
+# Multi-Stage Builds Introduction
 
 - a **multi-stage build** in a `Dockerfile` is a technique that allows you to use multiple `FROM` statements in a single `Dockerfile`, creating separate stages within the build process;
 - this approach is primarily used to optimize the size and efficiency of the final Docker image, by separating the build environment from the runtime environment;

@@ -1,4 +1,4 @@
-# ONBUILD
+# `ONBUILD`
 
 - **purpose:**
   - defines a **trigger** that executes a command **only when the image is used as a base image** in another Docker build;

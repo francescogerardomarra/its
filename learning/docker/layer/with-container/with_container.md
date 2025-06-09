@@ -6,7 +6,7 @@
  
 
 - the writable layer is discarded when the container is removed;
-- to persist important data, you should store it in [volumes]. <!-- todo: link to volumes chapter -->
+- to persist important data, you should store it in [volumes](../../volume/index.md).
 
 **Image:**
 

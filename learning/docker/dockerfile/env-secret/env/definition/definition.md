@@ -1,4 +1,4 @@
-# Environment Variables 
+# Environment Variables Definition
 
 - an environment variable is a key-value pair used by an operating system or application to store configuration settings;
 - instead of hardcoding values in the code, environment variables provide a flexible way to configure applications dynamically;

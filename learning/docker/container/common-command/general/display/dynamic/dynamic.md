@@ -30,4 +30,4 @@
 
 - note: the difference is in the output: 
   - in this version, the output console remains open until you forcibly close it and prints all the logs in real time;
-  - in the [previous](../static/static.md) version the output console displays all logs produced so far by the specified container.
+  - in the [previous](../static/static.md) version, the output console displays all logs produced so far by the specified container.

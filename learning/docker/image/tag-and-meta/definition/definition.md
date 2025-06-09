@@ -1,4 +1,4 @@
-# Definition
+# Tags and Metadata Definition
 
 - tagging images is the method to provide an image with a memorable name;
 - however, there is a structure to the name of an image;

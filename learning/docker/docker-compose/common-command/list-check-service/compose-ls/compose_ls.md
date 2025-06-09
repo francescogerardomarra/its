@@ -10,7 +10,7 @@ This command is used to list all the Docker Compose projects that are running on
     docker compose up
     ```
 
-2. check all the Docker Compose projects running on your sisntem
+2. check all the Docker Compose projects running on your system
 
     ```commandline
     docker compose ls
@@ -24,4 +24,4 @@ This command is used to list all the Docker Compose projects that are running on
     desktop             running(4)          /home/andrea/Desktop/docker-compose.yml
     ```
     
-    the `CONFIG FILES` colums shows the path to the `docker-compose.yml` config files used to define the projects.
+    the `CONFIG FILES` columns shows the path to the `docker-compose.yml` config files used to define the projects.

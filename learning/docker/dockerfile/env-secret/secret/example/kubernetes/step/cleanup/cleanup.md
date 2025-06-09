@@ -6,7 +6,7 @@
   ```
 
     - when executed, this command removes the deployment and all the associated pods, but not the underlying persistent storage, ConfigMaps, or secrets that may be linked to it;
-    - if you want to stop the pods without removing the deployment see [here](../../operation/stop/stop.md).    
+    - if you want to stop the pods without removing the deployment, see [here](../../operation/stop/stop.md).    
 
 - **delete the secret**:
   ```sh

@@ -1,4 +1,4 @@
-# How Enable It
+# How to Enable It
 
 - to enable Docker Swarm, you must initialize the swarm on one node (this will be your manager node):
 
@@ -20,4 +20,3 @@
     
     To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
     ```
-    <!-- todo: explain this command within the proper section: docker swarm join --token SWMTKN-1-1lxs9tpe0eewhhv13ndfxshwhmadvq1tg488iib225tvdt3dg5-akvn726yqx8kcikbkhourvdgx 192.168.1.11:2377

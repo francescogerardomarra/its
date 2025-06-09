@@ -1,7 +1,7 @@
 # `healthcheck`
 
 - see the `depends_on` with `condition:` on `web` service [here](../definition/definition.md);
-- the `db` service must define a `healthcheck` — a script that tells Docker if the service is ready:
+- the `db` service must define a `healthcheck`, a script that tells Docker if the service is ready:
 
     ```yaml
     version: "3.9"

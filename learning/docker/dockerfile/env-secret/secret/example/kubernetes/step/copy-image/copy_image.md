@@ -1,4 +1,4 @@
-# Copy Image
+# Copy the Image within Minikube
 
 Open a terminal and run this command:
 

@@ -5,7 +5,7 @@
     ```commandline
     docker service create --replicas 3 nginx
     ```
-- all the managers **cannot** run workloads ([drain]() command was executed on them); <!-- todo: link to drain command -->
+- all the managers **cannot** run workloads ([drain](../../../../common-command/node/availability/drain/drain.md) command was executed on them);
 - the manager decides where to place the three replicas;
 
 

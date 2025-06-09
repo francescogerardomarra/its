@@ -22,20 +22,20 @@
     docker login myregistry.com
     ```
    
-   3. push the image to the repository:
+3. push the image to the repository:
 
-       ```commandline
-       docker push username/repo-name:tag
-       ``` 
+    ```commandline
+    docker push username/repo-name:tag
+    ``` 
 
-       - on registries like Docker Hub, repositories are typically owned by users or organizations;
-       - including the `username` specifies whose repository the image belongs to;
-       - in many cases, the `username` in Docker image tags is often the company name;
-       - before pushing the image to a Docker registry (e.g., Docker Hub), you must tag it with the `username` (or namespace) to specify where the image will be stored:
+    - on registries like Docker Hub, repositories are typically owned by users or organizations;
+    - including the `username` specifies whose repository the image belongs to;
+    - in many cases, the `username` in Docker image tags is often the company name;
+    - before pushing the image to a Docker registry (e.g., Docker Hub), you must tag it with the `username` (or namespace) to specify where the image will be stored:
 
-           ```commandline
-           docker tag repo-name:tag username/repo-name:tag
-           ```  
+        ```commandline
+        docker tag repo-name:tag username/repo-name:tag
+        ```  
    
-       - `username` in the image tag is just part of the repository path, while the `username` in docker login is used for authentication.
+    - `username` in the image tag is just part of the repository path, while the `username` in docker login is used for authentication.
     

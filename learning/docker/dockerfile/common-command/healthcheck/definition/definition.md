@@ -1,4 +1,4 @@
-# `HEALTHCHECK`
+# `HEALTHCHECK` Definition
 
 - **purpose:**
     - defines a command that Docker runs periodically to check if the container is still healthy;

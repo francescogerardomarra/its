@@ -14,4 +14,4 @@ docker node demote <node-id>
 
 
 * requires that the node being demoted is currently a manager and part of the swarm;
-* should be used carefully, especially if demoting a [quorum-critical] manager node. <!-- todo: link to quorum chapter -->
+* should be used carefully, especially if demoting a [quorum-critical](../../../../node/type/manager/responsibility/raft-consensus/quorum/quorum.md) manager node.

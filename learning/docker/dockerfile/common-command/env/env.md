@@ -1,4 +1,4 @@
-# ENV (Environment Variables)
+# `ENV` (Environment Variables)
 
 - **purpose:**
   - defines **environment variables** that persist throughout the container’s lifecycle;

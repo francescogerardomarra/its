@@ -1,7 +1,7 @@
 # Restart the Docker Registry
 
 - after updating the `config.yml` file, restart your Docker registry to ensure the new configuration takes effect;
-- if you're using Docker Compose, run the following commands: // todo: link to docker compose
+- if you're using [Docker Compose](../../../../../../../../docker-compose/index.md), run the following commands:
 
     ```bash
     docker-compose down

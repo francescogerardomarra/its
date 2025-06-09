@@ -1,6 +1,6 @@
 # Problem in a Distributed Environment
 
-- consider you deploy using this [docker-compose.yml] file; <!-- todo: link to the example file -->
+- consider you deploy using this [docker-compose.yml](../../../example/local/compose/compose.md) file;
 - when you deploy this using:
 
     ```commandline
@@ -18,4 +18,4 @@
 
   1. check if `myvolume` exists on the new node;
   2. if it doesn't, it creates a new empty volume with the same name;
-  3. but the data is not transferred, so any data on the original node’s volume is lost unless you're using shared storage like [NFS] or [volume plugins]. <!-- todo: link to nfs --> <!-- todo: link to volume plugins -->
+  3. but the data is not transferred, so any data on the original node’s volume is lost unless you're using shared storage like [NFS](../../shared/shared.md) or [volume plugins](../../plugin/definition/definition.md).

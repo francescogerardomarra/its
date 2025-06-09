@@ -21,7 +21,7 @@
         docker swarm join --token SWMTKN-1-5mpo4vepc5ue76n43vw8h1vw0z68z7mfqzf2t1hm7ot7z5l5k9-cxdpqtf5agfe73pqu8x1lyuch 192.168.1.11:2377
     ```
 
-2. run the above **output** command in the new [follower]() manager node that you want to add to the swarm cluster: <!-- todo: link to follower chapter -->
+2. run the above **output** command in the new [follower](../responsibility/raft-consensus/role/role.md) manager node that you want to add to the swarm cluster:
 
     ```commandline
     docker swarm join --token SWMTKN-1-5mpo4vepc5ue76n43vw8h1vw0z68z7mfqzf2t1hm7ot7z5l5k9-cxdpqtf5agfe73pqu8x1lyuch 192.168.1.11:2377

@@ -8,7 +8,7 @@
 
 **Answer:**
 
-- the content of `/data` container folder will be **temporary hidden**;
+- the content of `/data` container folder will be **temporarily hidden**;
 - just the content of the local machine folder is shown (even if it's empty);
 - when the container is stopped, the mount is removed so you can see the original content of `/data` folder (see [here](../../../lifetime/lifetime.md)).
 

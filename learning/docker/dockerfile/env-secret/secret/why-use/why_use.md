@@ -1,4 +1,4 @@
-# Why Use Secrets
+# Why Use Secrets (Comparison with Env Variables)
 
 Read the [before proceeding](../before-proceed/before_proceed.md) section, before reading this chapter:
 

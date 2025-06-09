@@ -16,10 +16,10 @@
     - [Example](type/host/example/example.md)
     - [Port conflicts](type/host/port-conflict/port_conflict.md)
     - [Containers communication](type/host/communication/communication.md)
-  - `overlay` (Docker Swarm) <!-- todo: move this chapter in docker swarm -->
+  - `overlay` (Docker Swarm)
     - [Definition](type/overlay/definition/definition.md)
     - [Why use it](type/overlay/why-use/why_use.md)
-    - [How it works](type/overlay/why-use/why_use.md)
+    - [How it works](type/overlay/how-work/how_work.md)
   - `none`
     - [Definition](type/none/definition/definition.md)
     - [Why use it](type/none/why-use/why_use.md)
@@ -45,7 +45,7 @@
 - [Quick troubleshooting](troubleshooting/troubleshooting.md)
 - [Security tips](security-tip/security_tip.md)
 - Common commands
-  - Definition 
+  - [Definition](common-command/definition/definition.md) 
   - Create networks
     - [docker network create](common-command/create/network-create/network_create.md)
     - [docker network create with specific IP range](common-command/create/network-create-ip/network_create_ip.md)

@@ -1,4 +1,4 @@
-# `docker compose run <service> <command>`
+# `docker compose run`
 
 - this command is the same of [docker compose exec](../compose-exec/compose_exec.md), but instead of running the command within the already running service container, it creates a new one;
 - it's good for one-off task;

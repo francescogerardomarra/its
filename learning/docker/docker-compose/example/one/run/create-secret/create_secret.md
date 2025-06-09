@@ -1,6 +1,6 @@
 # Create the Secrets
 
-To create the db credentials as secrets, open a teminal and run these commands:
+To create the db credentials as secrets, open a terminal and run these commands:
 
 ```commandline
 echo "postgres" | docker secret create db_user -

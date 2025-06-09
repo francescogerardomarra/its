@@ -1,6 +1,6 @@
 # Roles
 
-- only manager nodes participate in the Raft consensus alghoritm;
+- only manager nodes participate in the Raft consensus algorithm;
 - **among the managers, just one is the leader, and the rest are followers**;
 - **leader**: responsible for managing and coordinating all state changes in the cluster by receiving client requests, replicating log entries to followers, and committing changes once a quorum is reached;
 

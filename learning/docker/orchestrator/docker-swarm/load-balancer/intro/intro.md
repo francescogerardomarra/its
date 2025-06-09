@@ -1,4 +1,4 @@
-# Introduction
+# Load Balancer Introduction
 
 - when you deploy a service in Swarm mode, you can specify how many **replicas** (copies) of the service you want;
 - Docker Swarm uses **built-in DNS-based load balancing** and **routing mesh**.

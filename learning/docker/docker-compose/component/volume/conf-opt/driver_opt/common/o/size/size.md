@@ -1,4 +1,4 @@
-# Size
+# `size`
 
 - the `size` option in Docker Compose volumes is used to specify the maximum size of the volume when using the `local` volume driver;
 - the size option needs to be included as part of the o (options) parameter;
@@ -10,7 +10,7 @@
 - the size value should be specified as a string representing the size limit, for example, `100m`, `2g`, or `1t`;
  
 
-- it is essential to have a file system that supports quota management, otherwise, the size limit will not be enforced;
+- it is essential to have a file system that supports quota management, otherwise the size limit will not be enforced;
 - specifying the `size` option helps to control disk space usage by limiting how much data can be stored within a given volume.
 
 **Example:**

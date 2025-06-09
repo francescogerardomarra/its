@@ -21,5 +21,5 @@
 
 - ways to create named volumes:
   - [Dockerfile](../../../../create/automatically/dockerfile/dockerfile.md);
-  - [container inialitization](../../../../create/automatically/container/container.md) (the above example);
+  - [container initialization](../../../../create/automatically/container/container.md) (the above example);
   - [`docker-compose.yml` file](../../../../create/automatically/compose/compose.md).

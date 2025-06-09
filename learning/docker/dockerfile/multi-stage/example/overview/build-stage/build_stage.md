@@ -7,13 +7,13 @@ In this chapter, we explain the `build` stage from the previous [Dockerfile](../
     - `RUN mvn dependency:go-offline` downloads all dependencies;
     - without this command, `mvn clean package` would download the dependencies since they are not present;
     - when we build the image, if we didn't change the `pom.xml` from the previous build, we don't want to download dependencies again;
-    - we want to reuse the previous Docker cached layers, with all the dependencies present;
+    - we want to reuse the previous Docker cached layers with all the dependencies present;
     - for this reason we:
       1. just copied the `pom.xml`;
       2. download the dependencies;
       3. just after copied the source code.
     - this avoids the cache invalidation for the dependency layer in case the source code changes;
-    - you can see this problem within [layers] section. // todo: link here
+    - you can see this problem within [layers](../../../../../layer/index.md) section.
 3. generates the `.jar` file.
 
 **`Dockerfile` `build` stage section:**

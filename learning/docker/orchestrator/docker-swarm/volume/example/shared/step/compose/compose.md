@@ -1,4 +1,4 @@
-# `docker-compose.yml` file
+# `docker-compose.yml` File
 
 - use the following`docker-compose.yml` file:
 

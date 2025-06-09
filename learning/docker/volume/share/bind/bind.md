@@ -11,11 +11,11 @@
 - Docker doesn't manage them automatically;
 
 
-- race condition can happen:
+- race conditions can happen:
   1. `container-1` opens `file A`;
   2. `container-2` opens `file A`;
   3. `container-1` writes `Hello dog` and save;
   4. `container-2` writes `Hello cat` and save;
-  5. file will contain only `Hello cat`, where maybe the purpuse was to have both strings saved within the file.
+  5. file will contain only `Hello cat`, where maybe the purpose was to have both strings saved within the file.
 
-- in this scenarios, you need to implement mechanisms at application level to prevent these issues (e.g. using queue).
+- in this scenario, you need to implement mechanisms at application level to prevent these issues (e.g., using queue).

@@ -7,7 +7,7 @@
     docker run -d -p 5000:5000 --name registry registry:2
     ```  
     - it runs a Docker container named `registry` in detached mode (`-d`), exposes it on port `5000`, and uses the official Docker `registry` image (version `2`).
-- **optional volume storage**: to make the registry's data persistent, add a [volume](): // todo: add link to volume
+- **optional volume storage**: to make the registry's data persistent, add a [volume](../../../volume/index.md):
 
     ```bash
     docker run -d -p 5000:5000 -v /path/to/registry/data:/var/lib/registry --name registry registry:2

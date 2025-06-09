@@ -8,7 +8,7 @@ It's possible to attach an existing container to an existing network (**containe
     docker network create my-custom-network
     ```
 
-2. create an Nginx container:
+2. create a Nginx container:
 
     ```commandline
     docker run -d --name my-nginx-container nginx

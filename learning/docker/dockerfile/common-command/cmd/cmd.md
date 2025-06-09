@@ -1,4 +1,4 @@
-# CMD
+# `CMD`
 
 - **purpose:**
   - defines the default command that runs when a container starts;

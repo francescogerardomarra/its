@@ -1,7 +1,7 @@
 # Why Use VM?
 
 - **isolation and security:**
-  - VMs operate independently from the host system and other VMs;
+  - VMs operate independently of the host system and other VMs;
   - this isolation ensures that if a VM encounters issues (e.g., crashes, malware infections), it won’t affect the host or other VMs;
   - VMs are ideal for testing software or visiting potentially harmful websites, as you can experiment in a controlled environment without risking your primary system.
 - **cost efficiency:**
@@ -29,7 +29,7 @@
   - they are scalable, especially in cloud environments, where you can easily add or reduce the number of VMs based on demand.
 - **cloud computing:**
   - Cloud service providers use VMs to deliver scalable and customizable infrastructure to users;
-  - if you're hosting a website or application on the cloud, it's likely running on a VM.
+  - if you're hosting a website or application in the cloud, it's likely running on a VM.
 
 
 - **environment replication:**

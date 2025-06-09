@@ -1,4 +1,4 @@
-# `volume_name:ro or :rw`
+# `volume_name:ro` and `volume_name:rw`
 
 - `volume_name:ro` indicates that the volume is mounted in **read-only** mode;
 - when a volume is mounted as `ro`, the container can **read** the data from the volume but cannot **modify** or **write** to it;

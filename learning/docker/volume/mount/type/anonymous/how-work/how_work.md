@@ -11,11 +11,11 @@
 
 
 - the volume name will be something like `f72d775f760fda95f401e123456789abcd1234e7f98a12f05b5f42de55123b3`;
-- **if the container is removed, the anonymous volume still exists, but it's harder to reuse for other containers because you need to use the above akward name**;
+- **if the container is removed, the anonymous volume still exists, but it's harder to reuse for other containers because you need to use the above awkward name**;
 - if you don't specify a name when defining a volume, Docker will create an anonymous volume automatically;
 
 
 - to create an **anonymous volume**, remove the volume names from these examples and provide only the container directory path:
   - [Dockerfile](../../../../create/automatically/dockerfile/dockerfile.md);
-  - [container inialitization](../../../../create/automatically/container/container.md) (the above example);
+  - [container initialization](../../../../create/automatically/container/container.md) (the above example);
   - [`docker-compose.yml` file](../../../../create/automatically/compose/compose.md).

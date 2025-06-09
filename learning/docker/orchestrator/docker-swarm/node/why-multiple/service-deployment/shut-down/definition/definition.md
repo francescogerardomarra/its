@@ -1,8 +1,8 @@
-# Can a Container Be Suddenly Shutted Down? Definition
+# Can a Container Be Suddenly Shut Down? Definition
 
 **Question:**
 
-If I perform a service update and the container that is going to be shutted down is managing a client request, it's going to be shutted down anyway or Docker Swarm waits that it finishes to manage the request?
+If I perform a service update and the container that is going to be shut down is managing a client request, it's going to be shut down anyway or Docker Swarm waits that it finishes to manage the request?
 
 **Answer:**
 

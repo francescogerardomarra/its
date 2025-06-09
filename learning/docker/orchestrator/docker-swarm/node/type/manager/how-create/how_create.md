@@ -6,7 +6,7 @@ Docker installed on the node.
 
 **Step:**
 
-Run the following command on the node you want to make the [leader] manager: <!-- todo: link to leader chapter -->
+Run the following command on the node you want to make the [leader](../responsibility/raft-consensus/role/role.md) manager:
 
 ```commandline
 docker swarm init

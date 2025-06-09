@@ -18,4 +18,4 @@
 - this ensures that data in the `/data` directory persists across container restarts or replacements, unlike bind mounts (which link to host file paths) or temporary mounts (which are deleted when the container stops);
 
 
-- the `--mount` flag is mandatory, since `-v` (see [here]()) works only with docker run, not with `docker service create`. <!-- todo: link to -v common command is volumes chapter -->
+- the `--mount` flag is mandatory, since `-v` (see [here](../../../../../../volume/mount/type/named/how-work/how_work.md)) works only with docker run, not with `docker service create`.

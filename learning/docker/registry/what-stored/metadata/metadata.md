@@ -1,4 +1,4 @@
-# Image Metadata
+# Images Metadata
 
 - **manifest files:** 
   - a manifest describes the image, including the layers that make it up and the associated tags;

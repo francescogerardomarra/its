@@ -42,10 +42,10 @@
         - [Run](component/service/replica/with-swarm/run/run.md)
         - [Check if stack and services are running](component/service/replica/with-swarm/check-service/check_service.md)
         - [Check service logs](component/service/replica/with-swarm/check-log/check_log.md)
-    - depends_on
+    - `depends_on`
       - [Definition](component/depend-on/definition/definition.md)
       - [healthcheck](component/depend-on/healthcheck/healthcheck.md)
-      - [How healthcheck is used after startup](component/depend-on/after-startup/after_startup.md)
+      - [How `healthcheck` is used after startup](component/depend-on/after-startup/after_startup.md)
       - [Type of `condition`](component/depend-on/condition-type/condition_type.md)
     - Environment variables
       - [Shell](component/env_variable/shell/shell.md)
@@ -62,7 +62,7 @@
         - [Definition](component/network/define-network/driver/definition/definition.md)
         - Types
           - [bridge](component/network/define-network/driver/type/bridge/bridge.md)
-          - overlay
+          - `overlay`
             - [Definition](component/network/define-network/driver/type/overlay/definition/definition.md)
             - [Example](component/network/define-network/driver/type/overlay/example/example.md)
           - [host](component/network/define-network/driver/type/host/host.md)
@@ -70,13 +70,13 @@
         - Options
           - [Definition](component/network/define-network/driver/option/definition/definition.md)
           - Examples
-            - bridge
+            - `bridge`
               - [com.docker.network.bridge.name](component/network/define-network/driver/option/example/bridge/name/name.md)
               - [com.docker.network.bridge.enable_ip_masquerade](component/network/define-network/driver/option/example/bridge/ip-masquerade/ip_masquerade.md)
               - [com.docker.network.bridge.enable_icc](component/network/define-network/driver/option/example/bridge/enable-icc/enable_icc.md)
               - [com.docker.network.bridge.host_binding_ipv4](component/network/define-network/driver/option/example/bridge/binding-ip/binding_ip.md)
               - [com.docker.network.driver.mtu](component/network/define-network/driver/option/example/bridge/driver-mtu/driver_mtu.md)
-            - overlay
+            - `overlay`
               - [com.docker.network.driver.mtu](component/network/define-network/driver/option/example/overlay/driver-mtu/driver_mtu.md)
     - [External](component/network/external/external.md)
     - [ipv4_address](component/network/static-ip/static_ip.md)
@@ -118,12 +118,12 @@
             - [Definition](component/volume/conf-opt/driver/type/other/definition/definition.md)
             - Example
               - [Amazon EFS](component/volume/conf-opt/driver/type/other/example/efs/efs.md)
-      - driver_opts
+      - `driver_opts`
         - [Definition](component/volume/conf-opt/driver_opt/definition/definition.md)
         - Common `driver_opts` for `local` driver
           - [type](component/volume/conf-opt/driver_opt/common/type/type.md)
           - [device](component/volume/conf-opt/driver_opt/common/device/device.md)
-          - o
+          - `o`
             - [Definition](component/volume/conf-opt/driver_opt/common/o/definition/definition.md)
             - Example
               - [tmpfs](component/volume/conf-opt/driver_opt/common/o/example/tmpfs/tmpfs.md)
@@ -135,7 +135,7 @@
         - Example 
           - [without name](component/volume/conf-opt/name/example/without-name/without_name.md)
           - [with name](component/volume/conf-opt/name/example/with-name/with_name.md)
-      - [volume_name:ro or :rw](component/volume/conf-opt/ro-rw/ro_rw.md)
+      - [`volume_name:ro` and `volume_name:rw`](component/volume/conf-opt/ro-rw/ro_rw.md)
       - [no_copy](component/volume/conf-opt/no-copy/no_copy.md)
   - Build context
     - [Definition](component/build-context/definition/definition.md)
@@ -150,7 +150,7 @@
     - [Built images](caching/type/built-image/built_image.md)
     - [Pulled images](caching/type/pulled-image/pulled_image.md)
   - [`--no-cache` option](caching/no-cache/no_cache.md)
-  - [clean up](caching/clean-up/clean_up.md)
+  - [Clean up](caching/clean-up/clean_up.md)
 - Run multiple `docker compose up`
   - [Introduction](run-multiple/intro/intro.md)
   - [What happens](run-multiple/what-happen/what_happen.md)
@@ -173,9 +173,9 @@
         - [backend](example/one/explanation/service/backend/backend.md)
         - [db](example/one/explanation/service/db/db.md)
     - Run
-      1. [create the secrets](example/one/run/create-secret/create_secret.md)
-      2. [build the backend image](example/one/run/build-backend/build_backend.md)
-      3. [run the stack](example/one/run/run-stack/run_stack.md)
+      1. [Create the secrets](example/one/run/create-secret/create_secret.md)
+      2. [Build the backend image](example/one/run/build-backend/build_backend.md)
+      3. [Run the stack](example/one/run/run-stack/run_stack.md)
     - [Test the program](example/one/test-program/test-program.md)
     - [Troubleshooting](example/one/troubleshooting/troubleshooting.md)
     - [Clean up](example/one/clean-up/clean_up.md)

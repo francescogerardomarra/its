@@ -1,6 +1,6 @@
 # Check Kubernetes Context
 
-- see what is a Kubernetes context [here](../../../../../../../orchestrator/kubernetes/context/context.md);
+- see what is a Kubernetes context [here](../../../../../../../../kubernetes/context/context.md);
 - minikube creates its own Kubernetes context, named `minikube`, which is separate from other Kubernetes contexts on your machine;
 - other contexts may include connections to cloud providers like AWS (`eks`), Google Cloud (`gke`), Azure (`aks`), or self-hosted Kubernetes clusters;
 

@@ -1,4 +1,4 @@
-# Push-Pull Image To Registry
+# Push Image To Registry
 
 - **purpose**: 
   - the `docker push` command uploads a locally tagged Docker image to a remote registry;

@@ -1,6 +1,6 @@
 # Example
 
-- this runs an Nginx container:
+- this runs a Nginx container:
 
     ```commandline
     docker run --network host nginx

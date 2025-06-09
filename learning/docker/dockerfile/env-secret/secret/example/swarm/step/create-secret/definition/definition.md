@@ -1,4 +1,4 @@
-# Create a Secret
+# Create a Secret Definition
 
 - run this command to create a secret:
 

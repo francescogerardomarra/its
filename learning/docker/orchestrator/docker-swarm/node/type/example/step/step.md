@@ -51,7 +51,7 @@
     docker service create --name myweb --replicas 4 nginx
     ```
 
-    - since we used the [drain]() command in the manager nodes node, the replicas will be split among the worker nodes;  <!-- todo: link to drain command -->
+    - since we used the [drain](../../../../common-command/node/availability/drain/drain.md) command in the manager nodes node, the replicas will be split among the worker nodes;
     - if you run the above command in the **leader** node (`node 1`): it will execute the command;
     - if you run the above command in the **follower** node (`node 2`): it will pass the command to the leader node (`node 1`), that will execute it.
 

@@ -1,4 +1,4 @@
-# `docker compose exec <service> <command>`
+# `docker compose exec`
 
 - this command is used to run a command inside a running service container defined in a `docker-compose.yml` file;
 - if `<service>` has more than one replica, Docker Compose will choose which replica to run the `<command>` in (usually the first one).

@@ -15,4 +15,4 @@ docker stack ls
 
 * only works when Docker Swarm mode is enabled and active on the node;
 * helps verify whether your stack deployments were successful;
-* **stacks** are a concept that exists only when using Docker Swarm in conjunction with Docker Compose files (see [here](../../../stack/only-compose/only_compose.md)).
+* the concept of **stacks** only exists when using Docker Swarm in conjunction with Docker Compose files (see [here](../../../stack/only-compose/only_compose.md)).

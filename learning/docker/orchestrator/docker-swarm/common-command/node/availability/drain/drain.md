@@ -1,4 +1,4 @@
-# Drain
+# `Drain`
 
 **Command:**
 

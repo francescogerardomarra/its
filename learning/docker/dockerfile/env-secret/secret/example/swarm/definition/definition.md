@@ -6,8 +6,8 @@
 
 
 - the `.jar` file will be containerized and run within a Docker Swarm service;
-- a Docker Swarm service is an abstraction that allows you to define how a container should be managed (the number of replicas for example);
+- a Docker Swarm service is an abstraction that allows you to define how a container should be managed (the number of replicas, for example);
 - within a single Docker Swarm service, can run only one container (with many replicas);
 
 
-- if you want to run a different type of container you should create another Docker Swarm service.
+- if you want to run a different type of container, you should create another Docker Swarm service.

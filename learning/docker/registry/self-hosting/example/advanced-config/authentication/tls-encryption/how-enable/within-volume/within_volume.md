@@ -1,4 +1,4 @@
-#
+# `config.yml` Within a Volume
 
 - it's a common practice to place the `config.yml` file within a volume;
 - storing the `config.yml` of a Docker registry in a volume ensures that configurations persist across container restarts and updates;

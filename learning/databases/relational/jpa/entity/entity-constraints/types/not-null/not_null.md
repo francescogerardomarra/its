@@ -1,71 +1,61 @@
 # notNull
+## Definition
+In a relational context, the `NOT NULL` constraint ensures that a column must have a value — it cannot be left empty (`null`).
+
+At the application level, the `@NotNull` annotation from the **Jakarta Bean Validation API** ensures that the field is not `null` during
+validation, typically before persisting the entity.
 
 
+**Database-level (Postgres):**
+```
+CREATE TABLE person (
+    id SERIAL PRIMARY KEY,
+
+    name VARCHAR(255) NOT NULL CHECK (char_length(name) >= 3),
+
+    age INTEGER CHECK (age >= 18 AND age <= 100),
+
+    email VARCHAR(255) NOT NULL UNIQUE CHECK (
+        email ~ '^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$'
+    )
+);
+```
+**Application-level (Hibernate/Java 21):**
 ```java
 package com.example;
 
-import jakarta.validation.constraints.*;  // Importing validation annotations from Jakarta Validation API
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
-// This class represents a Person entity that is used in JSON deserialization
-// It includes validation constraints to ensure that the data is correct before processing.
+@Entity
 public class Person {
 
-    // The name field is validated with two annotations:
-    // - @NotNull: Ensures that the 'name' field is not null.
-    // - @Size(min = 3): Ensures that the 'name' field is at least 3 characters long.
-    // If these conditions are not met, a validation message will be provided.
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @NotNull(message = "Name cannot be null")
     @Size(min = 3, message = "Name must be at least 3 characters long")
     private String name;
 
-    // The age field is validated with two annotations:
-    // - @Min(value = 18): Ensures that the 'age' field is at least 18.
-    // - @Max(value = 100): Ensures that the 'age' field is no greater than 100.
-    // If the age does not meet these constraints, a validation message will be provided.
     @Min(value = 18, message = "Age must be at least 18")
     @Max(value = 100, message = "Age must be less than or equal to 100")
     private int age;
 
-    // The email field is validated with two annotations:
-    // - @NotNull: Ensures that the 'email' field is not null.
-    // - @Pattern(regexp = ...): Ensures that the 'email' follows a valid email format.
-    // The regular expression defines a simple email pattern that allows alphanumeric characters and common symbols.
-    // If these conditions are not met, a validation message will be provided.
     @NotNull(message = "Email cannot be null")
-    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", message = "Invalid email format")
+    @Pattern(
+            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",
+            message = "Invalid email format"
+    )
+    @Column(unique = true)  // <-- Enforces UNIQUE at the database schema level
     private String email;
 
-    // Default constructor for deserialization (necessary for some deserialization frameworks like Jackson)
     public Person() {}
 
-    // Getter for 'name' field
-    public String getName() {
-        return name;
-    }
-
-    // Setter for 'name' field
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    // Getter for 'age' field
-    public int getAge() {
-        return age;
-    }
-
-    // Setter for 'age' field
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    // Getter for 'email' field
-    public String getEmail() {
-        return email;
-    }
-
-    // Setter for 'email' field
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    // Getters and setters ...
 }
 ```

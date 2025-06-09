@@ -1,4 +1,4 @@
-# Introduction
+# Layers Introduction
 
 - a Docker image is built up from a series of layers;
 - some instruction in a `Dockerfile` creates a new layer;

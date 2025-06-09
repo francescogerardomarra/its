@@ -1,10 +1,7 @@
 # Docker
 
-<!-- todo: check if some chapters in the indexs are not linked to the page -->
-<!-- todo: check if some link are broken like ".md" is missing -> find a regex for this case -->
-<!-- todo: remove note.md files -->
-
 - [What is Docker?](what-is-docker/what_is_docker.md)
+- [Install Docker Engine](install/install.md)
 - [Docker vs VM](docker-vs-vm/index.md)
 - [Architecture](architecture/index.md)
 - [Docker engine](docker-engine/index.md)

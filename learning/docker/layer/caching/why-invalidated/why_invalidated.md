@@ -1,6 +1,6 @@
 # Why are Next Layers Invalidated?
 
-- each Dockerfile step creates a new layer that represents a change to the image’s filesystem;
+- each `Dockerfile` step creates a new layer that represents a change to the image’s filesystem;
 - later layers depend on the exact state of the layers below them;
 - even if a later step hasn’t changed, it can’t be reused if the layers it builds on have changed;
 

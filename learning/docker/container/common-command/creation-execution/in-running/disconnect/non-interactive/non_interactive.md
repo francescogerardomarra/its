@@ -6,7 +6,7 @@
     Ctrl + P followed by Ctrl + Q
     ```
 
-- in this case you have to close the terminal from GUI;
+- in this case, you have to close the terminal from GUI;
 - **if you press `CTRL + C`, it stops the container because `ctrl + C` sends a kill signal to the main process**. 
 
 **Example:**

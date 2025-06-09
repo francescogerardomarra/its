@@ -1,4 +1,4 @@
-# Without Docker Swarm Definition
+# Replicas without Docker Swarm Definition
 
 - **no built-in load balancing**: Docker Compose does not automatically distribute traffic across replicas, requiring an external reverse proxy like Nginx or Traefik;
 - **port conflicts**: multiple replicas of a service cannot share the same host port, making it necessary to use dynamically assigned ports or a reverse proxy;

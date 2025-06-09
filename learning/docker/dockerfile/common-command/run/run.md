@@ -1,4 +1,4 @@
-# RUN
+# `RUN`
 
 - **purpose:**
   - executes a command **during the image build process** and creates a new layer in the image;

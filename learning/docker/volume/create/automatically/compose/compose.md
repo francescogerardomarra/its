@@ -6,7 +6,7 @@ When you define a volume inside a `docker-compose.yml`, Docker creates it automa
 
 - `docker-compose.yml`:
 
-    ```dockerfile
+    ```yaml
     version: '3'
     services:
       web:
@@ -21,7 +21,7 @@ When you define a volume inside a `docker-compose.yml`, Docker creates it automa
 - when you run `docker-compose up -d`, `myvolume` gets created;
 - if you don't define it explicitly under `volumes:`, Docker will create an anonymous volume:
 
-    ```dockerfile
+    ```yaml
     version: '3'
     services:
       app:

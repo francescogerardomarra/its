@@ -8,4 +8,4 @@
         - myvolume:/path/in/container
         - ./host/path:/path/in/container
   ```
-- supports both [named volumes] and [bind mounts]. todo: add link to named volumes, todo: add link to bind mounts
+- supports both [named volumes](../../../../volume/mount/type/named/how-work/how_work.md) and [bind mounts](../../../../volume/mount/type/bind/how-work/how_work.md).

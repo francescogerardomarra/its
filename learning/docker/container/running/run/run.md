@@ -19,5 +19,5 @@ Example:
 docker run -d --name mynginx -p 8080:80 nginx
 ```
 
-- this example runs a Nginx container, mapping port 80 in the container to port `8080` on the host;
+- this example runs a Nginx container, mapping port `80` in the container to port `8080` on the host;
 - the `-d` flag runs it in the background.

@@ -1,4 +1,4 @@
-# LABEL (Metadata)
+# `LABEL` (Metadata)
 
 - **purpose:**
   - adds **metadata** (key-value pairs) to a Docker image to store information like author, version, or description;
@@ -10,7 +10,7 @@
     ```dockerfile
     LABEL <key>=<value> <key2>=<value2> ...
     ```
-    all key, values are completely arbitrary, meaning you can define any key-value pairs you want.
+    all key values are completely arbitrary, meaning you can define any key-value pairs you want.
 
 - **example:**
   - **add basic metadata to an image:**

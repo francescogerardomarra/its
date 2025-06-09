@@ -1,4 +1,4 @@
-# With Docker Swarm Definition
+# Replicas with Docker Swarm Definition
 
 Benefits of setting replicas using Docker Swarm:
 

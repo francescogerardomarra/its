@@ -1,4 +1,4 @@
-# Manager
+# Manager Node
 
 **Command:**
 

@@ -1,4 +1,5 @@
 # jpa
+
 - introduction
     - [persistence](persistence/persistence.md)
     - [object-relational mismatch](or-mismatch/or_mismatch.md)
@@ -23,83 +24,170 @@
 - persistence in Spring
     - [definition](spring/definition/definition.md)
     - Spring boot
-      - [what it is](spring/boot/what-it-is/what_it_is.md)
-      - [datasource](spring/boot/datasource/datasource.md)
-      - [autoconfiguration](spring/boot/auto-config/auto_config.md)
+        - [what it is](spring/boot/what-it-is/what_it_is.md)
+        - [datasource](spring/boot/datasource/datasource.md)
+        - [autoconfiguration](spring/boot/auto-config/auto_config.md)
     - [`JpaRepository`](spring/repository/repository.md)
 - entity
     - [mapping](entity/mapping.md)
     - [constraints](entity/constraints.md)
     - [relationships](entity/relationships.md)
 - custom queries
-  - [JPQL](custom-queries/jpql/jpql.md)
-  - [native queries](custom-queries/native-queries/native_queries.md)
-- dto
-    - [definition](../../../java/chapter-2/object-oriented/components/dto/dto.md)
-    - [separation of concerns](dto/separation/separation.md)
-    - [duty separation](dto/duty/duty.md)
-    - [versioning and security](dto/version-sec/version_sec.md)
-    - example
-        - [db build](dto/example/db-build/db_build.md)
-        - [application](dto/example/application/application.md)
-        - [running](dto/example/running/running.md)
+    - [JPQL](custom-queries/jpql/jpql.md)
+    - [native queries](custom-queries/native-queries/native_queries.md)
+- [dataObjects](data-objects/data_objects.md)
 - transactions
     - [definition](transactions/definition/definition.md)
-    - [why do they matter?](transactions/why/why.md)
+    - code
+      - [database-level](transactions/code/database-level/database_level.md)
+      - [application-level](transactions/code/application-level/application_level.md)
+    - [notation](transactions/notation/notation.md)//to finish
+    - [code vs instance](transactions/code-vs-instance/code_vs_instance.md)//to finish
+    - [schedule](transactions/schedule/schedule.md)//to finish
+    - [timeline](transactions/timeline/timeline.md)//to finish
+    - parallel transactions
+        - definition
+        - timeline
+    - concurrent transactions
+        - definition
+        - timeline
+    - isolation
+        - definition
+        - scope
+        - READ UNCOMMITTED
+        - READ COMMITTED
+        - REPEATABLE READ
+        - SERIALIZABLE
+    - ACID RDBMS
+        - definition
+        - atomicity
+        - consistency
+        - isolation
+        - durability
+    - programming
+        - database-level
+            - SQL syntax
+            - isolation
+            - level
+            - scope
+            - stored procedures
+            - multithreaded execution
+        - application-level
+            - Spring
+                - declarative programming
+                - @Transactional
+                - isolation
+                    - level
+                    - scope
+                - multithreaded execution
+    - anomalous schedules
+        - dirty read
+            - definition
+            - timeline
+            - scenario
+            - solution
+            - programming
+                - SQL
+                - Spring
+        - non-repeatable reads
+            - definition
+            - timeline
+            - scenario
+            - solution
+            - programming
+                - SQL
+                - Spring
+        - ghost update
+            - definition
+            - timeline
+            - scenario
+            - solution
+            - programming
+                - SQL
+                - Spring
+        - phantom read
+            - definition
+            - timeline
+            - scenario
+            - solution
+            - programming
+                - SQL
+                - Spring
+        - skew writes
+            - definition
+            - timeline
+            - scenario
+            - solution
+            - programming
+                - SQL
+                - Spring
+    - serializability
+        - definition
+        - conflict operations
+        - serializable schedule
+        - implementations
+            - 2PL
+            - SSI
+
+//lascio questo qui temporaneamente
+
+- transactions
+    - [definition](transactions-old/definition/definition.md)
+    - [why do they matter?](transactions-old/why/why.md)
     - what is the role of transactions in database management systems (DBMS)?
-        - [what is a transaction?](transactions/dbms/definition/definition.md)
-        - [ACID principles](transactions/dbms/acid/acid.md)
-        - [concurrency control](transactions/dbms/concurrency/concurrency.md)
-        - [error recovery](transactions/dbms/error-recovery/error_recovery.md)
-        - [data integrity](transactions/dbms/integrity/integrity.md)
+        - [what is a transaction?](transactions-old/dbms/definition/definition.md)
+        - [ACID principles](transactions-old/dbms/acid/acid.md)
+        - [concurrency control](transactions-old/dbms/concurrency/concurrency.md)
+        - [error recovery](transactions-old/dbms/error-recovery/error_recovery.md)
+        - [data integrity](transactions-old/dbms/integrity/integrity.md)
     - transaction lifecycle
         - **Start, Commit, and Rollback**
             - `@Transactional`
-                - [description](transactions/lifecycle/stages/transactional/description/description.md)
-                - [what happens when you don't use `@Transactional`?](transactions/lifecycle/stages/transactional/what/what.md)
-            - [what triggers the start of a transaction?](transactions/lifecycle/stages/start/start.md)
-            - [Spring Object management](transactions/lifecycle/stages/spring-object-management/index.md)
-            - [Spring AOP in transaction management](transactions/lifecycle/stages/aop/index.md)
-            - [what happens when a transaction is committed?](transactions/lifecycle/stages/commit/commit.md)
-            - [rollback: when and how it happens?](transactions/lifecycle/stages/rollback/rollback.md)
+                - [description](transactions-old/lifecycle/stages/transactional/description/description.md)
+                - [what happens when you don't use `@Transactional`?](transactions-old/lifecycle/stages/transactional/what/what.md)
+            - [what triggers the start of a transaction?](transactions-old/lifecycle/stages/start/start.md)
+            - [Spring Object management](transactions-old/lifecycle/stages/spring-object-management/index.md)
+            - [Spring AOP in transaction management](transactions-old/lifecycle/stages/aop/index.md)
+            - [what happens when a transaction is committed?](transactions-old/lifecycle/stages/commit/commit.md)
+            - [rollback: when and how it happens?](transactions-old/lifecycle/stages/rollback/rollback.md)
     - using transactions
         - isolation levels
-            - [description](transactions/using/isolation/description/description.md)
-            - [why do they matter?](transactions/using/isolation/why/why.md)
-            - [what do they affect?](transactions/using/isolation/what/what.md)
-            - [default isolation level](transactions/using/isolation/default/default.md)
+            - [description](transactions-old/using/isolation/description/description.md)
+            - [why do they matter?](transactions-old/using/isolation/why/why.md)
+            - [what do they affect?](transactions-old/using/isolation/what/what.md)
+            - [default isolation level](transactions-old/using/isolation/default/default.md)
             - example
                 - dirty reads
-                    - [can they occur in PostgreSQL?](transactions/using/isolation/example/dirty-reads/can-it-occur/can_it_occur.md)
+                    - [can they occur in PostgreSQL?](transactions-old/using/isolation/example/dirty-reads/can-it-occur/can_it_occur.md)
                 - non-repeatable reads
-                    - [example](transactions/using/isolation/example/non-repeatable-reads/example/example.md)
-                    - [timeline](transactions/using/isolation/example/non-repeatable-reads/timeline/timeline.md)
-                    - [solution](transactions/using/isolation/example/non-repeatable-reads/solution/solution.md)
+                    - [example](transactions-old/using/isolation/example/non-repeatable-reads/example/example.md)
+                    - [timeline](transactions-old/using/isolation/example/non-repeatable-reads/timeline/timeline.md)
+                    - [solution](transactions-old/using/isolation/example/non-repeatable-reads/solution/solution.md)
                 - phantom reads
-                    - [example](transactions/using/isolation/example/phantom-reads/example/example.md)
-                    - [timeline](transactions/using/isolation/example/phantom-reads/timeline/timeline.md)
-                    - [solution](transactions/using/isolation/example/phantom-reads/solution/solution.md)
+                    - [example](transactions-old/using/isolation/example/phantom-reads/example/example.md)
+                    - [timeline](transactions-old/using/isolation/example/phantom-reads/timeline/timeline.md)
+                    - [solution](transactions-old/using/isolation/example/phantom-reads/solution/solution.md)
         - propagation
-            - [description](transactions/using/propagation/description/description.md)
-            - [why does it matter?](transactions/using/propagation/why/why.md)
-            - [what does it affect?](transactions/using/propagation/what/what.md)
-            - [default propagation type](transactions/using/propagation/default/default.md)
+            - [description](transactions-old/using/propagation/description/description.md)
+            - [why does it matter?](transactions-old/using/propagation/why/why.md)
+            - [what does it affect?](transactions-old/using/propagation/what/what.md)
+            - [default propagation type](transactions-old/using/propagation/default/default.md)
             - example
-                - [generic](transactions/using/propagation/example/generic/generic.md)
+                - [generic](transactions-old/using/propagation/example/generic/generic.md)
                 - nested transactions
-                    - [description](transactions/using/propagation/example/nested/description/description.md)
-                    - [example](transactions/using/propagation/example/nested/example/example.md)
+                    - [description](transactions-old/using/propagation/example/nested/description/description.md)
+                    - [example](transactions-old/using/propagation/example/nested/example/example.md)
     - **Transaction Boundaries**
-        - [how transactions are started and ended in different contexts](transactions/lifecycle/boundaries/contexts/contexts.md)
-        - [Adding a transactional context to a method](transactions/lifecycle/boundaries/transactional-context/transactional_context.md)
+        - [how transactions are started and ended in different contexts](transactions-old/lifecycle/boundaries/contexts/contexts.md)
+        - [Adding a transactional context to a method](transactions-old/lifecycle/boundaries/transactional-context/transactional_context.md)
     - when does a method need to be marked with a transactional context (transactional boundary)?
-        - [marking a method with a transactional context](transactions/transactional-boundary/marking/marking.md)
-        - [isolation requirements](transactions/isolation-requirements/isolation_requirements.md)
-        - [when read operations don’t need a transaction](transactions/read-ops/read_ops.md)
+        - [marking a method with a transactional context](transactions-old/transactional-boundary/marking/marking.md)
+        - [isolation requirements](transactions-old/isolation-requirements/isolation_requirements.md)
+        - [when read operations don’t need a transaction](transactions-old/read-ops/read_ops.md)
     - consequences of not using transactions:
-        - [case 1: when a single repository is involved](transactions/consequences/case-1/case_1.md)
-        - [case 2: when multiple repositories are involved](transactions/consequences/case-2/case_2.md)
-        - [comparison](transactions/consequences/comparison/comparison.md)
+        - [case 1: when a single repository is involved](transactions-old/consequences/case-1/case_1.md)
+        - [case 2: when multiple repositories are involved](transactions-old/consequences/case-2/case_2.md)
+        - [comparison](transactions-old/consequences/comparison/comparison.md)
 - explicit entity management
     - `EntityManager`
         - [description](entity-management/entity-manager/description/description.md)
@@ -130,7 +218,6 @@
         - `@PreUpdate`
         - `@PostLoad`
         - cheatsheet
-
 
 ```
 ## 🔄 Transaction Propagation

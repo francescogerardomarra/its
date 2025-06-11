@@ -1,0 +1,24 @@
+# dataObjects
+- [definition](definition/definition.md)
+- types
+    - pojo
+        - [definition](types/pojo/definition/definition.md)
+        - [purpose](types/pojo/purpose/purpose.md)
+        - [characteristics](types/pojo/characteristics/characteristics.md)
+        - [useCases](types/pojo/use-cases/use_cases.md)//to finish with an example as shown in point 38
+    - entity
+        - [definition](types/entity/definition/definition.md)
+        - [purpose](types/entity/purpose/purpose.md)
+        - [characteristics](types/entity/characteristics/characteristics.md)
+        - [useCases](types/entity/use-cases/use_cases.md)//to finish with an example as shown in point 38
+    - dto
+        - [definition](types/dto/definition/definition.md)
+        - [purpose](types/dto/purpose/purpose.md)
+        - [characteristics](types/dto/characteristics/characteristics.md)
+        - [useCases](types/dto/use-cases/use_cases.md)//to finish with an example as shown in point 38
+    - vo
+        - [definition](types/vo/definition/definition.md)
+        - [purpose](types/vo/purpose/purpose.md)
+        - [characteristics](types/vo/characteristics/characteristics.md)
+        - [useCases](types/vo/use-cases/use_cases.md)//to finish with an example as shown in point 38
+- [summary](summary/summary.md)

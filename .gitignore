@@ -41,7 +41,7 @@
 # .idea/modules.xml
 # .idea/*.iml
 # .idea/modules
-# *.iml
+*.iml
 # *.ipr
 
 # CMake
@@ -113,6 +113,7 @@ fabric.properties
 #*.zip
 *.tar.gz
 *.rar
+*.iml
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -120,6 +121,3 @@ replay_pid*
 
 # ignore all unref_file_checker.py files
 unref_file_checker.py
-
-# not ignore the one referenced in the doc to be downloaded
-!docs/sorint/tool/doc/unref-check/resources/unref_file_checker.py

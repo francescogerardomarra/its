@@ -28,3 +28,7 @@ Both directors can use different builders, one might produce a **real car**, and
 * clients to request complex products easily (without knowing technical details);
 * builders to focus on *how* to assemble the product;
 * directors to standardize *what sequence* of steps to follow.
+
+
+<img src="img/laptop_analogy.png">
+<img src="img/report_analogy.png">

@@ -2,7 +2,7 @@
 
 - [Definition](definition/definition.md)
 - Class diagram
-  - [Cheatsheet](class-diagram/cheatsheet/cheatsheet.md) 
+  - [Cheatsheet](class-diagram/cheatsheet/cheatsheet.md)
 - Types
   - [Creational](types/creational/index.md)
   - [Structural](types/structural/index.md)

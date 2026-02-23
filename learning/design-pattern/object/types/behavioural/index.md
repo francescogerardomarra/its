@@ -8,7 +8,7 @@
 - [Observer](observer/index.md)
 - [State](state/index.md)
 - [Strategy](strategy/index.md)
-- Iterator
+- [Iterator](iterator/index.md)
 - [Visitor](visitor/index.md)
 
 - Comparisons

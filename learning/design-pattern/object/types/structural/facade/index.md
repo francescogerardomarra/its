@@ -1,8 +1,7 @@
-# Facade
-- [intent](intent/intent.md)
-- [problem](problem/problem.md)
-- [solution](solution/solution.md)
-- [real-world analogy](analogy/analogy.md)
-- [structure](structure/structure.md)//to-finish
-- implementation
-    - [example: enabling a button based on input fields](implementation/example/example.md)//to-do
+# Facade Design Pattern
+
+- [Description](description/description.md)
+- [Real life analogy](real-analogy/real_analogy.md)
+- [Wrong way](wrong-way/wrong_way.md)
+- [Class diagram](class-diagram/class_diagram.md)
+- [Code](code/code.md)

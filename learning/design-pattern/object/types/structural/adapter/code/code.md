@@ -11,7 +11,7 @@
 - [FancyUIService.java](resources/java-project/src/main/java/com/youtube/geekific/FancyUIService.java)
 - [FancyUIServiceAdapter.java](resources/java-project/src/main/java/com/youtube/geekific/FancyUIServiceAdapter.java)
 - [MainApp.java](resources/java-project/src/main/java/com/youtube/geekific/MainApp.java)
-- 
+
 Open it within your Java IDE:
 
 [Java project](resources/java-project)

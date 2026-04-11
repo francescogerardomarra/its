@@ -6,5 +6,3 @@
 - [Facade](facade/index.md)
 - [Flyweight](flyweight/index.md)
 
-
-- [DAO](dao/dao.md)
